@@ -1,0 +1,35 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-text-field")
+        .AddParentAttr("hide-details")
+        .AddParentAttr(new
+        {
+            @class = "Input",
+            variant = "solo-filled",
+            density = "compact",
+            label = Model.GetSlotContent(InputSlot.Label),
+        });
+
+    Model.AddParentAttr("tabindex", "1", PropPassType.Fill);
+
+    if (Model.HasSlot(InputSlot.ReadOnly))
+        Model.AddParentAttr("readonly");
+
+    if (!Model.HasSlot(InputSlot.ReadOnly) || Model.HasSlot(InputSlot.Clearable))
+        Model.AddParentAttr("clearable");
+
+    if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
+        Model.AddParentAttr("Prepend-inner-icon", InnerIcon);
+
+    if (Model.HasSlot(InputSlot.SizeDefault))
+        Model.AddParentAttr("density", "default", PropPassType.Cover);
+    else if (Model.HasSlot(InputSlot.SizeCompact))
+        Model.AddParentAttr("density", "compact", PropPassType.Cover);
+    else if (Model.HasSlot(InputSlot.SizeComfortable))
+        Model.AddParentAttr("density", "comfortable", PropPassType.Cover);
+
+    if (Model.HasSlot(InputSlot.IsSecure))
+        Model.AddParentAttr("type", "password");
+
+}

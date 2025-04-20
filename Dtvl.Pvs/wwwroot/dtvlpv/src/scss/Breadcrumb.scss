@@ -1,0 +1,33 @@
+
+--BreadcrumbVar {
+    --Breadcrumb-font-size: 1.2rem;
+    --Breadcrumb-text-color: var(--DefaultTheme-text-color2);
+    --Breadcrumb-height: 3rem;
+    --Breadcrumb-bg: var(--DefaultTheme-bg);
+    --Breadcrumb-padding-x: 10px !important;
+}
+
+.Breadcrumb {
+    background-color: var(--Breadcrumb-bg);
+    height: var(--Breadcrumb-height);
+    padding-left: var(--Breadcrumb-padding-x) !important;
+    padding-right: var(--Breadcrumb-padding-x) !important;
+    width: 100%;
+}
+
+.PtForBreadcrumb {
+    padding-top: var(--Breadcrumb-height);
+}
+
+.BreadcrumbItem {
+    font-size: var(--Breadcrumb-font-size);
+    font-weight: bolder;
+}
+
+.BreadcrumbText {
+    color: var(--Breadcrumb-text-color);
+}
+
+.BreadcrumbArrow {
+    color: var(--Breadcrumb-text-color);
+}

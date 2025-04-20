@@ -1,0 +1,23 @@
+--InputVar {
+    --Input-bg: var(--DefaultTheme-bg);
+}
+
+.Input {
+}
+
+.Input .v-field {
+    background: var(--Input-bg);
+}
+
+.Input .v-label {
+    font-weight: bold;
+}
+
+.InputTitle {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.v-input__append {
+    margin-inline-start: 0px !important;
+}

@@ -1,0 +1,35 @@
+
+
+--CardVar {
+    --Card-bg: var(--DefaultTheme-bg2-2);
+    --Card-padding-x: 12px;
+    --Card-padding-y: 8px;
+    --Card-Header-text-color: var(--DefaultTheme-text-color2);
+    --Card-Content-text-color: var(--DefaultTheme-text-color);
+    --Card-Footer-text-color: var(--DefaultTheme-text-color3);
+}
+
+.CardBody {
+    padding-top: var(--Card-padding-y);
+    padding-bottom: var(--Card-padding-y);
+    padding-left: var(--Card-padding-x);
+    padding-right: var(--Card-padding-x);
+}
+
+.Card.v-card {
+    background: var(--Card-bg);
+}
+
+.CardHeader {
+    color: var(--Card-Header-text-color);
+}
+
+.CardContent {
+    color: var(--Card-Content-text-color);
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.CardFooter {
+    color: var(--Card-Footer-text-color);
+}

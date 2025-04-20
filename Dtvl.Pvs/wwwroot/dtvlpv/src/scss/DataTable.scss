@@ -1,0 +1,52 @@
+--DataTableVar {
+    --DataTable-bg: var(--DefaultTheme-bg2-2);
+    --DataTable-text-color: var(--DefaultTheme-text-color2);
+    --DataTable-Head-bg: var(--DefaultTheme-bg3);
+    --DataTable-Head-text-color: var(--DefaultTheme-text-color3);
+    --DataTable-Stripe-bg: #edeff7;
+}
+
+.DataTable {
+    background: var(--DataTable-bg);
+    color: var(--DataTable-text-color);
+    min-height: 300px;
+}
+
+.v-data-table__td-title {
+    width: auto !important;
+}
+
+
+.DataTable thead {
+    background: var(--DataTable-Head-bg);
+    color: var(--DataTable-Head-text-color);
+}
+
+.DataTable tbody {
+    font-size: var(--DefaultTheme-font-size);
+}
+
+.DataTable .v-data-table-header__content {
+    font-weight: bolder;
+}
+
+.DataTable .v-data-table .v-table__wrapper > table > thead > tr > th.v-data-table__th--sortable:hover {
+    background: var(--DataTable-Head-bg);
+    color: var(--DataTable-Head-text-color);
+}
+
+
+
+.DataTable ul.v-pagination__list {
+    padding: 0px;
+    margin: 0px;
+    margin-right: 2.5rem;
+}
+
+.v-data-table {
+    white-space: pre-line;
+}
+
+.DataTable-Stripe {
+    background: var(--DataTable-Stripe-bg);
+}

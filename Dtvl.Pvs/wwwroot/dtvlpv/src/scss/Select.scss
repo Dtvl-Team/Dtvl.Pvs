@@ -1,0 +1,16 @@
+--SelectVar {
+    --Select-bg: var(--DefaultTheme-bg);
+}
+
+.Select .v-field {
+    background: var(--Select-bg);
+}
+
+.Select .v-label {
+    font-weight: bold;
+}
+
+.SelectTitle {
+    font-size: 0.8rem;
+    font-weight: bold;
+}

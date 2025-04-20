@@ -1,0 +1,45 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-treeview")
+        .AddParentAttr("activatable", PropPassType.Fill)
+        .AddParentAttr("open-on-click", PropPassType.Fill)
+        .AddParentAttr("lines", "two", PropPassType.Fill)
+        .AddParentAttr(new
+        {
+            @class = "Tree py-1",
+        });
+    if (Model.PvName != null)
+        Model.AddParentAttr("v-bind:items", Model.PvName);
+}
+
+<div pv-name="Datas">
+    <v-treeview-group pv-name="Group">
+        <template v-slot:activator="{ props }">
+            <v-treeview-item pv-name="GroupItem"
+                             v-bind="props"
+                             density="compact">
+                <template v-slot:prepend="props">
+                    <i v-if="item.icon" class="TreeIcon" v-bind:class="item.icon"></i>
+                </template>
+            </v-treeview-item>
+        </template>
+
+        <v-treeview-item pv-name="ChildrenItem"
+                         density="compact">
+            <template v-slot:prepend="props">
+                <i v-if="item.icon" class="" v-bind:class="item.icon"></i>
+            </template>
+        </v-treeview-item>
+
+    </v-treeview-group>
+    <v-treeview-item pv-name="Item"
+                     v-else
+                     v-bind="props"
+                     density="compact">
+        <template v-slot:prepend="props">
+            <i v-if="item.icon" class="TreeIcon" v-bind:class="item.icon"></i>
+        </template>
+    </v-treeview-item>
+    <hr v-if="index < @(Model.PvName).length - 1" />
+</div>

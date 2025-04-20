@@ -1,0 +1,13 @@
+
+--FilterCardVar {
+    --FilterCard-bg: var(--DefaultTheme-bg2);
+}
+
+
+.FilterCard {
+    min-height: 60px;
+}
+
+.FilterCard .v-card {
+    background: var(--FilterCard-bg);
+}

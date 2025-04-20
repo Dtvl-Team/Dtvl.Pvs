@@ -1,0 +1,77 @@
+
+--HeaderVar {
+    --Header-height: 3rem;
+    --Header-bg: var(--DefaultTheme-bg2);
+    --Header-Title-font-size: 1.5rem;
+    --Header-Title-color: var(--DefaultTheme-text-color2);
+    --Header-border-bottom-color: var(--DefaultTheme-bg3);
+    --Header-User-Icon-color: var(--DefaultTheme-bg2);
+    --Header-User-Icon-bg: var(--DefaultTheme-text-color2);
+    --Header-Bars-Icon-bg: var(--DefaultTheme-text-color2);
+}
+
+.Header {
+    background: var(--Header-bg);
+    border-bottom-color: var(--Header-border-bottom-color);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    height: var(--Header-height);
+    z-index: 100;
+    position: fixed;
+}
+
+.Header a {
+    text-decoration: none;
+}
+
+.HeaderImageView > * {
+    display: block;
+}
+
+
+.HeaderTitle {
+    font-weight: bolder;
+    font-size: var(--Header-Title-font-size);
+    color: var(--Header-Title-color);
+}
+
+.HeaderUserCard {
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    background-color: var(--Header-bg);
+}
+
+.HeaderUser {
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+}
+
+.HeaderUserIcon {
+    @extend .HeaderUser;
+    color: var(--Header-User-Icon-bg);
+    background-color: var(--Header-User-Icon-color);
+}
+
+.HeaderUserImage {
+    @extend .HeaderUser;
+    object-fit: cover;
+}
+
+.HeaderBars {
+    width: 100%;
+    max-width: 2rem;
+    height: calc(var(--Header-height) - 1.2rem);
+    background-color: transparent;
+}
+
+.HeaderBars .v-card {
+    background-color: transparent;
+}
+
+.HeaderBarsIcon {
+    width: 100%;
+    height: 100%;
+    color: var(--Header-Bars-Icon-bg);
+}

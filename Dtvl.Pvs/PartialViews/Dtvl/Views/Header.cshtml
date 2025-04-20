@@ -1,0 +1,50 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model.AddParentAttr(new
+    {
+        @class = "Header py-0 w-100 row align-items-center NotSelect"
+    });
+}
+
+<section class="col-auto ms-3 HeaderBars Pointer"
+         style="display:none"
+         v-if="mobile || Router?.IsSidebarOpen"
+         v-show="mobile || Router?.IsSidebarOpen"
+         v-on:click="Router?.OpenSidebar">
+    <i class="fa-solid fa-bars HeaderBarsIcon"></i>
+</section>
+
+<a class="col-auto ms-3"
+   style="height:inherit;"
+   href="@Model.RenderSlot(HeaderSlot.RouteUrl)">
+    <div class="h-100 row align-content-center align-items-center HeaderTitle">
+
+        @if (Model.HasSlot(HeaderSlot.ImageView))
+        {
+            <div class="h-100 p-0 col-auto align-content-center HeaderImageView">
+                @Model.RenderSlot(HeaderSlot.ImageView)
+            </div>
+        }
+        else if (Model.HasSlot(HeaderSlot.ImageUrl))
+        {
+            <img class="h-100 col-auto"
+                 src="@Model.RenderSlot(HeaderSlot.ImageUrl)" />
+        }
+
+        <div class="col-auto ms-2">
+            @Model.RenderSlot(HeaderSlot.Title)
+        </div>
+    </div>
+</a>
+
+<div class="col row justify-content-end px-4">
+    <v-card hover
+            variant="tonal"
+            rounded="circle"
+            class="col-auto text-center HeaderUserCard"
+            href="@Model.GetSlotContent(HeaderSlot.ProfileUrl)">
+        <img class="HeaderUserImage"
+             style="display:none;" />
+        <i class="fa-solid fa-circle-user HeaderUserIcon"></i>
+    </v-card>
+</div>

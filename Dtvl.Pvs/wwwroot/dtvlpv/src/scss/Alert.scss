@@ -1,0 +1,44 @@
+
+--AlertVar {
+    --Alert-font-size: 1.8rem;
+    --Alert-Icon-size: 3.6rem;
+    --AlertOk-Icon-color: var(--DefaultTheme-color-success);
+    --AlertWarning-Icon-color: var(--DefaultTheme-color-warning);
+    --AlertError-Icon-color: var(--DefaultTheme-color-error);
+    --AlertConfirm-Icon-color: var(--DefaultTheme-color-confirm);
+}
+
+.Alert {
+}
+
+.AlertContent {
+    font-size: var(--Alert-font-size);
+    font-weight: bolder;
+}
+
+.AlertMessage {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.AlertIcon {
+    width: var(--Alert-Icon-size);
+    height: var(--Alert-Icon-size);
+}
+
+
+.AlertOk {
+    color: var(--AlertOk-Icon-color);
+}
+
+.AlertWarning {
+    color: var(--AlertWarning-Icon-color);
+}
+
+.AlertError {
+    color: var(--AlertError-Icon-color);
+}
+
+.AlterConfirm {
+    color: var(--AlertConfirm-Icon-color);
+}

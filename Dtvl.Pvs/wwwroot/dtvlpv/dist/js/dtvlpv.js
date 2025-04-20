@@ -1,0 +1,551 @@
+import { Model, Queryer } from '@rugal.tu/vuemodel3';
+//#endregion
+class DtvlPvIniter {
+    $PvStore;
+    constructor() {
+        this.$PvStore = 'pv';
+    }
+    //#region Sidebar Method
+    UseRouter(SidebarData, Option) {
+        if (SidebarData)
+            this.$InitRouter(SidebarData, Option);
+        return this;
+    }
+    $InitRouter(Datas, Option) {
+        Option ??= {};
+        let RouterList = [];
+        let RouterDatas = this.$CreateRouter(Datas, RouterList);
+        let CurrentPath = document.location.pathname;
+        let FindRouter = RouterList.find(Item => Item.href != null && Item.href.toLowerCase() == CurrentPath.toLowerCase());
+        let CurrentRouter = [];
+        if (FindRouter != null) {
+            if (FindRouter != null) {
+                while (FindRouter) {
+                    CurrentRouter.push(FindRouter);
+                    FindRouter = FindRouter.parent;
+                }
+                CurrentRouter = CurrentRouter.reverse();
+            }
+            CurrentRouter.forEach(Item => Item.isSelect = true);
+        }
+        let OpenRotuer = Option.openAll ? RouterList : CurrentRouter;
+        let RouterStoreData = {
+            IsSidebarOpen: false,
+            List: RouterList,
+            Datas: RouterDatas,
+            Current: CurrentRouter,
+            OpenIds: OpenRotuer.map(Item => Item.id),
+            Click: Item => {
+                if (Item == null)
+                    return;
+                let GoPath = Item.href;
+                if (GoPath == null)
+                    return;
+                if (GoPath == CurrentPath)
+                    return;
+                Model.NavigateTo(GoPath);
+            },
+            OpenSidebar: () => {
+                let IsSidebarOpen = Model.GetStore('Router.IsSidebarOpen');
+                IsSidebarOpen = !IsSidebarOpen;
+                Model.UpdateStore('Router.IsSidebarOpen', IsSidebarOpen);
+            }
+        };
+        Model.UpdateStore('Router', RouterStoreData);
+        Model.AddV_Tree('Sidebar', {
+            'v-bind:items': 'Router.Datas',
+            'v-model:opened': 'Router.OpenIds',
+            'v-on:update:activated': 'Router.Click',
+            ':SidebarItem': {
+                'v-for': 'Router.Datas',
+                ':SidebarGroup': {
+                    'v-if': 'item.children && item.children?.length > 0',
+                    'v-bind:value': 'item.id',
+                }
+            }
+        });
+    }
+    $CreateRouter(Data, RouterList, Parent = null) {
+        if (Data == null || Data.length == 0)
+            return null;
+        let Result = [];
+        for (let Item of Data) {
+            let NewRouter = {
+                ...Item,
+                id: Model.GenerateId(),
+                parent: Parent,
+                children: null,
+            };
+            NewRouter.children = this.$CreateRouter(Item.children, RouterList, NewRouter);
+            RouterList.push(NewRouter);
+            Result.push(NewRouter);
+        }
+        return Result;
+    }
+    //#endregion
+    //#region DataTable
+    AddPv_DataTable(PvName, Option) {
+        Option.HasIndex ??= true;
+        Option.HasButton ??= true;
+        Option.Datas ??= [];
+        let TableStore = {
+            ...Option,
+        };
+        Model.UpdateStore(this.RootPath(PvName), TableStore);
+        if (TableStore.HasButton) {
+            TableStore.ButtonHeader ??= {};
+            TableStore.ButtonHeader.title ??= '';
+            TableStore.ButtonHeader.value ??= 'buttons';
+            TableStore.Headers.push(TableStore.ButtonHeader);
+        }
+        if (TableStore.ApiKey) {
+            Model.AddV_Property(TableStore.ApiKey, {
+                Target: this.RootPath(PvName, 'Datas'),
+            });
+        }
+        this.$FillDataTableHeaders(TableStore.Headers);
+        if (TableStore.HasIndex)
+            TableStore.Headers.unshift({
+                title: '#',
+                value: 'index',
+            });
+        Model.AddV_Tree(PvName, {
+            "v-bind:items": this.RootPath(PvName, 'Datas'),
+            'v-bind:headers': this.RootPath(PvName, 'Headers'),
+        });
+        return this;
+    }
+    $FillDataTableHeaders(Headers) {
+        let HasAnyPx = false;
+        for (let Item of Headers) {
+            Item.align ??= 'start';
+            Item.key ??= Item.value;
+            Item.value ??= Item.key;
+            let GetWidth = Item.width;
+            if (GetWidth == null)
+                continue;
+            if (GetWidth.includes('px'))
+                HasAnyPx = true;
+        }
+        return;
+        //if (HasAnyPx)
+        //    Headers.forEach(Item => Item.width ??= 'auto');
+        //else {
+        //    let TotalPersent = 0;
+        //    let RemainColumn = 0;
+        //    for (let Item of Headers) {
+        //        let Width = Item.width;
+        //        if (Width == null) {
+        //            RemainColumn++;
+        //            continue;
+        //        }
+        //        TotalPersent += parseInt(Width);
+        //    }
+        //    if (RemainColumn != 0) {
+        //        let AvgColumnWidth = ((100 - TotalPersent) / RemainColumn).toFixed(2);
+        //        Headers.filter(Item => Item.width == null)
+        //            .forEach(Item => Item['width'] = `${AvgColumnWidth}%`);
+        //    }
+        //}
+    }
+    //#endregion
+    //#region Tree
+    AddPv_Tree(PvName, Option) {
+        Option.openAll ??= true;
+        Option.children ??= 'children';
+        let StoreData = {
+            Option: Option,
+            Datas: [],
+        };
+        let PvNames = Model.Paths(PvName);
+        Model.UpdateStore(PvName, StoreData)
+            .AddV_For([...PvName, 'Datas'], `${PvName}.Datas`)
+            .AddV_If([...PvName, 'Group'], `item.${Option.children} != null`)
+            .AddV_Bind([...PvName, 'GroupItem'], `title`, `item.${Option.children}`)
+            .AddV_For([...PvName, 'ChildrenItem'], `${PvName}.Datas`);
+        return this;
+    }
+    //#endregion
+    //#region Modal
+    AddPv_Modal(PvName, Option) {
+        Option ??= {};
+        Option.IsShow ??= false;
+        Model.UpdateStore(this.RootPath(PvName), {
+            IsShow: Option.IsShow,
+        });
+        Model.AddV_Tree(PvName, {
+            'v-model': this.RootPath(PvName, 'IsShow'),
+            ':Overlayer': {
+                'v-on:click': (event) => {
+                    let GetStore = Model.GetStore(this.RootPath(PvName));
+                    if (GetStore.BtnCancel != null) {
+                        GetStore.BtnCancel(GetStore, event);
+                        return;
+                    }
+                    this.Alert(PvName, false);
+                }
+            }
+        });
+        return this;
+    }
+    AddPv_SendModal(PvName, Option) {
+        Option ??= {};
+        this.AddPv_Modal(PvName, Option);
+        Option.BtnCancel ??= () => {
+            this.Modal(PvName, false);
+        };
+        Option.BtnSend ??= () => {
+            let ModalStore = Model.GetStore(this.RootPath(PvName));
+            if (ModalStore.IsCalling == true)
+                return;
+            ModalStore.IsCalling = true;
+            if (ModalStore.ApiKey) {
+                Model.ApiCall(ModalStore.ApiKey, {
+                    OnCalling: ModalStore.OnCalling,
+                    OnSuccess: ModalStore.OnSuccess,
+                    OnError: ModalStore.OnError,
+                    OnComplete: () => {
+                        ModalStore.OnComplete?.call(this);
+                        ModalStore.IsCalling = false;
+                    },
+                });
+            }
+        };
+        if (Option.BtnSend)
+            Model.AddV_Tree(PvName, {
+                ':BtnSend': {
+                    'v-on:click': (event) => {
+                        let ModalStore = Model.GetStore(this.RootPath(PvName));
+                        ModalStore.BtnSend(ModalStore, event);
+                    },
+                }
+            });
+        Model.AddV_Tree(PvName, {
+            ':BtnCancel': {
+                "v-on:click": (event) => {
+                    let ModalStore = Model.GetStore(this.RootPath(PvName));
+                    ModalStore.BtnCancel(ModalStore, event);
+                }
+            },
+            ':Title': {
+                "v-text": this.RootPath(PvName, 'Title'),
+            },
+        });
+        if (!Option.Title) {
+            Queryer.Using(this.RootPath(PvName, 'Title'), ({ Dom }) => {
+                Option.Title = Dom.textContent.trim();
+            });
+        }
+        let StoreData = {
+            ...Option,
+            IsCalling: false,
+        };
+        Model.UpdateStore(this.RootPath(PvName), StoreData);
+        return this;
+    }
+    Modal(PvName, Option) {
+        if (typeof (Option) == 'boolean') {
+            Model.UpdateStore(this.RootPath(PvName, 'IsShow'), Option);
+            return this;
+        }
+        Model.UpdateStore(this.RootPath(PvName), Option);
+        return this;
+    }
+    //#endregion
+    //#region Alert
+    AddPv_Alert(PvName, Option) {
+        Option ??= {};
+        Option.IsShow ??= false;
+        if (Option.Message == null) {
+            Queryer.Init();
+            Queryer.Using(Model.Paths(PvName, 'Message'), ({ Dom }) => {
+                Option.Message = Dom.textContent.trim();
+            });
+        }
+        let SetAlertStore = {
+            BtnCancel: Option.BtnCancel,
+            IsShow: Option.IsShow,
+            Message: Option.Message,
+            BtnOk: Option.BtnOk,
+            IsCalling: false,
+        };
+        Model
+            .UpdateStore(this.RootPath(PvName), SetAlertStore)
+            .AddV_Tree(PvName, {
+            'v-model': this.RootPath(PvName, 'IsShow'),
+            ':Message': {
+                'v-text': this.RootPath(PvName, 'Message')
+            },
+            ':BtnOk': {
+                'v-on:click': (event) => {
+                    let AlertStore = Model.GetStore(this.RootPath(PvName));
+                    if (AlertStore.BtnOk != null) {
+                        AlertStore.BtnOk(AlertStore, event);
+                        return;
+                    }
+                    if (AlertStore.ApiKey != null) {
+                        if (AlertStore.IsCalling)
+                            return;
+                        AlertStore.IsCalling = true;
+                        Model.ApiCall(AlertStore.ApiKey, {
+                            OnCalling: AlertStore.OnCalling,
+                            OnSuccess: AlertStore.OnSuccess,
+                            OnError: AlertStore.OnError,
+                            OnComplete: () => {
+                                AlertStore.OnComplete?.call(this);
+                                AlertStore.IsCalling = false;
+                            },
+                        });
+                    }
+                    else
+                        this.Alert(PvName, false);
+                },
+            },
+            ':BtnCancel': {
+                'v-on:click': (event) => {
+                    let GetStore = Model.GetStore(this.RootPath(PvName));
+                    if (GetStore.BtnCancel != null) {
+                        GetStore.BtnCancel(GetStore, event);
+                        return;
+                    }
+                    this.Alert(PvName, false);
+                },
+            },
+            ':Overlayer': {
+                'v-on:click': (event) => {
+                    let GetStore = Model.GetStore(this.RootPath(PvName));
+                    if (GetStore.BtnCancel != null) {
+                        GetStore.BtnCancel(GetStore, event);
+                        return;
+                    }
+                    this.Alert(PvName, false);
+                }
+            }
+        });
+        return this;
+    }
+    Alert(PvName, Option) {
+        if (typeof (Option) == 'boolean') {
+            let GetStore = Model.GetStore(this.RootPath(PvName));
+            Option = {
+                IsShow: Option,
+                IsCalling: GetStore.IsCalling,
+            };
+        }
+        Model.UpdateStore(this.RootPath(PvName), Option);
+        return this;
+    }
+    //#endregion
+    //#region Card
+    AddPv_FilterCard(PvName, Option) {
+        Option ??= {};
+        Option.Store ??= PvName;
+        let FullPath = Model.ToJoin(PvName);
+        PvName = Model.Paths(PvName);
+        Option.BtnClear ??= () => {
+            Model.ClearStore(FullPath);
+        };
+        Model.AddV_Click(Model.Paths(PvName, 'BtnClear'), Option.BtnClear);
+        if (Option.ApiKey != null) {
+            Option.BtnSearch ??= () => {
+                Model.ApiCall(Option.ApiKey);
+            };
+        }
+        if (Option.BtnSearch != null)
+            Model.AddV_Click(Model.Paths(PvName, 'BtnSearch'), Option.BtnSearch);
+        return this;
+    }
+    //#endregion
+    //#region Input
+    AddPv_Input(PvName, Option) {
+        Option ??= {};
+        Option.Store ??= Model.ToJoin(PvName);
+        Model.AddV_Model(PvName, Option.Store);
+        return this;
+    }
+    //#endregion
+    //#region Select
+    AddPv_Select(PvName, Option) {
+        Option ??= {};
+        Option.ReturnObject ??= false;
+        Option.Multiple ??= false;
+        Option.Datas ??= [];
+        let Store = {
+            IsInited: false,
+            ...Option,
+        };
+        Model.UpdateStore(this.RootPath(PvName), Store);
+        let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
+        let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
+        if (Option.ValueStore) {
+            let Target = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
+            Model.AddV_Property(Option.ValueStore, {
+                Target,
+            });
+        }
+        Model.AddV_Property(SelectedItemPath, {
+            get() {
+                let SelectedValue = this.SelectedValue;
+                if (SelectedValue == null)
+                    return null;
+                let Datas = this.Datas;
+                if (!Array.isArray(Datas))
+                    return null;
+                if (Array.isArray(SelectedValue)) {
+                    if (Datas == null)
+                        return null;
+                    let GetItems = SelectedValue
+                        .map(Value => Datas.find(Item => Item[this.ItemValue]) == Value)
+                        .filter(Item => Item != null);
+                    return GetItems;
+                }
+                return Datas.find(Item => Item[this.ItemValue] == SelectedValue);
+            },
+            set(Value) {
+                if (!Value) {
+                    this.SelectedValue = null;
+                    return;
+                }
+                let Datas = this.Datas;
+                if (!Array.isArray(Datas))
+                    return null;
+                if (Array.isArray(Value)) {
+                    let AllValues = Datas.map(Item => Item[this.ItemValue]);
+                    let SetValues = Value.map(Item => Item[this.ItemValue]);
+                    SetValues = SetValues.filter(Item => AllValues.includes(Item));
+                    this.SelectedValue = SetValues;
+                    return;
+                }
+                this.SelectedValue = Value[this.ItemValue];
+            }
+        });
+        if (Option.ApiKey) {
+            Model.AddV_Property(this.RootPath(PvName, 'Datas'), {
+                Target: Option.ApiKey,
+                Value: Option.Datas,
+                get() {
+                    let GetDatas = this.$get('Datas');
+                    if (GetDatas == null)
+                        return [];
+                    if (!Array.isArray(GetDatas))
+                        return [];
+                    if (GetDatas.length == 0) {
+                        if (this.IsInited) {
+                            this.SelectedValue = null;
+                        }
+                        return [];
+                    }
+                    if (!this.IsInited)
+                        this.IsInited = true;
+                    let QueryDatas = GetDatas;
+                    if (Option.ItemValue)
+                        QueryDatas = QueryDatas.map(Item => Item[Option.ItemValue]);
+                    let SelectedValue = this.SelectedValue;
+                    if (SelectedValue == null)
+                        return GetDatas;
+                    if (!Array.isArray(SelectedValue)) {
+                        if (!QueryDatas.includes(SelectedValue))
+                            this.SelectedValue = null;
+                    }
+                    else {
+                        for (let Item of SelectedValue) {
+                            if (!QueryDatas.includes(Item)) {
+                                this.SelectedValue = null;
+                                break;
+                            }
+                        }
+                    }
+                    return GetDatas;
+                }
+            });
+        }
+        if (Option.OnChange)
+            Model.AddV_Tree(PvName, {
+                'v-on:update:model-value': Option.OnChange,
+            });
+        Model.AddV_Tree(PvName, {
+            'v-bind:items': this.RootPath(PvName, 'Datas'),
+            'v-bind:item-title': this.RootPath(PvName, 'ItemName'),
+            'v-bind:item-value': this.RootPath(PvName, 'ItemValue'),
+            'v-model': this.RootPath(PvName, 'SelectedValue'),
+            'v-bind:return-object': `false`,
+            'v-bind:multiple': `${Option.Multiple}`,
+        });
+        return this;
+    }
+    //#endregion
+    //#region DatePicker
+    AddPv_DatePicker(PvName, Option) {
+        Option ??= {};
+        Option.IsOpen ??= false;
+        let Store = {
+            ...Option,
+        };
+        Model.UpdateStore(PvName, Store);
+        if (Store.ValueStore) {
+            Model.AddV_Property(Store.ValueStore, {
+                Target: this.RootPath(PvName, 'Date'),
+                get() {
+                    let PickerStore = Model.GetStore(DtvlPv.RootPath(PvName));
+                    return PickerStore['Date'];
+                },
+                set(Value) {
+                    let PickerStore = Model.GetStore(DtvlPv.RootPath(PvName));
+                    PickerStore['Date'] = Value;
+                }
+            });
+        }
+        Model.AddV_Property(this.RootPath(PvName, 'Selected'), {
+            set(Value) {
+                this.$set('Selected', Value);
+            }
+        });
+        Model.AddV_Property(this.RootPath(PvName, 'Date'), {
+            get() {
+                let Selected = this.Selected;
+                if (Selected == null) {
+                    if (this.IsOpen)
+                        return ' ';
+                    Queryer.Init(true);
+                    Queryer.Using(Model.Paths(PvName, 'Input'), ({ Dom }) => {
+                        Dom.blur();
+                    });
+                    return null;
+                }
+                return Model.ToDateText(Selected);
+            },
+            set(Value) {
+                if (Value)
+                    this.Selected = new Date(Value);
+                else
+                    this.Selected = null;
+            }
+        });
+        Model.AddV_Tree(PvName, {
+            'v-model': this.RootPath(PvName, 'IsOpen'),
+            ':Input': {
+                'v-model': this.RootPath(PvName, 'Date'),
+                'v-on:click:clear': () => {
+                    let FindStore = Model.GetStore(this.RootPath(PvName));
+                    if (FindStore) {
+                        FindStore.Selected = null;
+                    }
+                },
+            },
+            ':DatePicker': {
+                'v-model': this.RootPath(PvName, 'Selected'),
+            },
+        });
+        return this;
+    }
+    //#endregion
+    //#region Protect Process
+    RootPath(...PushPath) {
+        let RootPath = Model.Paths([this.$PvStore, PushPath]);
+        return RootPath;
+    }
+}
+const DtvlPv = new DtvlPvIniter();
+window.DtvlPv = DtvlPv;
+export { DtvlPv };
+//# sourceMappingURL=dtvlpv.js.map

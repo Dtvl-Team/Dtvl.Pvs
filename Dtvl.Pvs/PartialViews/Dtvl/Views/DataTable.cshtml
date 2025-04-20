@@ -1,0 +1,43 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-data-table")
+        .AddParentAttr("items-per-page-text", "每頁筆數")
+        .AddParentAttr("select-strategy", "all")
+        .AddParentAttr(":mobile", "mobile")
+        .AddParentAttr("hover")
+        .AddParentAttr("page-text", "{0}-{1} / {2}")
+        .AddParentAttr("no-data-text", "查無資料")
+        .AddParentAttr(new
+        {
+            @class = "DataTable text-break",
+        });
+}
+
+@* <template v-slot:item="props, item = props.item">
+    <tr v-if="mobile">
+        AAA
+    </tr>
+    <tr v-if="!mobile">
+         
+        BBB
+    </tr>
+</template> *@
+
+<template v-slot:loading>
+    <v-skeleton-loader class="SkeletonLoader"
+                       type="table-row@@10"></v-skeleton-loader>
+</template>
+
+<template v-slot:item.index="props">
+    {{ props.index + 1 }}
+</template>
+
+@if (Model.TryGetSlotRender(DataTableSlot.Buttons, out var ButtonSlot))
+{
+    <template v-slot:item.buttons="{ item, Item = item }">
+        <div class="row w-100 justify-content-sm-center justify-content-evenly">
+            @ButtonSlot
+        </div>
+    </template>
+}

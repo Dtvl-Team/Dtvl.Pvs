@@ -1,0 +1,32 @@
+
+--TreeVar {
+    --Tree-bg: var(--DefaultTheme-bg2);
+}
+
+.Tree {
+    background: var(--Tree-bg);
+    color: var(--DefaultTheme-text-color2);
+}
+
+.TreeItem {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.Tree hr {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    height: 1px;
+}
+
+.Tree .v-list-item {
+    padding: 0;
+}
+
+.Tree .v-list-item--density-compact:not(.v-list-item--nav).v-list-item--one-line, .v-list-item--density-compact:not(.v-list-item--nav).v-list-item--three-line, .v-list-item--density-compact:not(.v-list-item--nav).v-list-item--two-line {
+    padding-inline: 0;
+}
+
+.Tree .v-treeview-group.v-list-group .v-list-group__items .v-list-item {
+    padding-inline-start: 2.5rem !important;
+}

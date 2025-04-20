@@ -1,0 +1,15 @@
+--DialogVar {
+    --Dialog-z-index: 1000;
+}
+
+.Dialog {
+    z-index: var(--Dialog-z-index) !important;
+}
+
+.DialogContent {
+    overflow-y: scroll !important;
+}
+
+.DialogContent::-webkit-scrollbar {
+    display: none;
+}

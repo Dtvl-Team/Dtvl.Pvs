@@ -1,0 +1,10 @@
+--TableColumnNumberInput {
+    --TableColumnNumberInput-text-align: end;
+}
+
+.TableColumnNumberInput {
+}
+
+.TableColumnNumberInput input {
+    text-align: var(--TableColumnNumberInput-text-align);
+}

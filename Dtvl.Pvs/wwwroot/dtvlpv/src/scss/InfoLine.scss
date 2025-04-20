@@ -1,0 +1,10 @@
+
+--InfoLineVar {
+    --InfoLine-text-color: var(--DefaultTheme-text-color2);
+}
+
+.InfoLine {
+    color: var(--InfoLine-text-color);
+    font-size: var(--DefaultTheme-font-size2);
+    font-weight: var(--DefaultTheme-font-weight2);
+}

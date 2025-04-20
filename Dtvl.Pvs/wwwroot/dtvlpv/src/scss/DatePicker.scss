@@ -1,0 +1,31 @@
+
+
+--DatePickerVar {
+    --DatePicker-bg: var(--DefaultTheme-bg);
+    --DetaPicker-text-color: var(--DefaultTheme-text-color);
+    --DatePicker-DayBtn-bg: var(--DefaultTheme-bg3);
+}
+
+.DatePickerMenu .v-overlay__content {
+    width: auto !important;
+    min-width: auto !important;
+}
+
+.DatePicker {
+    background: var(--DatePicker-bg) !important;
+    color: var(--DetaPicker-text-color);
+}
+
+.DatePicker .v-picker__body {
+    background: var(--DatePicker-bg);
+}
+
+.DatePicker .v-date-picker-month__day-btn {
+    background-color: transparent;
+    color: var(--DefaultTheme-text-color-2);
+}
+
+.DatePicker .v-date-picker-month__day--selected .v-date-picker-month__day-btn {
+    background-color: var(--DatePicker-DayBtn-bg);
+    color: var(--DetaPicker-text-color) !important;
+}

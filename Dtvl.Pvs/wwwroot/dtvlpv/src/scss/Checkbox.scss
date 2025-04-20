@@ -1,0 +1,15 @@
+--CheckboxVar {
+}
+
+.Checkbox {
+    font-weight: bolder;
+    color: var(--DefaultTheme-text-color);
+}
+
+.Checkbox label {
+    opacity: 1 !important;
+}
+
+.Checkbox i {
+    opacity: 1 !important;
+}
