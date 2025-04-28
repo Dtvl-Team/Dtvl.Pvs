@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\dtvlpv\dist\css\" />
     <Folder Include="wwwroot\dtvlpv\dist\js\" />
     <Folder Include="wwwroot\dtvlpv\src\types\" />
     <Folder Include="wwwroot\scripts\Home\" />
