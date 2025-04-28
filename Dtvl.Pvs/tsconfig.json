@@ -6,9 +6,14 @@
     "declaration": false, // NOTE: true = export type
     "removeComments": false,
     "sourceMap": true,
+    "skipLibCheck": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": { // NOTE: put project types path in here
+      "dtvlpv": [ "wwwroot/dtvlpv/src/types/dtvlpv.d.ts" ]
+    }
   },
   "exclude": [
     "node_modules"

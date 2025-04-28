@@ -13,9 +13,9 @@
     "baseUrl": ".",
     "outDir": "wwwroot/dtvlpv/src/types"
   },
-  "exclude": [ "node_modules", "wwwroot/types" ],
+  "exclude": [ "node_modules" ],
   "include": [ // NOTE: put types ts path in here
-    "wwwroot/dtvlpv/src"
+    "wwwroot/dtvlpv/src/dtvlpv.ts"
   ],
   "charset": "utf8"
 }

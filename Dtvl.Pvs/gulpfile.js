@@ -6,6 +6,10 @@ Initer
     .AddFolder('@fortawesome/fontawesome-free/webfonts', {
         encoding: false, // NOTE: encoding should be false
     })
+    .AddFolder('@mdi/font/css')
+    .AddFolder('@mdi/font/fonts', {
+        encoding: false,
+    })
     .AddFolder('bootstrap/dist', {
         Type: '*.+(js|css)' // NOTE: only copy .js .css files
     })

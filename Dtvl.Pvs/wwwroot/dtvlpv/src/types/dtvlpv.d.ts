@@ -1,12 +1,13 @@
 import { PathType, ApiCallback } from '@rugal.tu/vuemodel3';
-export type RouterDataParam = {
+export type SidebarItemSet = {
     title: string;
     icon?: string;
-    children?: RouterDataParam[];
+    children?: SidebarItemSet[];
     href?: string;
     show?: () => boolean;
+    clicked?: Function;
 };
-export type RouterOption = {
+export type SidebarOption = {
     openAll?: boolean;
 };
 export type DataTableHeader = {
@@ -37,7 +38,7 @@ type ModalOption = {
     IsShow?: boolean;
 };
 type CallingLockType = {
-    IsCalling: boolean;
+    IsCalling?: boolean;
 };
 export type SendModalOption = ModalOption & {
     ApiKey?: string;
@@ -83,9 +84,11 @@ type DatePickerOption = {
 declare class DtvlPvIniter {
     protected $PvStore: string;
     constructor();
-    UseRouter(SidebarData?: RouterDataParam[], Option?: RouterOption): this;
-    private $InitRouter;
-    private $CreateRouter;
+    UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
+    private $InitSidebar;
+    private $CreateSidebar;
+    AddPv_Sidebar(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
+    private $SetSidebarTreeCommand;
     AddPv_DataTable(PvName: PathType, Option: DataTableOption): this;
     private $FillDataTableHeaders;
     AddPv_Tree(PvName: PathType, Option: TreeOption): this;

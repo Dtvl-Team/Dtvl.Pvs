@@ -9,17 +9,17 @@
 }
 
 <section class="col-auto row">
-    <div class="col-auto me-2 BreadcrumbItem" v-for="(item, index) in Router?.Current ?? []">
+    <div class="col-auto me-2 BreadcrumbItem" v-for="(item, index) in App.Router?.Current ?? []">
         <a style="text-decoration:none;"
-           v-on:click="Router.Click(item)"
+           v-on:click="App.Router.Click(item)"
            class="BreadcrumbText">
             <i v-if="item.icon" v-bind:class="item.icon" class="me-2"></i>
             <span class="Pointer" v-text="item.title"></span>
         </a>
         <i class="fa-solid fa-angle-right ms-2 BreadcrumbArrow"
            style="display:none;"
-           v-show="index < Router.Current.length - 1"
-           v-if="index < Router.Current.length - 1">
+           v-show="index < App.Router.Current.length - 1"
+           v-if="index < App.Router.Current.length - 1">
         </i>
     </div>
 </section>

@@ -1,60 +1,85 @@
 ﻿@model PvOption<DtvlPvs>
 @{
+    var Classes = new List<string>{
+        "Sidebar NotSelect row",
+    };
+
+    if (Model.HasSlot(SidebarSlot.AutoHeight))
+        Classes.Add("Sidebar-AutoHeight");
+    else
+        Classes.Add("Sidebar-FullHeight");
+
+    if (Model.HasSlot(SidebarSlot.Radius1))
+        Classes.Add("Sidebar-Radius-1");
+    else if (Model.HasSlot(SidebarSlot.Radius2))
+        Classes.Add("Sidebar-Radius-2");
+    else if (Model.HasSlot(SidebarSlot.Radius3))
+        Classes.Add("Sidebar-Radius-3");
+
+    if (Model.HasSlot(SidebarSlot.Block))
+        Classes.Add("Sidebar-Block");
+
+    if (Model.HasSlot(SidebarSlot.FromRight))
+        Classes.Add("Sidebar-Right");
+
     Model
-        .WithPvName("SidebarView")
         .AddParentAttr("v-show", "!mobile || Router?.IsSidebarOpen")
-        // .AddParentAttr("v-bind:class", "[ (!mobile || Router?.IsSidebarOpen) ? 'Sidebar-Show' : 'Sidebar-Hide' ]")
         .AddParentAttr(new
         {
-            @class = "Sidebar NotSelect Sidebar-Show",
+            @class = string.Join(' ', Classes),
             style = "display:none; "
         });
 }
 
-<v-treeview pv-name="Sidebar"
-            :items="Router?.Datas ?? []"
-            v-on:update:activated="Router?.Click"
+@if (Model.TryGetSlotRender(SidebarSlot.Header, out var HeaderRender))
+{
+    <section pv-name="Header">
+        @HeaderRender
+    </section>
+}
+
+<v-treeview pv-name="SidebarTree"
             return-object
             open-on-click>
-    <section v-for="item in Router?.Datas ?? []">
-        <v-list-group v-if="item.children && item.children?.length > 0 && item.show() == true"
-                      :value="item.id">
-            <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props"
-                             v-on:click="Router.Click(item)"
-                             class="SidebarItem"
-                             density="compact"
-                             :value="item.id"
-                             :title="item.title">
-                    <template v-slot:prepend="props">
-                        <i v-if="item.icon" class="SidebarIcon" v-bind:class="item.icon"></i>
-                    </template>
-                </v-list-item>
-            </template>
-            <v-list-item v-for="(subItem, subindex) in item.children"
-                         v-on:click="Router.Click(subItem)"
+    <section pv-name="SidebarContent">
+        <div pv-name="SidebarItem">
+            <v-list-group pv-name="SidebarGroup">
+                <template v-slot:activator="{ props }">
+                    <v-list-item pv-name="SidebarGroupItem"
+                                 v-bind="props"
+                                 class="SidebarItem"
+                                 density="compact">
+                        <template v-slot:prepend="props">
+                            <i pv-name="ItemIcon"
+                               class="SidebarIcon"></i>
+                        </template>
+                    </v-list-item>
+                </template>
+                <div pv-name="SidebarGroupChildren">
+                    <v-list-item pv-name="SidebarGroupChildrenItem"
+                                 density="compact"
+                                 class="SidebarItem">
+                        <template v-slot:prepend="props">
+                            <i pv-name="ItemIcon"
+                               class="SidebarIcon"></i>
+                        </template>
+                    </v-list-item>
+                </div>
+            </v-list-group>
+            <v-list-item pv-name="SidebarSingleItem"
                          density="compact"
-                         class="SidebarItem"
-                         v-bind:class="{ SidebarSelect: subItem.isSelect }"
-                         :value="item.id"
-                         :title="subItem.title">
+                         class="SidebarItem">
                 <template v-slot:prepend="props">
-                    <i v-if="subItem.icon" class="SidebarIcon" v-bind:class="subItem.icon"></i>
+                    <i pv-name="ItemIcon"
+                       class="SidebarIcon"></i>
                 </template>
             </v-list-item>
-        </v-list-group>
-        <v-list-item v-else-if="item.show() == true"
-                     v-on:click="Router.Click(item)"
-                     density="compact"
-                     class="SidebarItem"
-                     v-bind:class="{ SidebarSelect: item.isSelect }"
-                     :value="item.id"
-                     :title="item.title">
-            <template v-slot:prepend="props">
-                <i v-if="item.icon" class="SidebarIcon" v-bind:class="item.icon"></i>
-            </template>
-        </v-list-item>
-        <hr v-if="item.show() == true" />
+            <hr />
+        </div>
     </section>
 </v-treeview>
 
+@if (Model.TryGetSlotRender(SidebarSlot.Footer, out var FooterRender))
+{
+    @FooterRender
+}

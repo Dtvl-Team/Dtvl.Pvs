@@ -1,31 +1,34 @@
 import { Model, Queryer, PathType, ApiCallback } from '@rugal.tu/vuemodel3';
 
 //#region Router Type
-export type RouterDataParam = {
+export type SidebarItemSet = {
     title: string,
     icon?: string,
-    children?: RouterDataParam[],
+    children?: SidebarItemSet[],
     href?: string,
-    show?: () => boolean;
+    show?: () => boolean,
+    clicked?: Function,
 };
-export type RouterOption = {
+export type SidebarOption = {
     openAll?: boolean,
 };
-type RouterData = RouterDataParam & {
+type SidebarItemData = SidebarItemSet & {
     id: string,
-    parent?: RouterData,
-    children?: RouterData[],
+    parent?: SidebarItemData,
+    children?: SidebarItemData[],
     isSelect?: boolean,
     query?: string | Record<string, any>,
 }
-type RouterStore = {
-    List: RouterData[];
-    Datas: RouterData[];
-    Current: RouterData[];
-    OpenIds: string[];
-    IsSidebarOpen: boolean;
-    Click: (Item: RouterData) => void;
-    OpenSidebar: () => void;
+type SidebarStore = {
+    IsMobileOpen: boolean,
+    IsShow: boolean,
+    List: SidebarItemData[],
+    Datas: SidebarItemData[],
+    Current: SidebarItemData[],
+    OpenIds: string[],
+    Click: (Item: SidebarItemData, event: MouseEvent) => void,
+    MobileOpen: () => void,
+    Show: (IsShow: boolean) => void,
 };
 //#endregion
 
@@ -71,7 +74,7 @@ type ModalOption = {
     IsShow?: boolean,
 };
 type CallingLockType = {
-    IsCalling: boolean,
+    IsCalling?: boolean,
 };
 export type SendModalOption = ModalOption & {
     ApiKey?: string;
@@ -143,22 +146,22 @@ class DtvlPvIniter {
     }
 
     //#region Sidebar Method
-    public UseRouter(SidebarData?: RouterDataParam[], Option?: RouterOption) {
-        if (SidebarData)
-            this.$InitRouter(SidebarData, Option);
+    public UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption) {
+        let RouterDefaultStore = 'App.Router';
+        this.$InitSidebar(PvName, RouterDefaultStore, RouterData, Option);
         return this;
     }
-    private $InitRouter(Datas: RouterDataParam[], Option: RouterOption) {
+    private $InitSidebar(PvName: PathType, StorePath: PathType, RouterData: SidebarItemSet[], Option: SidebarOption) {
         Option ??= {};
 
-        let RouterList: RouterData[] = [];
-        let RouterDatas = this.$CreateRouter(Datas, RouterList);
+        let RouterList: SidebarItemData[] = [];
+        let RouterDatas = this.$CreateSidebar(RouterData, RouterList);
 
         let CurrentPath = document.location.pathname;
         let FindRouter = RouterList.find(Item =>
             Item.href != null && Item.href.toLowerCase() == CurrentPath.toLowerCase());
 
-        let CurrentRouter: RouterData[] = [];
+        let CurrentRouter: SidebarItemData[] = [];
         if (FindRouter != null) {
             if (FindRouter != null) {
                 while (FindRouter) {
@@ -171,13 +174,14 @@ class DtvlPvIniter {
         }
 
         let OpenRotuer = Option.openAll ? RouterList : CurrentRouter;
-        let RouterStoreData: RouterStore = {
-            IsSidebarOpen: false,
+        let RouterStoreData: SidebarStore = {
+            IsMobileOpen: false,
+            IsShow: true,
             List: RouterList,
             Datas: RouterDatas,
             Current: CurrentRouter,
             OpenIds: OpenRotuer.map(Item => Item.id),
-            Click: Item => {
+            Click: (Item, event) => {
                 if (Item == null)
                     return;
 
@@ -185,50 +189,101 @@ class DtvlPvIniter {
                 if (GoPath == null)
                     return;
 
+                let HasCtrlKey = event.ctrlKey;
+                if (HasCtrlKey) {
+                    Model.NavigateBlank(GoPath);
+                    return;
+                }
+
                 if (GoPath == CurrentPath)
                     return;
 
                 Model.NavigateTo(GoPath);
             },
-            OpenSidebar: () => {
-                let IsSidebarOpen = Model.GetStore('Router.IsSidebarOpen') as boolean;
+            MobileOpen: () => {
+                let TargetPaths = Model.Paths(StorePath, 'IsMobileOpen');
+                let IsSidebarOpen = Model.GetStore<boolean>(TargetPaths);
                 IsSidebarOpen = !IsSidebarOpen;
-                Model.UpdateStore('Router.IsSidebarOpen', IsSidebarOpen);
+                Model.UpdateStore(TargetPaths, IsSidebarOpen);
+            },
+            Show: (IsShow) => {
+                RouterStoreData.IsShow = IsShow;
+                Model.ForceUpdate();
             }
         };
-        Model.UpdateStore('Router', RouterStoreData)
-        Model.AddV_Tree('Sidebar', {
-            'v-bind:items': 'Router.Datas',
-            'v-model:opened': 'Router.OpenIds',
-            'v-on:update:activated': 'Router.Click',
-            ':SidebarItem': {
-                'v-for': 'Router.Datas',
-                ':SidebarGroup': {
-                    'v-if': 'item.children && item.children?.length > 0',
-                    'v-bind:value': 'item.id',
-                }
-            }
-        });
+        Model.UpdateStore(StorePath, RouterStoreData);
+        this.$SetSidebarTreeCommand(PvName, Model.ToJoin(StorePath));
     }
-    private $CreateRouter(Data: RouterDataParam[], RouterList: RouterData[], Parent: RouterData = null): RouterData[] {
+    private $CreateSidebar(Data: SidebarItemSet[], RouterList: SidebarItemData[], Parent: SidebarItemData = null): SidebarItemData[] {
         if (Data == null || Data.length == 0)
             return null;
 
-        let Result: RouterData[] = [];
+        let Result: SidebarItemData[] = [];
         for (let Item of Data) {
-            let NewRouter: RouterData = {
+            let NewRouter: SidebarItemData = {
                 ...Item,
                 id: Model.GenerateId(),
                 parent: Parent,
                 children: null,
             }
-            NewRouter.children = this.$CreateRouter(Item.children, RouterList, NewRouter);
-
+            NewRouter.show ??= () => true;
+            NewRouter.children = this.$CreateSidebar(Item.children, RouterList, NewRouter);
             RouterList.push(NewRouter);
             Result.push(NewRouter);
         }
-
         return Result;
+    }
+
+    public AddPv_Sidebar(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption) {
+        let RouterDefaultStore = this.RootPath(PvName);
+        this.$InitSidebar(PvName, RouterDefaultStore, RouterData, Option);
+        return this;
+    }
+    private $SetSidebarTreeCommand(PvName: PathType, StorePath: string) {
+
+        Model.AddV_Bind(PvName, 'class', `[ ${StorePath}.IsShow ? 'Sidebar-Show' : 'Sidebar-Hide' ]`,);
+
+        let SidebarTreePath = Model.Paths(PvName, 'SidebarTree');
+        let ItemBaseCommand = {
+            'v-on:click': `${StorePath}.Click(item, $event)`,
+            'v-bind:value': 'item.id',
+            'v-bind:title': 'item.title',
+            ':ItemIcon': {
+                'v-if': 'item.icon',
+                'v-bind:class': 'item.icon',
+            }
+        };
+        Model.AddV_Tree(SidebarTreePath, {
+            'v-bind:items': `${StorePath}?.Datas ?? []`,
+            'v-on:update:activated': `${StorePath}?.Click`,
+            'v-model:opened': `${StorePath}.OpenIds`,
+            ':SidebarContent': {
+                'v-for': `${StorePath}?.Datas ?? []`,
+                ':SidebarItem': {
+                    'v-if': 'item.show()',
+                    ':SidebarGroup': {
+                        'v-if': 'item.children && item.children.length > 0',
+                        'v-bind:value': 'item.id',
+                        ':SidebarGroupItem': {
+                            ...ItemBaseCommand,
+                        },
+                        ':SidebarGroupChildren': {
+                            'v-for': 'item.children',
+                            ':SidebarGroupChildrenItem': {
+                                'v-if': 'item.show()',
+                                'v-bind:class': '{ SidebarSelect: item.isSelect }',
+                                ...ItemBaseCommand,
+                            },
+                        }
+                    },
+                    ':SidebarSingleItem': {
+                        'v-if': 'item.children == null || item.children.length == 0',
+                        'v-bind:class': '{ SidebarSelect: item.isSelect }',
+                        ...ItemBaseCommand,
+                    },
+                }
+            }
+        });
     }
     //#endregion
 
@@ -425,6 +480,8 @@ class DtvlPvIniter {
             Model.UpdateStore(this.RootPath(PvName, 'IsShow'), Option);
             return this;
         }
+        if (Option.IsShow == null)
+            Option.IsShow = true;
         Model.UpdateStore(this.RootPath(PvName), Option);
         return this;
     }
@@ -516,7 +573,8 @@ class DtvlPvIniter {
                 IsCalling: GetStore.IsCalling,
             };
         }
-
+        if (Option.IsShow == null)
+            Option.IsShow = true;
         Model.UpdateStore(this.RootPath(PvName), Option);
         return this;
     }
@@ -761,7 +819,6 @@ class DtvlPvIniter {
         });
         return this;
     }
-
     //#endregion
 
     //#region Protect Process

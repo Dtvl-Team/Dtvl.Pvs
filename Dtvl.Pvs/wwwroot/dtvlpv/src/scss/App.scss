@@ -54,3 +54,9 @@
     height: 100%;
     width: 100%;
 }
+
+.Sticky-AppContent {
+    position: sticky;
+    align-self: flex-start;
+    top: calc(var(--Header-height) + var(--Breadcrumb-height) + var(--AppContent-padding));
+}
