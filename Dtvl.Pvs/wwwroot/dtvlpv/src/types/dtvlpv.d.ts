@@ -64,6 +64,7 @@ type FilterCardOption = {
 };
 type InputOption = {
     Store?: PathType;
+    ReadOnly?: boolean | string | (() => boolean);
 };
 export type SelectOption = {
     ValueStore?: PathType;

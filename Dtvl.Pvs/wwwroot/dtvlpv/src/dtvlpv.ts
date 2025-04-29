@@ -109,6 +109,7 @@ type FilterCardOption = {
 //#region Input Type
 type InputOption = {
     Store?: PathType,
+    ReadOnly?: boolean | string | (() => boolean),
 };
 //#endregion
 
@@ -588,6 +589,7 @@ class DtvlPvIniter {
         let FullPath = Model.ToJoin(PvName);
         PvName = Model.Paths(PvName);
 
+        Model.UpdateStore(PvName, {});
         Option.BtnClear ??= () => {
             Model.ClearStore(FullPath);
         }
@@ -612,6 +614,19 @@ class DtvlPvIniter {
         Option ??= {};
         Option.Store ??= Model.ToJoin(PvName);
         Model.AddV_Model(PvName, Option.Store);
+
+        if (Option.ReadOnly != null) {
+            if (typeof (Option.ReadOnly) == 'function') {
+                Model.AddV_Function(`Func_${Model.ToJoin(PvName)}_ReadOnly`, Option.ReadOnly);
+            }
+            else {
+                let Clearable = typeof (Option.ReadOnly) == 'boolean' ?
+                    (!Option.ReadOnly).toString() : `!${Option.ReadOnly}`;
+                Model.AddV_Bind(PvName, 'readonly', Option.ReadOnly.toString());
+                Model.AddV_Bind(PvName, 'clearable', Clearable);
+            }
+        }
+
         return this;
     }
     //#endregion

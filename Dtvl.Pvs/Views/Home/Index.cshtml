@@ -1,19 +1,17 @@
 ﻿
-<div class="row" style="height:100%;">
-    <div class="col w-100 bg-success">
-        <div>
-            12321321
-        </div>
-    </div>
-    <div class="col-auto Sticky-AppContent" style="">
-        <dtvl-pv pv-type="Sidebar"
-                 pv-name="TestSidebar">
-            <pv-slot slot="SidebarSlot.AutoHeight"></pv-slot>
-            <pv-slot slot="SidebarSlot.Radius1"></pv-slot>
-            <pv-slot slot="SidebarSlot.Block"></pv-slot>
-            <pv-slot slot="SidebarSlot.FromRight"></pv-slot>
-        </dtvl-pv>
-    </div>
+<div class="row">
+
+    <v-text-field v-bind:readonly="true"></v-text-field>
+
+
+    <dtvl-pv pv-type="CollapseView">
+        <pv-slot slot="CollapseViewSlot.Content">
+            <div style="width:30px;">
+                asd
+            </div>
+        </pv-slot>
+    </dtvl-pv>
 </div>
+
 
 <script type="module" src="~/scripts/Home/Index.js" asp-append-version="true"></script>

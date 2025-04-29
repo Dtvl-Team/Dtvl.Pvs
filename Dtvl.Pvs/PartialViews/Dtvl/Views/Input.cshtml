@@ -14,10 +14,10 @@
     Model.AddParentAttr("tabindex", "1", PropPassType.Fill);
 
     if (Model.HasSlot(InputSlot.ReadOnly))
-        Model.AddParentAttr("readonly");
+        Model.AddParentAttr("v-bind:readonly", "true");
 
     if (!Model.HasSlot(InputSlot.ReadOnly) || Model.HasSlot(InputSlot.Clearable))
-        Model.AddParentAttr("clearable");
+        Model.AddParentAttr("v-bind:clearable", "true");
 
     if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
         Model.AddParentAttr("Prepend-inner-icon", InnerIcon);

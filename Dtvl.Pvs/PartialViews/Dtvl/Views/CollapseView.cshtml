@@ -1,0 +1,13 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.AddParentAttr(new
+    {
+        @class = "bg-danger",
+    });
+}
+
+@if (Model.TryGetSlotRender(CollapseViewSlot.Content, out var ContentRender))
+{
+    @ContentRender
+}

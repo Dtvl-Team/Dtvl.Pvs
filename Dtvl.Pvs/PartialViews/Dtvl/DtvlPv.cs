@@ -62,5 +62,9 @@ public enum DtvlPvs
     SendModal,
     Alert,
     #endregion
+
+    #region Container
+    CollapseView,
+    #endregion
 }
 
