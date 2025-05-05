@@ -1,4 +1,5 @@
-﻿@model PvOption<DtvlPvs>
+﻿@using Microsoft.AspNetCore.Html
+@model PvOption<DtvlPvs>
 @{
     var Classes = new List<string>{
         "Sidebar NotSelect row",
@@ -31,6 +32,25 @@
         });
 }
 
+
+@functions {
+    IHtmlContent Rcs_CreateSidebarGroup(int CurrentLayer, int EndLayer)
+    {
+        var Group = DtvlPvRender.Create(DtvlPvs.SidebarGroup);
+        Group.Option.AddSlot(SidebarGroupSlot.LayerLevel, CurrentLayer.ToString());
+        if (CurrentLayer < EndLayer)
+        {
+            var NextGroup = Rcs_CreateSidebarGroup(CurrentLayer + 1, EndLayer);
+            Group.Option.AddSlot(SidebarGroupSlot.Content, NextGroup);
+        }
+        else
+        {
+            Group.Option.AddSlot(SidebarGroupSlot.Single, "true");
+        }
+        return Group.Content;
+    }
+}
+
 @if (Model.TryGetSlotRender(SidebarSlot.Header, out var HeaderRender))
 {
     <section pv-name="Header">
@@ -42,40 +62,16 @@
             return-object
             open-on-click>
     <section pv-name="SidebarContent">
-        <div pv-name="SidebarItem">
-            <v-list-group pv-name="SidebarGroup">
-                <template v-slot:activator="{ props }">
-                    <v-list-item pv-name="SidebarGroupItem"
-                                 v-bind="props"
-                                 class="SidebarItem"
-                                 density="compact">
-                        <template v-slot:prepend="props">
-                            <i pv-name="ItemIcon"
-                               class="SidebarIcon"></i>
-                        </template>
-                    </v-list-item>
-                </template>
-                <div pv-name="SidebarGroupChildren">
-                    <v-list-item pv-name="SidebarGroupChildrenItem"
-                                 density="compact"
-                                 class="SidebarItem">
-                        <template v-slot:prepend="props">
-                            <i pv-name="ItemIcon"
-                               class="SidebarIcon"></i>
-                        </template>
-                    </v-list-item>
-                </div>
-            </v-list-group>
-            <v-list-item pv-name="SidebarSingleItem"
-                         density="compact"
-                         class="SidebarItem">
-                <template v-slot:prepend="props">
-                    <i pv-name="ItemIcon"
-                       class="SidebarIcon"></i>
-                </template>
-            </v-list-item>
-            <hr />
-        </div>
+        @{
+            var Layers = 2; //default layers
+            if (Model.TryGetSlotContent(SidebarSlot.Layers, out var LayersContent))
+            {
+                if (int.TryParse(LayersContent, out var TryGetLayers) && TryGetLayers > 0)
+                    Layers = TryGetLayers;
+            }
+            var Group = Rcs_CreateSidebarGroup(1, Layers);
+            @Group
+        }
     </section>
 </v-treeview>
 

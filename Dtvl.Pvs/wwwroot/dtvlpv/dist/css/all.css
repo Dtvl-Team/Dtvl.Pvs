@@ -508,6 +508,11 @@ body {
   --Sidebar-radius-1: 10px;
   --Sidebar-radius-2: 20px;
   --Sidebar-radius-3: 30px;
+  --Sidebar-Layer-padding-1: 0 0.5rem 0 1rem;
+  --Sidebar-Layer-padding-2: 0 0.5rem 0 1.5rem;
+  --Sidebar-Layer-padding-3: 0 0.5rem 0 2rem;
+  --Sidebar-Layer-padding-4: 0 0.5rem 0 2.5rem;
+  --Sidebar-Layer-padding-5: 0 0.5rem 0 3rem;
 }
 
 .Sidebar {
@@ -644,13 +649,28 @@ body {
   margin-right: 5px;
 }
 
-.SidebarItem {
+.SidebarChildren {
   padding: 0 10px !important;
 }
 
-.Sidebar .v-list-group__items .v-list-item {
-  padding-inline-start: 0;
-  padding: 0 30px !important;
+.Sidebar-Layer-1 .v-list-item {
+  padding: var(--Sidebar-Layer-padding-1) !important;
+}
+
+.Sidebar-Layer-2 .v-list-item {
+  padding: var(--Sidebar-Layer-padding-2) !important;
+}
+
+.Sidebar-Layer-3 .v-list-item {
+  padding: var(--Sidebar-Layer-padding-3) !important;
+}
+
+.Sidebar-Layer-4 .v-list-item {
+  padding: var(--Sidebar-Layer-padding-4) !important;
+}
+
+.Sidebar-Layer-5 .v-list-item {
+  padding: var(--Sidebar-Layer-padding-5) !important;
 }
 
 --BreadVar, :root {
@@ -1254,4 +1274,8 @@ body {
 
 --TimePickerVar, :root {
   --TimeInput-Card-bg: var(--DefaultTheme-bg);
+}
+
+--CollapseVar, :root {
+  --Collapse-animation-duration: 500ms;
 }

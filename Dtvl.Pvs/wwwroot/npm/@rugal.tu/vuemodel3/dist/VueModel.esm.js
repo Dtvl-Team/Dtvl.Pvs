@@ -183,6 +183,20 @@ class FuncBase {
         }
         return Result;
     }
+    IsPathType(CheckPathType) {
+        if (Array.isArray(CheckPathType)) {
+            for (let Item of CheckPathType) {
+                let IsTrue = this.IsPathType(Item);
+                if (!IsTrue)
+                    return false;
+            }
+            return true;
+        }
+        else if (typeof (CheckPathType) == 'string') {
+            return true;
+        }
+        return false;
+    }
     $Throw(Message) {
         throw new Error(Message);
     }
@@ -201,8 +215,8 @@ class QueryNode extends FuncBase {
         super();
         this.Dom = Dom;
     }
-    Query(DomName) {
-        return this.$RCS_QueryChildren(this, DomName);
+    Query(DomName, Option) {
+        return this.$RCS_QueryChildrens(this, DomName, Option);
     }
     Selector(Selector) {
         return this.Dom.querySelector(Selector);
@@ -210,12 +224,13 @@ class QueryNode extends FuncBase {
     SelectorAll(Selector) {
         return this.Dom.querySelectorAll(Selector);
     }
-    $RCS_QueryChildren(TargetNode, DomName) {
+    $RCS_QueryChildrens(TargetNode, DomName, Option) {
         if (DomName == null)
             return null;
         DomName = this.Paths(DomName);
         if (DomName.length == 1)
             DomName = DomName[0];
+        let Results = [];
         for (let Item of TargetNode.Children) {
             if (Array.isArray(DomName)) {
                 let Names = [...DomName];
@@ -223,20 +238,23 @@ class QueryNode extends FuncBase {
                 if (Item.DomName == FirstName) {
                     if (Names.length == 1)
                         Names = Names[0];
-                    let FindChildren = this.$RCS_QueryChildren(Item, Names);
-                    if (FindChildren != null)
-                        return FindChildren;
+                    let FindChildren = this.$RCS_QueryChildrens(Item, Names, Option);
+                    if (FindChildren != null) {
+                        Results.push(...FindChildren);
+                        continue;
+                    }
                 }
             }
-            else {
-                if (Item.DomName == DomName)
-                    return Item;
+            else if (Item.DomName == DomName) {
+                Results.push(Item);
+                if (Option.Mode == 'Multi')
+                    continue;
             }
-            let ChildrenResult = this.$RCS_QueryChildren(Item, DomName);
+            let ChildrenResult = this.$RCS_QueryChildrens(Item, DomName, Option);
             if (ChildrenResult != null)
-                return ChildrenResult;
+                Results.push(...ChildrenResult);
         }
-        return null;
+        return Results;
     }
 }
 class DomQueryer {
@@ -263,18 +281,34 @@ class DomQueryer {
         this.IsInited = true;
         return this;
     }
-    Query(DomName, TargetNode) {
-        TargetNode ??= this.$RootNode;
-        return TargetNode.Query(DomName);
+    Query(DomName, Option) {
+        if (!Queryer.IsInited)
+            Queryer.Init();
+        if (Option == null) {
+            Option = {
+                Mode: 'Multi',
+            };
+        }
+        else if (Option instanceof QueryNode) {
+            Option = {
+                Mode: 'Multi',
+                TargetNode: Option,
+            };
+        }
+        if (Option.TargetNode == null)
+            Option.TargetNode = this.$RootNode;
+        return Option.TargetNode.Query(DomName, Option);
     }
     Using(DomName, UsingFunc, TargetNode) {
-        TargetNode ??= this.$RootNode;
-        let QueryNode = TargetNode.Query(DomName);
-        if (QueryNode != null)
+        let QueryNodes = this.Query(DomName, {
+            Mode: 'Multi',
+            TargetNode: TargetNode,
+        });
+        if (QueryNodes != null && QueryNodes.length > 0) {
             UsingFunc({
-                QueryNode,
-                Dom: QueryNode.Dom,
+                QueryNodes,
             });
+        }
         return this;
     }
     $RCS_Visit(DomNode, Parent, ElementDeep) {
@@ -377,6 +411,7 @@ class ApiStore extends FuncBase {
     #OnSuccess;
     #OnError;
     #OnComplete;
+    #ExportSuccessStore;
     #Store = {
         FileStore: {},
     };
@@ -441,6 +476,10 @@ class ApiStore extends FuncBase {
         this.#OnComplete = CompleteFunc;
         return this;
     }
+    WithExportSuccessStore(ExportSuccessStoreFunc) {
+        this.#ExportSuccessStore = ExportSuccessStoreFunc;
+        return this;
+    }
     WithConvertTo_FormParam(ConvertToFunc) {
         this.#Func_ConvertTo_FormData.push(ConvertToFunc);
         return this;
@@ -493,12 +532,15 @@ class ApiStore extends FuncBase {
                 throw ApiResponse;
             let ConvertResult = await this.$ProcessApiReturn(ApiResponse);
             if (IsUpdateStore) {
+                if (this.#ExportSuccessStore != null) {
+                    ConvertResult = this.#ExportSuccessStore?.call(this, ConvertResult, ApiResponse);
+                }
                 let StoreKey = Api.ApiKey;
                 this.UpdateStore(StoreKey, ConvertResult);
             }
             Api.OnSuccess?.call(this, ConvertResult, ApiResponse);
             Option?.OnSuccess?.call(this, ConvertResult, ApiResponse);
-            this.#OnSuccess(ConvertResult, ApiResponse);
+            this.#OnSuccess?.call(this, ConvertResult, ApiResponse);
             return { ConvertResult, ApiResponse };
         })
             .catch(ex => {
@@ -622,7 +664,8 @@ class ApiStore extends FuncBase {
         Option ??= {};
         Option.Clone ??= false;
         Option.CreateIfNull ??= false;
-        Option.DefaultValue ??= {};
+        if (Option.DefaultValue == null)
+            Option.DefaultValue = {};
         StorePath = this.ToJoin(StorePath);
         let FindStore = this.$RCS_GetStore(StorePath, this.Store, {
             CreateIfNull: Option.CreateIfNull,
@@ -912,8 +955,9 @@ class VueStore extends ApiStore {
 class VueCommand extends VueStore {
     $IsInited = false;
     $QueryDomName = null;
-    WithQueryAttribute(QueryDomName) {
+    WithQueryDomName(QueryDomName) {
         this.$QueryDomName = QueryDomName;
+        Queryer.WithDomName(this.$QueryDomName);
         return this;
     }
     AddV_Text(DomName, Option) {
@@ -953,6 +997,17 @@ class VueCommand extends VueStore {
         this.$AddCommand(DomName, 'v-if', SetOption);
         return this;
     }
+    AddV_ElseIf(DomName, Option) {
+        let SetOption = this.$ConvertCommandOption(DomName, Option);
+        this.$AddCommand(DomName, 'v-else-if', SetOption);
+        return this;
+    }
+    AddV_Else(DomName) {
+        let SetOption = this.$ConvertCommandOption(DomName);
+        SetOption.Target = '';
+        this.$AddCommand(DomName, 'v-else', SetOption);
+        return this;
+    }
     AddV_Show(DomName, Option) {
         let SetOption = this.$ConvertCommandOption(DomName, Option);
         this.$AddCommand(DomName, 'v-show', SetOption);
@@ -971,15 +1026,13 @@ class VueCommand extends VueStore {
         this.$AddCommand(DomName, `v-on`, SetOption);
         return this;
     }
-    AddV_OnChange(DomName, ChangeFunc) {
-        this.AddV_On(DomName, 'change', ChangeFunc);
-        return this;
-    }
-    AddV_Click(DomName, Option, Args) {
-        let SetOption = this.$ConvertCommandOption(DomName, Option);
-        if (Args)
-            SetOption.FuncArgs = Args;
-        this.AddV_On(DomName, 'click', SetOption);
+    AddV_Watch(WatchPath, Func, Deep = false, Option = {}) {
+        let SetWatch = {
+            handler: Func,
+            deep: Deep,
+            ...Option,
+        };
+        this.$VueOption.watch[this.ToJoin(WatchPath)] = SetWatch;
         return this;
     }
     AddV_Function(FuncName, Func) {
@@ -989,13 +1042,15 @@ class VueCommand extends VueStore {
             Model.UpdateStore(FuncName, Func);
         return this;
     }
-    AddV_Watch(WatchPath, Func, Deep = false, Option = {}) {
-        let SetWatch = {
-            handler: Func,
-            deep: Deep,
-            ...Option,
-        };
-        this.$VueOption.watch[this.ToJoin(WatchPath)] = SetWatch;
+    AddV_OnChange(DomName, ChangeFunc) {
+        this.AddV_On(DomName, 'change', ChangeFunc);
+        return this;
+    }
+    AddV_Click(DomName, Option, Args) {
+        let SetOption = this.$ConvertCommandOption(DomName, Option);
+        if (Args)
+            SetOption.FuncArgs = Args;
+        this.AddV_On(DomName, 'click', SetOption);
         return this;
     }
     AddV_FilePicker(DomName, Option) {
@@ -1035,68 +1090,95 @@ class VueCommand extends VueStore {
         });
         return this;
     }
-    AddV_Tree(TreeRoot, TreeSet) {
+    AddV_Tree(TreeRoot, TreeSet, Option) {
         let AllSetInfo = [];
         let RootPaths = this.Paths(TreeRoot);
-        let AllKeys = Object.keys(TreeSet);
         this.$ParseTreeSet(RootPaths, TreeSet, AllSetInfo);
         let CommandMap = {
-            'v-text': Info => {
-                Model.AddV_Text(Info.Paths, Info.StoreValue);
+            'v-text': (Info, Option) => {
+                Model.AddV_Text(Option.TargetDom, Option.TargetValue);
             },
-            'v-model': Info => {
+            'v-model': (Info, Option) => {
                 if (typeof (Info.StoreValue) == 'function') {
-                    Model.$Error(`v-model command value must be a string or string[], path: ${this.ToJoin(Info.Paths)}`);
+                    Model.$Error(`v-model command value must be a string or string[], path: ${this.ToJoin(Info.DomPaths)}`);
                     return;
                 }
-                Model.AddV_Model(Info.Paths, Info.StoreValue, {
+                Model.AddV_Model(Option.TargetDom, Option.TargetPath, {
                     ModelValue: Info.CommandKey,
                 });
             },
-            'v-for': Info => {
-                Model.AddV_For(Info.Paths, Info.StoreValue, Info.CommandKey);
+            'v-for': (Info, Option) => {
+                Model.AddV_For(Option.TargetDom, Option.TargetValue, Info.CommandKey);
             },
-            'v-if': Info => {
-                Model.AddV_If(Info.Paths, Info.StoreValue);
+            'v-if': (Info, Option) => {
+                Model.AddV_If(Option.TargetDom, Option.TargetValue);
             },
-            'v-show': Info => {
-                Model.AddV_Show(Info.Paths, Info.StoreValue);
+            'v-else-if': (Info, Option) => {
+                Model.AddV_ElseIf(Option.TargetDom, Option.TargetValue);
             },
-            'v-bind': Info => {
-                Model.AddV_Bind(Info.Paths, Info.CommandKey, Info.StoreValue);
+            'v-else': (Info, Option) => {
+                Model.AddV_Else(Option.TargetDom);
             },
-            'v-on': Info => {
-                Model.AddV_On(Info.Paths, Info.CommandKey, Info.StoreValue);
+            'v-show': (Info, Option) => {
+                Model.AddV_Show(Option.TargetDom, Option.TargetValue);
             },
-            'v-slot': Info => {
+            'v-bind': (Info, Option) => {
+                Model.AddV_Bind(Option.TargetDom, Info.CommandKey, Option.TargetValue);
+            },
+            'v-on': (Info, Option) => {
+                Model.AddV_On(Option.TargetDom, Info.CommandKey, Option.TargetValue);
+            },
+            'v-slot': (Info, Option) => {
                 if (Array.isArray(Info.StoreValue) || typeof (Info.StoreValue) == 'function') {
-                    Model.$Error(`v-slot command value must be a string, path: ${this.ToJoin(Info.Paths)}`);
+                    Model.$Error(`v-slot command value must be a string, path: ${this.ToJoin(Info.DomPaths)}`);
                     return;
                 }
-                Model.AddV_Slot(Info.Paths, Info.CommandKey, Info.StoreValue);
+                Model.AddV_Slot(Option.TargetDom, Info.CommandKey, Option.TargetPath);
             },
-            'watch': Info => {
+            'watch': (Info, Option) => {
                 if (typeof (Info.StoreValue) != 'function') {
-                    Model.$Error(`watch command value must be a function, path: ${this.ToJoin(Info.Paths)}`);
+                    Model.$Error(`watch command value must be a function, path: ${this.ToJoin(Info.DomPaths)}`);
                     return;
                 }
-                Model.AddV_Watch(Info.Paths, Info.StoreValue);
+                Model.AddV_Watch(Info.DomPaths, Info.StoreValue);
             },
-            'func': Info => {
+            'func': (Info, Option) => {
                 if (typeof (Info.StoreValue) != 'function') {
-                    Model.$Error(`func command value must be a function, path: ${this.ToJoin(Info.Paths)}`);
+                    Model.$Error(`func command value must be a function, path: ${this.ToJoin(Info.DomPaths)}`);
                     return;
                 }
-                Model.AddV_Function(['event', ...Info.Paths, Info.CommandKey], Info.StoreValue);
+                Model.AddV_Function(['event', ...Info.DomPaths, Info.CommandKey], Info.StoreValue);
             }
         };
         for (let Info of AllSetInfo) {
             let ActionSet = CommandMap[Info.Command];
             if (ActionSet == null) {
-                Model.$Error(`${Info.Command} command is not allowed, path: ${this.ToJoin(Info.Paths)}`);
+                Model.$Error(`${Info.Command} command is not allowed, path: ${this.ToJoin(Info.DomPaths)}`);
                 continue;
             }
-            ActionSet(Info);
+            if (Option?.UseDeepQuery) {
+                let QueryNodes = Queryer.Query(Info.DomPaths, {
+                    Mode: 'DeepMulti',
+                });
+                Info.Nodes = QueryNodes;
+            }
+            let TargetDom = Option?.UseDeepQuery ? Info.Nodes : Info.DomPaths;
+            let TargetPath = [];
+            let TargetValue;
+            if (typeof (Info.StoreValue) != 'function') {
+                if (Option?.UseTreePath)
+                    TargetPath = [...Info.TreePaths];
+                if (Option?.UseDomStore || Info.StoreValue == '.')
+                    TargetPath.push(Info.DomName);
+                else if (Info.StoreValue != null && Info.StoreValue != '')
+                    TargetPath = this.Paths(TargetPath, Info.StoreValue);
+            }
+            TargetValue = TargetPath.length > 0 ? TargetPath : Info.StoreValue;
+            ActionSet(Info, {
+                TargetDom: TargetDom,
+                TargetPath: TargetPath,
+                TargetValue: TargetValue,
+            });
         }
         return this;
     }
@@ -1104,12 +1186,17 @@ class VueCommand extends VueStore {
         let AllKeys = Object.keys(TreeSet);
         for (let i = 0; i < AllKeys.length; i++) {
             let Command = AllKeys[i];
-            let Value = TreeSet[Command];
+            let SetPair = TreeSet[Command];
+            let DomPaths = [...Paths];
+            let TreePaths = [...Paths];
+            let DomName = TreePaths.pop();
             if (!Command.includes(':')) {
                 Result.push({
                     Command: Command,
-                    StoreValue: Value == '.' ? [...Paths] : Value,
-                    Paths: [...Paths],
+                    StoreValue: SetPair,
+                    TreePaths: TreePaths,
+                    DomPaths: DomPaths,
+                    DomName: DomName,
                 });
                 continue;
             }
@@ -1119,18 +1206,19 @@ class VueCommand extends VueStore {
                 continue;
             }
             Command = Commands.shift();
-            let CommandKey = Model.ToJoin(Commands, ':');
-            if (Command != '') {
-                Result.push({
-                    Command: Command,
-                    CommandKey: CommandKey,
-                    StoreValue: Value,
-                    Paths: [...Paths],
-                });
+            let NextDomName = Model.ToJoin(Commands, ':');
+            if (Command == '') {
+                this.$ParseTreeSet([...Paths, NextDomName], SetPair, Result);
                 continue;
             }
-            let DomName = CommandKey;
-            this.$ParseTreeSet([...Paths, DomName], Value, Result);
+            Result.push({
+                Command: Command,
+                CommandKey: NextDomName,
+                StoreValue: SetPair,
+                TreePaths: TreePaths,
+                DomPaths: DomPaths,
+                DomName: DomName,
+            });
         }
     }
     AddV_Property(PropertyPath, Option) {
@@ -1143,7 +1231,6 @@ class VueCommand extends VueStore {
             let FindPath = PropertyPaths.join('.');
             SetStore = this.GetStore(FindPath, {
                 CreateIfNull: true,
-                DefaultValue: {},
             });
         }
         let SetProperty = this.$BaseAddProperty(SetStore, PropertyKey, Option);
@@ -1200,39 +1287,56 @@ class VueCommand extends VueStore {
         return SetProperty;
     }
     $ConvertCommandOption(DomName, Option) {
-        if (!Option)
-            return { Target: DomName, FuncAction: true };
+        if (Option == null) {
+            if (this.IsPathType(DomName))
+                return { Target: DomName, FuncAction: false };
+            else {
+                let Nodes = DomName;
+                let NodeNames = Nodes.map(Item => Item.DomName);
+                return { Target: NodeNames, FuncAction: false };
+            }
+        }
         if (typeof Option == 'string' || typeof Option == 'function' || Array.isArray(Option))
             return { Target: Option, FuncAction: true };
         Option.FuncAction ??= true;
         return Option;
     }
     $AddCommand(DomName, Command, Option) {
-        Queryer.WithDomName(this.$QueryDomName);
-        if (!Queryer.IsInited)
-            Queryer.Init();
+        if (DomName == null)
+            return;
+        if (!Array.isArray(DomName))
+            DomName = [DomName];
+        let IsFromQueryNode = DomName[0] instanceof QueryNode;
+        let QueryNodes;
+        if (IsFromQueryNode)
+            QueryNodes = DomName;
+        else
+            QueryNodes = Queryer.Query(DomName);
         let Target = Option.Target;
-        Queryer.Using(DomName, ({ Dom }) => {
-            if (typeof (Target) == 'function') {
-                Target = this.$GenerateEventFunction(DomName, Target, Command);
-                if (Option.FuncArgs) {
-                    let Args = this.ToJoin(Option.FuncArgs, ',');
-                    Target += `(${Args})`;
-                }
-                else if (Option.FuncAction) {
-                    Target += `()`;
-                }
+        if (typeof (Target) == 'function') {
+            let FuncDomName = DomName;
+            Target = this.$GenerateEventFunction(FuncDomName, Target, Command);
+            if (Option.FuncArgs) {
+                let Args = this.ToJoin(Option.FuncArgs, ',');
+                Target += `(${Args})`;
             }
-            else
-                Target = this.ToJoin(Target);
-            if (Option.TargetHead)
-                Target = Option.TargetHead + Target;
-            if (Option.TargetTail)
-                Target += Option.TargetTail;
-            if (Option.CommandKey)
-                Command += `:${Option.CommandKey}`;
+            else if (Option.FuncAction) {
+                Target += `()`;
+            }
+        }
+        else
+            Target = this.ToJoin(Target);
+        if (Option.TargetHead)
+            Target = Option.TargetHead + Target;
+        if (Option.TargetTail)
+            Target += Option.TargetTail;
+        if (Option.CommandKey)
+            Command += `:${Option.CommandKey}`;
+        for (let i = 0; i < QueryNodes.length; i++) {
+            let NodeItem = QueryNodes[i];
+            let Dom = NodeItem.Dom;
             this.$SetAttribute(Dom, Command, Target);
-        });
+        }
     }
     $SetAttribute(Dom, AttrName, AttrValue) {
         if (Dom == null) {
@@ -1259,6 +1363,7 @@ class VueModel extends VueCommand {
     constructor() {
         super();
         this.Id = this.GenerateId();
+        this.$MountId = 'app';
     }
     WithMountId(MountId) {
         this.$MountId = MountId;

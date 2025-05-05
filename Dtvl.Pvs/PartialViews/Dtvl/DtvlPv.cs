@@ -15,14 +15,17 @@ public enum DtvlPvs
 {
     #region Core
     Sidebar,
+    SidebarGroup,
+    SidebarChildren,
     Header,
     Bread,
     App,
     #endregion
 
-    #region Card
+    #region Container
     Card,
     FilterCard,
+    Collapse,
     #endregion
 
     #region Btn
@@ -61,10 +64,6 @@ public enum DtvlPvs
     Modal,
     SendModal,
     Alert,
-    #endregion
-
-    #region Container
-    CollapseView,
     #endregion
 }
 

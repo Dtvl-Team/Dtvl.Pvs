@@ -106,31 +106,28 @@ class DtvlPvIniter {
             'v-model:opened': `${StorePath}.OpenIds`,
             ':SidebarContent': {
                 'v-for': `${StorePath}?.Datas ?? []`,
-                ':SidebarItem': {
-                    'v-if': 'item.show()',
-                    ':SidebarGroup': {
-                        'v-if': 'item.children && item.children.length > 0',
-                        'v-bind:value': 'item.id',
-                        ':SidebarGroupItem': {
-                            ...ItemBaseCommand,
-                        },
-                        ':SidebarGroupChildren': {
-                            'v-for': 'item.children',
-                            ':SidebarGroupChildrenItem': {
-                                'v-if': 'item.show()',
-                                'v-bind:class': '{ SidebarSelect: item.isSelect }',
-                                ...ItemBaseCommand,
-                            },
-                        }
-                    },
-                    ':SidebarSingleItem': {
-                        'v-if': 'item.children == null || item.children.length == 0',
+            },
+            ':SidebarGroup': {
+                'v-if': 'item.children && item.children.length > 0 && item.children.every(val => val.show && val.show())',
+                'v-bind:value': 'item.id',
+                ':SidebarGroupItem': {
+                    ...ItemBaseCommand,
+                },
+                ':GroupChildren': {
+                    'v-for': 'item.children',
+                    ':ChildrenItem': {
+                        'v-if': 'item.show()',
                         'v-bind:class': '{ SidebarSelect: item.isSelect }',
                         ...ItemBaseCommand,
                     },
                 }
-            }
-        });
+            },
+            ':SingleGroup': {
+                'v-else': null,
+                'v-bind:class': '{ SidebarSelect: item.isSelect }',
+                ...ItemBaseCommand,
+            },
+        }, { UseDeepQuery: true });
     }
     //#endregion
     //#region DataTable
@@ -282,8 +279,10 @@ class DtvlPvIniter {
             },
         });
         if (!Option.Title) {
-            Queryer.Using(this.RootPath(PvName, 'Title'), ({ Dom }) => {
-                Option.Title = Dom.textContent.trim();
+            Queryer.Using(this.RootPath(PvName, 'Title'), ({ QueryNodes }) => {
+                QueryNodes.forEach(NodeItem => {
+                    Option.Title = NodeItem.Dom.textContent.trim();
+                });
             });
         }
         let StoreData = {
@@ -310,8 +309,10 @@ class DtvlPvIniter {
         Option.IsShow ??= false;
         if (Option.Message == null) {
             Queryer.Init();
-            Queryer.Using(Model.Paths(PvName, 'Message'), ({ Dom }) => {
-                Option.Message = Dom.textContent.trim();
+            Queryer.Using(Model.Paths(PvName, 'Message'), ({ QueryNodes }) => {
+                QueryNodes.forEach(NodeItem => {
+                    Option.Message = NodeItem.Dom.textContent.trim();
+                });
             });
         }
         let SetAlertStore = {
@@ -573,8 +574,10 @@ class DtvlPvIniter {
                     if (this.IsOpen)
                         return ' ';
                     Queryer.Init(true);
-                    Queryer.Using(Model.Paths(PvName, 'Input'), ({ Dom }) => {
-                        Dom.blur();
+                    Queryer.Using(Model.Paths(PvName, 'Input'), ({ QueryNodes }) => {
+                        QueryNodes.forEach(NodeItem => {
+                            NodeItem.Dom.blur();
+                        });
                     });
                     return null;
                 }
@@ -603,6 +606,33 @@ class DtvlPvIniter {
             },
         });
         return this;
+    }
+    //#endregion
+    //#region Collapse
+    //#endregion
+    //#region Animate
+    AddPv_AnimatePush(PvName, Option) {
+        let StorePath = this.RootPath(PvName, 'Animate');
+        Model.SetStore(StorePath, {
+            IsRun: false,
+        });
+        Model.AddV_Watch([StorePath, 'IsRun'], (NewValue) => {
+            if (NewValue) {
+            }
+        });
+        Model.AddV_Tree(PvName, {});
+    }
+    Animate(PvName) {
+        let StorePath = this.RootPath(PvName, 'Animate');
+        let AnimateStore = Model.GetStore(StorePath, {
+            CreateIfNull: true,
+            DefaultValue: {
+                IsRun: false,
+            },
+        });
+        let IsRun = Model.GetStore([StorePath, 'IsRun']);
+        IsRun = IsRun ? false : true;
+        Model.UpdateStore([StorePath, ''], true);
     }
     //#endregion
     //#region Protect Process

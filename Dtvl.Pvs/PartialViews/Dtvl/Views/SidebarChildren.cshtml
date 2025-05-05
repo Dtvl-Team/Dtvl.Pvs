@@ -1,0 +1,13 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model.WithParentTag("v-list-item")
+        .AddParentAttr(new
+        {
+            density = "compact",
+            @class = "SidebarChildren",
+        });
+}
+<template v-slot:prepend="props">
+    <i pv-name="ItemIcon"
+       class="SidebarIcon"></i>
+</template>

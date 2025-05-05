@@ -605,6 +605,33 @@ class DtvlPvIniter {
         return this;
     }
     //#endregion
+    //#region Collapse
+    //#endregion
+    //#region Animate
+    AddPv_AnimatePush(PvName, Option) {
+        let StorePath = this.RootPath(PvName, 'Animate');
+        Model.SetStore(StorePath, {
+            IsRun: false,
+        });
+        Model.AddV_Watch([StorePath, 'IsRun'], (NewValue) => {
+            if (NewValue) {
+            }
+        });
+        Model.AddV_Tree(PvName, {});
+    }
+    Animate(PvName) {
+        let StorePath = this.RootPath(PvName, 'Animate');
+        let AnimateStore = Model.GetStore(StorePath, {
+            CreateIfNull: true,
+            DefaultValue: {
+                IsRun: false,
+            },
+        });
+        let IsRun = Model.GetStore([StorePath, 'IsRun']);
+        IsRun = IsRun ? false : true;
+        Model.UpdateStore([StorePath, ''], true);
+    }
+    //#endregion
     //#region Protect Process
     RootPath(...PushPath) {
         let RootPath = Model.Paths([this.$PvStore, PushPath]);

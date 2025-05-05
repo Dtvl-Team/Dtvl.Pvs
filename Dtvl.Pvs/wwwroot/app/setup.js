@@ -8,7 +8,7 @@ let VuetifyInit = createVuetify({
     }
 });
 Model.WithVueUse(VuetifyInit)
-    .WithQueryAttribute('pv-name');
+    .WithQueryDomName('pv-name');
 DtvlPv.UseRouter('Router', [
     {
         title: 'AAA',
@@ -17,17 +17,28 @@ DtvlPv.UseRouter('Router', [
             {
                 title: 'BBB',
                 icon: 'fa-solid fa-house',
-                href: '/Home/Index'
+                href: '/Home/Index',
+                children: [
+                    {
+                        title: 'EEE',
+                        icon: 'fa-solid fa-house',
+                        href: '/Home/Index',
+                        children: [
+                            {
+                                show: () => false,
+                                title: 'FFF',
+                                icon: 'fa-solid fa-house',
+                                href: '/Home/Index',
+                            }
+                        ]
+                    }
+                ]
             },
-            {
-                title: 'CCC',
-                href: '/',
-            },
+            //{
+            //    title: 'CCC',
+            //    href: '/',
+            //},
         ]
-    },
-    {
-        title: 'DDD',
-        show: () => false,
     }
 ], { openAll: true });
 //# sourceMappingURL=setup.js.map

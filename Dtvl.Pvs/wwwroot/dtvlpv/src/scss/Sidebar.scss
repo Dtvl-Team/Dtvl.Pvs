@@ -9,6 +9,11 @@
     --Sidebar-radius-1: 10px;
     --Sidebar-radius-2: 20px;
     --Sidebar-radius-3: 30px;
+    --Sidebar-Layer-padding-1: 0 0.5rem 0 1rem;
+    --Sidebar-Layer-padding-2: 0 0.5rem 0 1.5rem;
+    --Sidebar-Layer-padding-3: 0 0.5rem 0 2rem;
+    --Sidebar-Layer-padding-4: 0 0.5rem 0 2.5rem;
+    --Sidebar-Layer-padding-5: 0 0.5rem 0 3rem;
 }
 
 .Sidebar {
@@ -120,9 +125,6 @@
     }
 }
 
-
-
-
 .Sidebar .v-list-item-title {
     font-weight: bolder;
 }
@@ -161,11 +163,12 @@
     margin-right: 5px;
 }
 
-.SidebarItem {
+.SidebarChildren {
     padding: 0 10px !important;
 }
 
-.Sidebar .v-list-group__items .v-list-item {
-    padding-inline-start: 0;
-    padding: 0 30px !important;
+@for $i from 1 through 5 {
+    .Sidebar-Layer-#{$i} .v-list-item {
+        padding: var(--Sidebar-Layer-padding-#{$i}) !important;
+    }
 }

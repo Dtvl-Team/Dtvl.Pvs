@@ -82,6 +82,9 @@ type DatePickerOption = {
     ValueStore?: string;
     IsOpen?: boolean;
 };
+type PushAnimateOption = {
+    PositionFrom: 'Left' | 'Right';
+};
 declare class DtvlPvIniter {
     protected $PvStore: string;
     constructor();
@@ -102,6 +105,8 @@ declare class DtvlPvIniter {
     AddPv_Input(PvName: PathType, Option?: InputOption): this;
     AddPv_Select(PvName: PathType, Option?: SelectOption): this;
     AddPv_DatePicker(PvName: PathType, Option?: DatePickerOption): this;
+    AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption): void;
+    Animate(PvName: PathType): void;
     protected RootPath(...PushPath: PathType[]): string[];
 }
 declare const DtvlPv: DtvlPvIniter;

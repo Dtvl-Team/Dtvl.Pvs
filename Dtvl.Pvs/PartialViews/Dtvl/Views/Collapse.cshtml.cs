@@ -1,6 +1,6 @@
 ﻿namespace Dtvl.Pvs;
 
-public enum CollapseViewSlot
+public enum CollapseSlot
 {
     Content
 }

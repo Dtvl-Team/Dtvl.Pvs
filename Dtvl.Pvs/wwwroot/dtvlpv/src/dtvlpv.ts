@@ -131,7 +131,7 @@ type SelectStore = SelectOption & {
 };
 //#endregion
 
-//#region
+//#region DatePicker
 type DatePickerOption = {
     ValueStore?: string,
     IsOpen?: boolean,
@@ -140,6 +140,17 @@ type DatePickerStore = DatePickerOption & {
 }
 //#endregion
 
+//#region Animation
+type PushAnimateOption = {
+    PositionFrom: 'Left' | 'Right',
+};
+type AnimateStore = {
+    IsRun: boolean,
+    Width?: number,
+    Height?: number,
+};
+
+//#endregion
 class DtvlPvIniter {
     protected $PvStore: string;
     constructor() {
@@ -260,31 +271,28 @@ class DtvlPvIniter {
             'v-model:opened': `${StorePath}.OpenIds`,
             ':SidebarContent': {
                 'v-for': `${StorePath}?.Datas ?? []`,
-                ':SidebarItem': {
-                    'v-if': 'item.show()',
-                    ':SidebarGroup': {
-                        'v-if': 'item.children && item.children.length > 0',
-                        'v-bind:value': 'item.id',
-                        ':SidebarGroupItem': {
-                            ...ItemBaseCommand,
-                        },
-                        ':SidebarGroupChildren': {
-                            'v-for': 'item.children',
-                            ':SidebarGroupChildrenItem': {
-                                'v-if': 'item.show()',
-                                'v-bind:class': '{ SidebarSelect: item.isSelect }',
-                                ...ItemBaseCommand,
-                            },
-                        }
-                    },
-                    ':SidebarSingleItem': {
-                        'v-if': 'item.children == null || item.children.length == 0',
+            },
+            ':SidebarGroup': {
+                'v-if': 'item.children && item.children.length > 0 && item.children.every(val => val.show && val.show())',
+                'v-bind:value': 'item.id',
+                ':SidebarGroupItem': {
+                    ...ItemBaseCommand,
+                },
+                ':GroupChildren': {
+                    'v-for': 'item.children',
+                    ':ChildrenItem': {
+                        'v-if': 'item.show()',
                         'v-bind:class': '{ SidebarSelect: item.isSelect }',
                         ...ItemBaseCommand,
                     },
                 }
-            }
-        });
+            },
+            ':SingleGroup': {
+                'v-else': null,
+                'v-bind:class': '{ SidebarSelect: item.isSelect }',
+                ...ItemBaseCommand,
+            },
+        }, { UseDeepQuery: true });
     }
     //#endregion
 
@@ -463,8 +471,10 @@ class DtvlPvIniter {
         });
 
         if (!Option.Title) {
-            Queryer.Using(this.RootPath(PvName, 'Title'), ({ Dom }) => {
-                Option.Title = Dom.textContent.trim();
+            Queryer.Using(this.RootPath(PvName, 'Title'), ({ QueryNodes }) => {
+                QueryNodes.forEach(NodeItem => {
+                    Option.Title = NodeItem.Dom.textContent.trim();
+                });
             });
         }
 
@@ -495,8 +505,10 @@ class DtvlPvIniter {
 
         if (Option.Message == null) {
             Queryer.Init();
-            Queryer.Using(Model.Paths(PvName, 'Message'), ({ Dom }) => {
-                Option.Message = Dom.textContent.trim();
+            Queryer.Using(Model.Paths(PvName, 'Message'), ({ QueryNodes }) => {
+                QueryNodes.forEach(NodeItem => {
+                    Option.Message = NodeItem.Dom.textContent.trim();
+                });
             });
         }
 
@@ -803,8 +815,10 @@ class DtvlPvIniter {
                         return ' ';
 
                     Queryer.Init(true);
-                    Queryer.Using(Model.Paths(PvName, 'Input'), ({ Dom }) => {
-                        Dom.blur();
+                    Queryer.Using(Model.Paths(PvName, 'Input'), ({ QueryNodes }) => {
+                        QueryNodes.forEach(NodeItem => {
+                            NodeItem.Dom.blur();
+                        });
                     });
                     return null;
                 }
@@ -836,12 +850,48 @@ class DtvlPvIniter {
     }
     //#endregion
 
+    //#region Collapse
+
+
+    //#endregion
+
+    //#region Animate
+    public AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption) {
+        let StorePath = this.RootPath(PvName, 'Animate');
+
+        Model.SetStore<AnimateStore>(StorePath, {
+            IsRun: false,
+        });
+        Model.AddV_Watch([StorePath, 'IsRun'], (NewValue: boolean) => {
+            if (NewValue) {
+
+            }
+        });
+        Model.AddV_Tree(PvName, {
+
+        });
+    }
+    public Animate(PvName: PathType) {
+        let StorePath = this.RootPath(PvName, 'Animate');
+        let AnimateStore = Model.GetStore<AnimateStore>(StorePath, {
+            CreateIfNull: true,
+            DefaultValue: {
+                IsRun: false,
+            },
+        });
+        let IsRun = Model.GetStore<boolean>([StorePath, 'IsRun']);
+        IsRun = IsRun ? false : true;
+        Model.UpdateStore([StorePath, ''], true);
+    }
+
+    //#endregion
+
     //#region Protect Process
     protected RootPath(...PushPath: PathType[]): string[] {
         let RootPath = Model.Paths([this.$PvStore, PushPath]);
         return RootPath;
     }
-    //#endregoin
+    //#endregion
 }
 
 const DtvlPv = new DtvlPvIniter();

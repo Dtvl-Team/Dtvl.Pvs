@@ -25,6 +25,7 @@
 @import 'Checkbox.scss';
 @import 'OverLayer.scss';
 @import 'TimePicker.scss';
+@import 'Collapse.scss';
 
 :root {
     @extend --DefaultThemeVar;
@@ -41,7 +42,6 @@
     @extend --AlertVar;
     @extend --DatePickerVar;
 
-
     @extend --FilterCardVar;
     @extend --DataTableVar;
     @extend --SkeletonLoaderVar;
@@ -53,4 +53,5 @@
     @extend --CheckboxVar;
     @extend --OverLayerVar;
     @extend --TimePickerVar;
+    @extend --CollapseVar;
 }

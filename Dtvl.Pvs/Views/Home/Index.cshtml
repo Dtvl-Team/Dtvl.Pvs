@@ -1,17 +1,21 @@
 ﻿
-<div class="row">
+@* 
+<div pv-name="Page">
+    <div class="row">
+        <div pv-name="LeftView"
+             class="col bg-success">
+            <dtvl-pv pv-type="Btn"
+                     pv-name="Btn">
 
-    <v-text-field v-bind:readonly="true"></v-text-field>
+            </dtvl-pv>
+        </div>
 
-
-    <dtvl-pv pv-type="CollapseView">
-        <pv-slot slot="CollapseViewSlot.Content">
-            <div style="width:30px;">
-                asd
-            </div>
-        </pv-slot>
-    </dtvl-pv>
+        <div class="col-3 bg-danger"
+             pv-name="View">
+            123
+        </div>
+    </div>
 </div>
-
+ *@
 
 <script type="module" src="~/scripts/Home/Index.js" asp-append-version="true"></script>
