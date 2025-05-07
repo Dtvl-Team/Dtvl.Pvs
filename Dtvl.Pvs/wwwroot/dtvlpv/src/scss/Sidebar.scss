@@ -4,6 +4,7 @@
     --Sidebar-bg: var(--DefaultTheme-bg2);
     --Sidebar-Select-bg: var(--DefaultTheme-text-color2);
     --Sidebar-text-color: var(--DefaultTheme-text-color2);
+    --Sidebar-font-size: var(--DefaultTheme-font-size);
     --Sidebar-Select-text-color: var(--DefaultTheme-bg2);
     --Sidebar-padding-bottom: var(--Header-height);
     --Sidebar-radius-1: 10px;
@@ -14,6 +15,7 @@
     --Sidebar-Layer-padding-3: 0 0.5rem 0 2rem;
     --Sidebar-Layer-padding-4: 0 0.5rem 0 2.5rem;
     --Sidebar-Layer-padding-5: 0 0.5rem 0 3rem;
+    --Sidebar-Icon-font-size: var(--DefaultTheme-font-size);
 }
 
 .Sidebar {
@@ -127,6 +129,11 @@
 
 .Sidebar .v-list-item-title {
     font-weight: bolder;
+    font-size: var(--Sidebar-font-size);
+}
+
+.Sidebar .v-list-item__prepend {
+    font-size: var(--Sidebar-font-size);
 }
 
 .Sidebar::-webkit-scrollbar {
@@ -158,9 +165,8 @@
 }
 
 .SidebarIcon {
-    width: 15px;
-    height: 15px;
     margin-right: 5px;
+    font-size: var(--Sidebar-Icon-font-size) !important;
 }
 
 .SidebarChildren {

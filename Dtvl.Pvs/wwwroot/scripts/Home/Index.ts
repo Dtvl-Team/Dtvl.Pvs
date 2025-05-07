@@ -24,3 +24,11 @@ Model.AddV_Click('Btn', () => {
     //});
 })
 
+DtvlPv.AddPv_DataTable('Table', {
+    Headers: [
+        {
+            title: 'A'
+        }
+    ]
+});
+
