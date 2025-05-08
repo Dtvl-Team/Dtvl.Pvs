@@ -16,10 +16,10 @@
 
 @* <template v-slot:item="props, item = props.item">
     <tr v-if="mobile">
-        
+
     </tr>
     <tr v-if="!mobile">
- 
+
     </tr>
 </template> *@
 
@@ -29,7 +29,7 @@
 </template>
 
 <template v-slot:item.index="props">
-    {{ props.index + 1 }}
+    <span pv-name="IndexColumn"></span>
 </template>
 
 @if (Model.TryGetSlotRender(DataTableSlot.Buttons, out var ButtonSlot))

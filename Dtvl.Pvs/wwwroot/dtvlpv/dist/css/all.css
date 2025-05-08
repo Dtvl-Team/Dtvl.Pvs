@@ -1167,11 +1167,13 @@ body {
 }
 
 --InputVar, :root {
-  --Input-bg: var(--DefaultTheme-bg);
+  --Input-bg-color: var(--DefaultTheme-bg3);
+  --Input-text-color: var(--DefaultTheme-text-color3);
 }
 
 .Input .v-field {
-  background: var(--Input-bg);
+  background-color: var(--Input-bg-color);
+  color: var(--Input-text-color);
 }
 
 .Input .v-label {

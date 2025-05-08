@@ -106,36 +106,33 @@ class DtvlPvIniter {
             'v-model:opened': `${StorePath}.OpenIds`,
             ':SidebarContent': {
                 'v-for': `${StorePath}?.Datas ?? []`,
-                ':SidebarItem': {
-                    'v-if': 'item.show()',
-                    ':SidebarGroup': {
-                        'v-if': 'item.children && item.children.length > 0',
-                        'v-bind:value': 'item.id',
-                        ':SidebarGroupItem': {
-                            ...ItemBaseCommand,
-                        },
-                        ':SidebarGroupChildren': {
-                            'v-for': 'item.children',
-                            ':SidebarGroupChildrenItem': {
-                                'v-if': 'item.show()',
-                                'v-bind:class': '{ SidebarSelect: item.isSelect }',
-                                ...ItemBaseCommand,
-                            },
-                        }
-                    },
-                    ':SidebarSingleItem': {
-                        'v-if': 'item.children == null || item.children.length == 0',
+            },
+            ':SidebarGroup': {
+                'v-if': 'item.children && item.children.length > 0 && item.children.every(val => val.show && val.show())',
+                'v-bind:value': 'item.id',
+                ':SidebarGroupItem': {
+                    ...ItemBaseCommand,
+                },
+                ':GroupChildren': {
+                    'v-for': 'item.children',
+                    ':ChildrenItem': {
+                        'v-if': 'item.show()',
                         'v-bind:class': '{ SidebarSelect: item.isSelect }',
                         ...ItemBaseCommand,
                     },
                 }
-            }
-        });
+            },
+            ':SingleGroup': {
+                'v-else': null,
+                'v-bind:class': '{ SidebarSelect: item.isSelect }',
+                ...ItemBaseCommand,
+            },
+        }, { UseDeepQuery: true });
     }
     //#endregion
     //#region DataTable
     AddPv_DataTable(PvName, Option) {
-        Option.HasIndex ??= true;
+        Option.Index ??= true;
         Option.HasButton ??= true;
         Option.Datas ??= [];
         let TableStore = {
@@ -154,11 +151,31 @@ class DtvlPvIniter {
             });
         }
         this.$FillDataTableHeaders(TableStore.Headers);
-        if (TableStore.HasIndex)
-            TableStore.Headers.unshift({
-                title: '#',
-                value: 'index',
-            });
+        if (TableStore.Index != null && TableStore.Index != false) {
+            if (typeof (TableStore.Index) == 'boolean') {
+                TableStore.Index = {
+                    Type: 'Total',
+                };
+            }
+            let IndexPath = null;
+            switch (TableStore.Index.Type) {
+                case 'Page':
+                    IndexPath = 'props.index + 1';
+                    break;
+                case 'Total':
+                    IndexPath = 'props.internalItem.index + 1';
+                    break;
+                default:
+                    break;
+            }
+            if (IndexPath != null) {
+                Model.AddV_Text(Model.Paths(PvName, 'IndexColumn'), IndexPath);
+                TableStore.Headers.unshift({
+                    title: '#',
+                    value: 'index',
+                });
+            }
+        }
         Model.AddV_Tree(PvName, {
             "v-bind:items": this.RootPath(PvName, 'Datas'),
             'v-bind:headers': this.RootPath(PvName, 'Headers'),
@@ -282,8 +299,10 @@ class DtvlPvIniter {
             },
         });
         if (!Option.Title) {
-            Queryer.Using(this.RootPath(PvName, 'Title'), ({ Dom }) => {
-                Option.Title = Dom.textContent.trim();
+            Queryer.Using(this.RootPath(PvName, 'Title'), ({ QueryNodes }) => {
+                QueryNodes.forEach(NodeItem => {
+                    Option.Title = NodeItem.Dom.textContent.trim();
+                });
             });
         }
         let StoreData = {
@@ -310,8 +329,10 @@ class DtvlPvIniter {
         Option.IsShow ??= false;
         if (Option.Message == null) {
             Queryer.Init();
-            Queryer.Using(Model.Paths(PvName, 'Message'), ({ Dom }) => {
-                Option.Message = Dom.textContent.trim();
+            Queryer.Using(Model.Paths(PvName, 'Message'), ({ QueryNodes }) => {
+                QueryNodes.forEach(NodeItem => {
+                    Option.Message = NodeItem.Dom.textContent.trim();
+                });
             });
         }
         let SetAlertStore = {
@@ -415,17 +436,73 @@ class DtvlPvIniter {
     AddPv_Input(PvName, Option) {
         Option ??= {};
         Option.Store ??= Model.ToJoin(PvName);
-        Model.AddV_Model(PvName, Option.Store);
+        let PvStorePath = this.RootPath(PvName);
+        let Store = {
+            Clearable: true,
+        };
+        Model.UpdateStore(PvStorePath, Store);
+        let ValuePath = this.RootPath(PvName, 'Value');
+        Model.AddV_Model(PvName, ValuePath)
+            .AddV_Property(ValuePath, {
+            Target: Option.Store,
+        });
         if (Option.ReadOnly != null) {
+            let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
-                Model.AddV_Function(`Func_${Model.ToJoin(PvName)}_ReadOnly`, Option.ReadOnly);
+                Store.ReadOnly = Option.ReadOnly;
+                ReadOnlyPath = this.RootPath(PvName, `ReadOnly(${Model.ToJoin(PvStorePath)})`);
             }
-            else {
-                let Clearable = typeof (Option.ReadOnly) == 'boolean' ?
-                    (!Option.ReadOnly).toString() : `!${Option.ReadOnly}`;
-                Model.AddV_Bind(PvName, 'readonly', Option.ReadOnly.toString());
-                Model.AddV_Bind(PvName, 'clearable', Clearable);
+            else if (typeof (Option.ReadOnly) == 'boolean') {
+                Store.ReadOnly = Option.ReadOnly;
+                ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
+                if (Option.ReadOnly == true) {
+                    Store.Clearable = false;
+                    Model.AddV_Bind(PvName, 'clearable', this.RootPath(PvName, 'Clearable'));
+                }
             }
+            else if (typeof (Option.ReadOnly == 'string')) {
+                ReadOnlyPath = Option.ReadOnly;
+            }
+            if (ReadOnlyPath != null)
+                Model.AddV_Bind(PvName, 'readonly', ReadOnlyPath);
+        }
+        if (Option.Secure != null) {
+            if (typeof (Option.Secure) == 'boolean') {
+                Option.Secure = {
+                    SecureEye: true,
+                };
+            }
+            Option.Secure.HidingIcon ??= 'fa-solid fa-eye';
+            Option.Secure.ShowingIcon ??= 'fa-solid fa-eye-slash';
+            Store.Secure = {
+                Securing: true,
+                ...Option.Secure,
+            };
+            let SecureStorePath = this.RootPath(PvName, 'Secure');
+            let SecuringPath = Model.ToJoin([SecureStorePath, 'Securing'], '.');
+            let HidingIconPath = Model.ToJoin([SecureStorePath, 'HidingIcon'], '.');
+            let ShowingIconPath = Model.ToJoin([SecureStorePath, 'ShowingIcon'], '.');
+            Model.AddV_Tree(PvName, {
+                ':HidingSecure': {
+                    'v-show': `${SecuringPath} == true`,
+                    'v-on:click': () => {
+                        Model.UpdateStore(SecuringPath, false);
+                    },
+                    ':Icon': {
+                        'v-bind:class': HidingIconPath,
+                    },
+                },
+                ':ShowingSecure': {
+                    'v-show': `${SecuringPath} == false`,
+                    'v-on:click': () => {
+                        Model.UpdateStore(SecuringPath, true);
+                    },
+                    ':Icon': {
+                        'v-bind:class': ShowingIconPath,
+                    },
+                },
+                'v-bind:type': `${SecuringPath} ? 'password' : 'text' `,
+            });
         }
         return this;
     }
@@ -573,8 +650,10 @@ class DtvlPvIniter {
                     if (this.IsOpen)
                         return ' ';
                     Queryer.Init(true);
-                    Queryer.Using(Model.Paths(PvName, 'Input'), ({ Dom }) => {
-                        Dom.blur();
+                    Queryer.Using(Model.Paths(PvName, 'Input'), ({ QueryNodes }) => {
+                        QueryNodes.forEach(NodeItem => {
+                            NodeItem.Dom.blur();
+                        });
                     });
                     return null;
                 }

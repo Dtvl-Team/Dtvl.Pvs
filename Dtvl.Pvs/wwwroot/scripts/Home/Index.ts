@@ -23,12 +23,35 @@ Model.AddV_Click('Btn', () => {
     //    fill: 'forwards',
     //});
 })
+console.warn()
+
+DtvlPv.AddPv_Input('MyInput', {
+    Store: 'Test.MyA',
+    Secure: true,
+})
 
 DtvlPv.AddPv_DataTable('Table', {
+    Index: {
+        Type: 'Page'
+    },
     Headers: [
         {
             title: 'A'
         }
+    ],
+    Datas: [
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
+        'a',
     ]
 });
 

@@ -19,12 +19,15 @@ export type DataTableHeader = {
     width?: string;
 };
 export type DataTableOption = {
-    HasIndex?: boolean;
+    Index?: boolean | DataTableIndexOption;
     HasButton?: boolean;
     ButtonHeader?: DataTableHeader;
     Headers: DataTableHeader[];
     Datas?: any[];
     ApiKey?: string;
+};
+type DataTableIndexOption = {
+    Type: 'Page' | 'Total';
 };
 export type TreeOption = {
     openAll?: boolean;
@@ -62,9 +65,23 @@ type FilterCardOption = {
     BtnClear?: () => void;
     BtnSearch?: () => void;
 };
+type SecureOption = boolean | {
+    SecureEye?: boolean;
+    ShowingIcon?: string;
+    HidingIcon?: string;
+};
 type InputOption = {
     Store?: PathType;
-    ReadOnly?: boolean | string | (() => boolean);
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
+    Secure?: SecureOption;
+};
+type InputStore = {
+    Value?: any;
+    ReadOnly?: boolean | ((Store?: InputStore) => boolean);
+    Clearable?: boolean | ((Store?: InputStore) => boolean);
+    Secure?: {
+        Securing: boolean;
+    } & SecureOption;
 };
 export type SelectOption = {
     ValueStore?: PathType;

@@ -50,10 +50,11 @@
                 <dtvl-pv pv-type="Bread"></dtvl-pv>
             </pv-slot>
         }
-
         <pv-slot slot="AppSlot.Content">
-            <!--body-->
-            @RenderBody()
+            <div class="w-100 h-100 p-3"
+                 style="background-color:#808080">
+                @RenderBody()
+            </div>
         </pv-slot>
     </dtvl-pv>
 

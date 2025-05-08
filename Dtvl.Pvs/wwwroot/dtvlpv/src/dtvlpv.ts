@@ -42,12 +42,15 @@ export type DataTableHeader = {
     width?: string,
 };
 export type DataTableOption = {
-    HasIndex?: boolean,
+    Index?: boolean | DataTableIndexOption,
     HasButton?: boolean,
     ButtonHeader?: DataTableHeader,
     Headers: DataTableHeader[],
     Datas?: any[],
     ApiKey?: string,
+};
+type DataTableIndexOption = {
+    Type: 'Page' | 'Total',
 };
 type DataTableStore = DataTableOption & {
 
@@ -107,10 +110,24 @@ type FilterCardOption = {
 //#endregion
 
 //#region Input Type
+type SecureOption = boolean | {
+    SecureEye?: boolean,
+    ShowingIcon?: string,
+    HidingIcon?: string,
+};
 type InputOption = {
     Store?: PathType,
-    ReadOnly?: boolean | string | (() => boolean),
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
+    Secure?: SecureOption,
 };
+type InputStore = {
+    Value?: any,
+    ReadOnly?: boolean | ((Store?: InputStore) => boolean),
+    Clearable?: boolean | ((Store?: InputStore) => boolean),
+    Secure?: {
+        Securing: boolean,
+    } & SecureOption,
+}
 //#endregion
 
 //#region Select Type
@@ -299,7 +316,7 @@ class DtvlPvIniter {
     //#region DataTable
     public AddPv_DataTable(PvName: PathType, Option: DataTableOption) {
 
-        Option.HasIndex ??= true;
+        Option.Index ??= true;
         Option.HasButton ??= true;
         Option.Datas ??= [];
 
@@ -324,11 +341,33 @@ class DtvlPvIniter {
 
         this.$FillDataTableHeaders(TableStore.Headers);
 
-        if (TableStore.HasIndex)
-            TableStore.Headers.unshift({
-                title: '#',
-                value: 'index',
-            });
+        if (TableStore.Index != null && TableStore.Index != false) {
+            if (typeof (TableStore.Index) == 'boolean') {
+                TableStore.Index = {
+                    Type: 'Total',
+                };
+            }
+
+            let IndexPath = null;
+            switch (TableStore.Index.Type) {
+                case 'Page':
+                    IndexPath = 'props.index + 1';
+                    break;
+                case 'Total':
+                    IndexPath = 'props.internalItem.index + 1';
+                    break;
+                default:
+                    break;
+            }
+            if (IndexPath != null) {
+                Model.AddV_Text(Model.Paths(PvName, 'IndexColumn'), IndexPath)
+                TableStore.Headers.unshift({
+                    title: '#',
+                    value: 'index',
+                });
+            }
+        }
+
 
         Model.AddV_Tree(PvName, {
             "v-bind:items": this.RootPath(PvName, 'Datas'),
@@ -625,18 +664,76 @@ class DtvlPvIniter {
     public AddPv_Input(PvName: PathType, Option?: InputOption) {
         Option ??= {};
         Option.Store ??= Model.ToJoin(PvName);
-        Model.AddV_Model(PvName, Option.Store);
+
+        let PvStorePath = this.RootPath(PvName);
+        let Store: InputStore = {
+            Clearable: true,
+        };
+        Model.UpdateStore(PvStorePath, Store);
+
+        let ValuePath = this.RootPath(PvName, 'Value');
+        Model.AddV_Model(PvName, ValuePath)
+            .AddV_Property(ValuePath, {
+                Target: Option.Store,
+            });
 
         if (Option.ReadOnly != null) {
+            let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
-                Model.AddV_Function(`Func_${Model.ToJoin(PvName)}_ReadOnly`, Option.ReadOnly);
+                Store.ReadOnly = Option.ReadOnly;
+                ReadOnlyPath = this.RootPath(PvName, `ReadOnly(${Model.ToJoin(PvStorePath)})`);
             }
-            else {
-                let Clearable = typeof (Option.ReadOnly) == 'boolean' ?
-                    (!Option.ReadOnly).toString() : `!${Option.ReadOnly}`;
-                Model.AddV_Bind(PvName, 'readonly', Option.ReadOnly.toString());
-                Model.AddV_Bind(PvName, 'clearable', Clearable);
+            else if (typeof (Option.ReadOnly) == 'boolean') {
+                Store.ReadOnly = Option.ReadOnly;
+                ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
+                if (Option.ReadOnly == true) {
+                    Store.Clearable = false;
+                    Model.AddV_Bind(PvName, 'clearable', this.RootPath(PvName, 'Clearable'));
+                }
+            } else if (typeof (Option.ReadOnly == 'string')) {
+                ReadOnlyPath = Option.ReadOnly;
             }
+
+            if (ReadOnlyPath != null)
+                Model.AddV_Bind(PvName, 'readonly', ReadOnlyPath);
+        }
+        if (Option.Secure != null) {
+            if (typeof (Option.Secure) == 'boolean') {
+                Option.Secure = {
+                    SecureEye: true,
+                };
+            }
+            Option.Secure.HidingIcon ??= 'fa-solid fa-eye';
+            Option.Secure.ShowingIcon ??= 'fa-solid fa-eye-slash';
+            Store.Secure = {
+                Securing: true,
+                ...Option.Secure,
+            };
+            let SecureStorePath = this.RootPath(PvName, 'Secure');
+            let SecuringPath = Model.ToJoin([SecureStorePath, 'Securing'], '.');
+            let HidingIconPath = Model.ToJoin([SecureStorePath, 'HidingIcon'], '.');
+            let ShowingIconPath = Model.ToJoin([SecureStorePath, 'ShowingIcon'], '.');
+            Model.AddV_Tree(PvName, {
+                ':HidingSecure': {
+                    'v-show': `${SecuringPath} == true`,
+                    'v-on:click': () => {
+                        Model.UpdateStore(SecuringPath, false);
+                    },
+                    ':Icon': {
+                        'v-bind:class': HidingIconPath,
+                    },
+                },
+                ':ShowingSecure': {
+                    'v-show': `${SecuringPath} == false`,
+                    'v-on:click': () => {
+                        Model.UpdateStore(SecuringPath, true);
+                    },
+                    ':Icon': {
+                        'v-bind:class': ShowingIconPath,
+                    },
+                },
+                'v-bind:type': `${SecuringPath} ? 'password' : 'text' `,
+            });
         }
 
         return this;

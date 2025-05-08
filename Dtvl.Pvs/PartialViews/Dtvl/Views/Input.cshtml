@@ -19,8 +19,11 @@
     if (!Model.HasSlot(InputSlot.ReadOnly) || Model.HasSlot(InputSlot.Clearable))
         Model.AddParentAttr("v-bind:clearable", "true");
 
+    if (Model.HasSlot(InputSlot.IsSecure))
+        Model.AddParentAttr("v-bind:type", "password");
+
     if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
-        Model.AddParentAttr("Prepend-inner-icon", InnerIcon);
+        Model.AddParentAttr("prepend-inner-icon", InnerIcon);
 
     if (Model.HasSlot(InputSlot.SizeDefault))
         Model.AddParentAttr("density", "default", PropPassType.Cover);
@@ -29,7 +32,15 @@
     else if (Model.HasSlot(InputSlot.SizeComfortable))
         Model.AddParentAttr("density", "comfortable", PropPassType.Cover);
 
-    if (Model.HasSlot(InputSlot.IsSecure))
-        Model.AddParentAttr("type", "password");
-
 }
+
+<template v-slot:append-inner>
+    <div pv-name="HidingSecure">
+        <i pv-name="Icon"
+           class="Pointer"></i>
+    </div>
+    <div pv-name="ShowingSecure">
+        <i pv-name="Icon"
+           class="Pointer"></i>
+    </div>
+</template>
