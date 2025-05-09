@@ -46,6 +46,7 @@ public enum DtvlPvs
 
     #region Input
     Input,
+    Textarea,
     #endregion
 
     #region DatePicker

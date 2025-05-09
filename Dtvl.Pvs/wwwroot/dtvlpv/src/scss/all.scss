@@ -2,6 +2,7 @@
 @import '_Static.scss';
 
 @import 'Default.scss';
+
 @import 'Header.scss';
 @import 'Sidebar.scss';
 @import 'Bread.scss';
@@ -18,6 +19,7 @@
 
 @import 'SkeletonLoader.scss';
 @import 'Input.scss';
+@import 'Textarea.scss';
 @import 'InfoCard.scss';
 @import 'TableColumnNumberInput.scss';
 @import 'Select.scss';
@@ -30,6 +32,7 @@
 :root {
     @extend --DefaultThemeVar;
     @extend --DefaultFontVar;
+
     @extend --HeaderVar;
     @extend --SidebarVar;
     @extend --BreadVar;
@@ -46,6 +49,7 @@
     @extend --DataTableVar;
     @extend --SkeletonLoaderVar;
     @extend --InputVar;
+    @extend --TextareaVar;
     @extend --InfoCardVar;
     @extend --TableColumnNumberInput;
     @extend --SelectVar;

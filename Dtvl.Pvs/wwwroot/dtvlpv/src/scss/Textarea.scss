@@ -1,0 +1,13 @@
+--TextareaVar {
+    --Textarea-bg-color: var(--DefaultTheme-bg3);
+    --Textarea-text-color: var(--DefaultTheme-text-color3);
+}
+
+
+.Textarea {
+}
+
+.Textarea .v-field {
+    background-color: var(--Textarea-bg-color);
+    color: var(--Textarea-text-color);
+}

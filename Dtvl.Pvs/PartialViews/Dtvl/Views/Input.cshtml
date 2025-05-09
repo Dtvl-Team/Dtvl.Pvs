@@ -2,36 +2,11 @@
 
 @{
     Model.WithParentTag("v-text-field")
-        .AddParentAttr("hide-details")
+        .UsingInputBase()
         .AddParentAttr(new
         {
             @class = "Input",
-            variant = "solo-filled",
-            density = "compact",
-            label = Model.GetSlotContent(InputSlot.Label),
         });
-
-    Model.AddParentAttr("tabindex", "1", PropPassType.Fill);
-
-    if (Model.HasSlot(InputSlot.ReadOnly))
-        Model.AddParentAttr("v-bind:readonly", "true");
-
-    if (!Model.HasSlot(InputSlot.ReadOnly) || Model.HasSlot(InputSlot.Clearable))
-        Model.AddParentAttr("v-bind:clearable", "true");
-
-    if (Model.HasSlot(InputSlot.IsSecure))
-        Model.AddParentAttr("v-bind:type", "password");
-
-    if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
-        Model.AddParentAttr("prepend-inner-icon", InnerIcon);
-
-    if (Model.HasSlot(InputSlot.SizeDefault))
-        Model.AddParentAttr("density", "default", PropPassType.Cover);
-    else if (Model.HasSlot(InputSlot.SizeCompact))
-        Model.AddParentAttr("density", "compact", PropPassType.Cover);
-    else if (Model.HasSlot(InputSlot.SizeComfortable))
-        Model.AddParentAttr("density", "comfortable", PropPassType.Cover);
-
 }
 
 <template v-slot:append-inner>

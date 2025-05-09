@@ -1189,6 +1189,16 @@ body {
   margin-inline-start: 0px !important;
 }
 
+--TextareaVar, :root {
+  --Textarea-bg-color: var(--DefaultTheme-bg3);
+  --Textarea-text-color: var(--DefaultTheme-text-color3);
+}
+
+.Textarea .v-field {
+  background-color: var(--Textarea-bg-color);
+  color: var(--Textarea-text-color);
+}
+
 --InfoCardVar, :root {
   --InfoCard-Chip-text-color: var(--DefaultTheme-text-color2);
   --InfoCard-Chip-bg: var(--DefaultTheme-bg3);

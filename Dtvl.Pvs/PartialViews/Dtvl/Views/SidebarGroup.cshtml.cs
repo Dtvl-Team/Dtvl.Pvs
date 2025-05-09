@@ -1,4 +1,3 @@
-
 namespace Dtvl.Pvs;
 
 public enum SidebarGroupSlot
