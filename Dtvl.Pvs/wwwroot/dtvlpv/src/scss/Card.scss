@@ -7,14 +7,14 @@
     --Card-Footer-text-color: var(--DefaultTheme-text-color3);
 }
 
+.Card {
+}
+
 .CardBody {
     padding-top: var(--Card-padding-y);
     padding-bottom: var(--Card-padding-y);
     padding-left: var(--Card-padding-x);
     padding-right: var(--Card-padding-x);
-}
-
-.Card .v-card {
     background: var(--Card-bg);
 }
 
