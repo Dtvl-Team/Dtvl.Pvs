@@ -14,13 +14,19 @@
         <v-btn v-bind="props">btn</v-btn>
     </pv-slot>
     <pv-slot slot="MenuSlot.Content">
-        <section class="bg-success">
-            <dtvl-pv pv-type="List">
-
-            </dtvl-pv>
-        </section>
+        <dtvl-pv pv-type="List"
+                 class="bg-success">
+            @{
+                var Datas = new List<PvListItem>();
+                Datas.Add(new PvListItem("A"));
+            }
+            <pv-slot slot="ListSlot.Datas"
+                     pass-data="Datas"></pv-slot>
+        </dtvl-pv>
     </pv-slot>
 </dtvl-pv>
+
+
 
 
 

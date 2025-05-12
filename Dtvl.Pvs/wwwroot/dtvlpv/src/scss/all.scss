@@ -29,6 +29,7 @@
 @import 'TimePicker.scss';
 @import 'Collapse.scss';
 @import 'List.scss';
+@import 'Menu.scss';
 
 :root {
     @extend --DefaultThemeVar;
@@ -59,4 +60,6 @@
     @extend --OverLayerVar;
     @extend --TimePickerVar;
     @extend --CollapseVar;
+    @extend --MenuVar;
+    @extend --ListVar;
 }

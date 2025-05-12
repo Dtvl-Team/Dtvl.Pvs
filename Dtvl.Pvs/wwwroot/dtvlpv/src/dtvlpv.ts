@@ -171,7 +171,20 @@ class DtvlPvIniter {
     protected $PvStore: string;
     constructor() {
         this.$PvStore = 'pv';
+        this.UseShowOnMounted();
     }
+
+    //#region App
+    public UseShowOnMounted() {
+        Model.WithMounted(() => {
+            let ShowItems = document.querySelectorAll('[class*="ShowOnMounted"]');
+            for (let Item of ShowItems) {
+                Item.classList.remove('ShowOnMounted');
+            }
+        });
+        return this;
+    }
+    //#endregion
 
     //#region Sidebar Method
     public UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption) {

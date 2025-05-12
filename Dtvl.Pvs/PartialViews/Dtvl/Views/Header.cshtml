@@ -47,22 +47,25 @@
     }
     @if (Model.TryGetSlotRender(HeaderSlot.ProfileMenu, out var ProfileMenu))
     {
-        <dtvl-pv pv-type="Menu" pass-slot="Model.Slots">
-            <pv-slot slot="MenuSlot.Activator">
-                <v-card pv-name="HeaderUserView"
-                        v-bind="props"
-                        class="col-auto text-center HeaderUserCard ms-2"
-                        hover
-                        variant="tonal"
-                        rounded="circle"
-                        href="@Model.GetSlotContent(HeaderSlot.ProfileUrl)">
-                    <i class="fa-solid fa-circle-user HeaderUserIcon"></i>
-                </v-card>
-            </pv-slot>
-            <pv-slot slot="MenuSlot.Content">
-                @ProfileMenu
-            </pv-slot>
-        </dtvl-pv>
+        <div class="col-auto ShowOnMounted">
+            <dtvl-pv pv-type="Menu"
+                     pass-slot="Model.Slots">
+                <pv-slot slot="MenuSlot.Activator">
+                    <v-card pv-name="HeaderUserView"
+                            v-bind="props"
+                            class="col-auto text-center HeaderUserCard ms-2"
+                            hover
+                            variant="tonal"
+                            rounded="circle"
+                            href="@Model.GetSlotContent(HeaderSlot.ProfileUrl)">
+                        <i class="fa-solid fa-circle-user HeaderUserIcon"></i>
+                    </v-card>
+                </pv-slot>
+                <pv-slot slot="MenuSlot.Content">
+                    @ProfileMenu
+                </pv-slot>
+            </dtvl-pv>
+        </div>
     }
     else
     {

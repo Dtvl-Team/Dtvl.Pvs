@@ -4,7 +4,19 @@ class DtvlPvIniter {
     $PvStore;
     constructor() {
         this.$PvStore = 'pv';
+        this.UseShowOnMounted();
     }
+    //#region App
+    UseShowOnMounted() {
+        Model.WithMounted(() => {
+            let ShowItems = document.querySelectorAll('[class*="ShowOnMounted"]');
+            for (let Item of ShowItems) {
+                Item.classList.remove('ShowOnMounted');
+            }
+        });
+        return this;
+    }
+    //#endregion
     //#region Sidebar Method
     UseRouter(PvName, RouterData, Option) {
         let RouterDefaultStore = 'App.Router';

@@ -2,10 +2,11 @@
 
 @{
     Model.WithParentTag("v-list")
+        .AddParentAttr("v-show", "App.IsMounted")
         .AddParentAttr(new
         {
             density = "compact",
-            @class = "List"
+            @class = "List",
         });
 
     if (Model.HasSlot(InputSlot.SizeDefault))

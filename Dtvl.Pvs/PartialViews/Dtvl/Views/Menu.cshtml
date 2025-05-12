@@ -1,7 +1,11 @@
 ﻿@model PvOption<DtvlPvs>
 
 @{
-    Model.WithParentTag("v-menu");
+    Model.WithParentTag("v-menu")
+        .AddParentAttr(new
+        {
+            @class = "Menu"
+        });
 
     var Location = "bottom";
     var LocationDic = new Dictionary<MenuSlot, string>(){
