@@ -342,6 +342,7 @@ class DtvlPvIniter {
             TableStore.ButtonHeader ??= {};
             TableStore.ButtonHeader.title ??= '';
             TableStore.ButtonHeader.value ??= 'buttons';
+            TableStore.ButtonHeader.sortable = false;
             TableStore.Headers.push(TableStore.ButtonHeader);
         }
 

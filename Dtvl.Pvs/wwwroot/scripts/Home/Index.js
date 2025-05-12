@@ -21,8 +21,16 @@ Model.AddV_Click('Btn', () => {
 })
     .UpdateStore('App.UserName', UserName)
     .AddV_Text('HeaderUserName', 'App.UserName');
-console.warn();
 DtvlPv
+    .AddPv_DataTable('Table', {
+    Headers: [
+        {
+            title: 'a',
+        }
+    ],
+    HasButton: true,
+    Datas: [{}],
+})
     .AddPv_Input('MyInput', {
     Store: 'Test.MyA',
 })
