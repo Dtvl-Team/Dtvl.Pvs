@@ -36,8 +36,9 @@ public enum DtvlPvs
     DataTable,
     #endregion
 
-    #region Select
+    #region Items
     Select,
+    List,
     #endregion
 
     #region Checkbox
@@ -61,7 +62,8 @@ public enum DtvlPvs
     Tree,
     #endregion
 
-    #region Modal
+    #region Pop
+    Menu,
     Modal,
     SendModal,
     Alert,

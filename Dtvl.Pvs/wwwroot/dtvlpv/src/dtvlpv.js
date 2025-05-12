@@ -309,7 +309,8 @@ class DtvlPvIniter {
             ...Option,
             IsCalling: false,
         };
-        Model.UpdateStore(this.RootPath(PvName), StoreData);
+        Model.UpdateStore(this.RootPath(PvName), StoreData)
+            .AddStore(PvName);
         return this;
     }
     Modal(PvName, Option) {
@@ -437,9 +438,7 @@ class DtvlPvIniter {
         Option ??= {};
         Option.Store ??= Model.ToJoin(PvName);
         let PvStorePath = this.RootPath(PvName);
-        let Store = {
-            Clearable: true,
-        };
+        let Store = {};
         Model.UpdateStore(PvStorePath, Store);
         let ValuePath = this.RootPath(PvName, 'Value');
         Model.AddV_Model(PvName, ValuePath)
@@ -455,16 +454,14 @@ class DtvlPvIniter {
             else if (typeof (Option.ReadOnly) == 'boolean') {
                 Store.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
-                if (Option.ReadOnly == true) {
-                    Store.Clearable = false;
-                    Model.AddV_Bind(PvName, 'clearable', this.RootPath(PvName, 'Clearable'));
-                }
             }
             else if (typeof (Option.ReadOnly == 'string')) {
                 ReadOnlyPath = Option.ReadOnly;
             }
-            if (ReadOnlyPath != null)
+            if (ReadOnlyPath != null) {
                 Model.AddV_Bind(PvName, 'readonly', ReadOnlyPath);
+                Model.AddV_Bind(PvName, 'clearable', `!${ReadOnlyPath}`);
+            }
         }
         if (Option.Secure != null) {
             if (typeof (Option.Secure) == 'boolean') {

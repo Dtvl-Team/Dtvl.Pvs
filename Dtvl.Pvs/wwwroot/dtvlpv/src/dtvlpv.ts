@@ -123,7 +123,6 @@ type InputOption = {
 type InputStore = {
     Value?: any,
     ReadOnly?: boolean | ((Store?: InputStore) => boolean),
-    Clearable?: boolean | ((Store?: InputStore) => boolean),
     Secure?: {
         Securing: boolean,
     } & SecureOption,
@@ -521,7 +520,8 @@ class DtvlPvIniter {
             ...Option,
             IsCalling: false,
         };
-        Model.UpdateStore(this.RootPath(PvName), StoreData);
+        Model.UpdateStore(this.RootPath(PvName), StoreData)
+            .AddStore(PvName);
         return this;
     }
     public Modal(PvName: PathType, Option: boolean | SendModalStore) {
@@ -666,9 +666,7 @@ class DtvlPvIniter {
         Option.Store ??= Model.ToJoin(PvName);
 
         let PvStorePath = this.RootPath(PvName);
-        let Store: InputStore = {
-            Clearable: true,
-        };
+        let Store: InputStore = {};
         Model.UpdateStore(PvStorePath, Store);
 
         let ValuePath = this.RootPath(PvName, 'Value');
@@ -686,16 +684,14 @@ class DtvlPvIniter {
             else if (typeof (Option.ReadOnly) == 'boolean') {
                 Store.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
-                if (Option.ReadOnly == true) {
-                    Store.Clearable = false;
-                    Model.AddV_Bind(PvName, 'clearable', this.RootPath(PvName, 'Clearable'));
-                }
             } else if (typeof (Option.ReadOnly == 'string')) {
                 ReadOnlyPath = Option.ReadOnly;
             }
 
-            if (ReadOnlyPath != null)
+            if (ReadOnlyPath != null) {
                 Model.AddV_Bind(PvName, 'readonly', ReadOnlyPath);
+                Model.AddV_Bind(PvName, 'clearable', `!${ReadOnlyPath}`);
+            }
         }
         if (Option.Secure != null) {
             if (typeof (Option.Secure) == 'boolean') {

@@ -4,6 +4,8 @@
     {
         @class = "Header py-0 w-100 row align-items-center NotSelect"
     });
+
+
 }
 
 <section class="col-auto ms-3 HeaderBars Pointer"
@@ -36,15 +38,41 @@
         </div>
     </div>
 </a>
-
-<div class="col row justify-content-end px-4">
-    <v-card hover
-            variant="tonal"
-            rounded="circle"
-            class="col-auto text-center HeaderUserCard"
-            href="@Model.GetSlotContent(HeaderSlot.ProfileUrl)">
-        <img class="HeaderUserImage"
-             style="display:none;" />
-        <i class="fa-solid fa-circle-user HeaderUserIcon"></i>
-    </v-card>
+<div class="col row justify-content-end align-content-center align-items-center px-2">
+    @if (Model.TryGetSlotRender(HeaderSlot.ProfileStart, out var ProfileStartRender))
+    {
+        <div class="col-auto">
+            @ProfileStartRender
+        </div>
+    }
+    @if (Model.TryGetSlotRender(HeaderSlot.ProfileMenu, out var ProfileMenu))
+    {
+        <dtvl-pv pv-type="Menu" pass-slot="Model.Slots">
+            <pv-slot slot="MenuSlot.Activator">
+                <v-card pv-name="HeaderUserView"
+                        v-bind="props"
+                        class="col-auto text-center HeaderUserCard ms-2"
+                        hover
+                        variant="tonal"
+                        rounded="circle"
+                        href="@Model.GetSlotContent(HeaderSlot.ProfileUrl)">
+                    <i class="fa-solid fa-circle-user HeaderUserIcon"></i>
+                </v-card>
+            </pv-slot>
+            <pv-slot slot="MenuSlot.Content">
+                @ProfileMenu
+            </pv-slot>
+        </dtvl-pv>
+    }
+    else
+    {
+        <v-card pv-name="HeaderUserView"
+                class="col-auto text-center HeaderUserCard ms-2"
+                hover
+                variant="tonal"
+                rounded="circle"
+                href="@Model.GetSlotContent(HeaderSlot.ProfileUrl)">
+            <i class="fa-solid fa-circle-user HeaderUserIcon"></i>
+        </v-card>
+    }
 </div>

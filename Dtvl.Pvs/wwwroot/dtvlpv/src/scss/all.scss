@@ -28,6 +28,7 @@
 @import 'OverLayer.scss';
 @import 'TimePicker.scss';
 @import 'Collapse.scss';
+@import 'List.scss';
 
 :root {
     @extend --DefaultThemeVar;
@@ -50,9 +51,9 @@
     @extend --SkeletonLoaderVar;
     @extend --InputVar;
     @extend --TextareaVar;
+    @extend --SelectVar;
     @extend --InfoCardVar;
     @extend --TableColumnNumberInput;
-    @extend --SelectVar;
     @extend --RequiredTipVar;
     @extend --CheckboxVar;
     @extend --OverLayerVar;

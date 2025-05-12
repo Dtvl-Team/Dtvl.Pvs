@@ -1,6 +1,7 @@
 --InputVar {
     --Input-bg-color: var(--DefaultTheme-bg3);
     --Input-text-color: var(--DefaultTheme-text-color3);
+    --Input-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
 .Input {
@@ -12,12 +13,7 @@
 }
 
 .Input .v-label {
-    font-weight: bold;
-}
-
-.InputTitle {
-    font-size: 0.8rem;
-    font-weight: bold;
+    font-weight: var(--Input-label-font-weight);
 }
 
 .v-input__append {

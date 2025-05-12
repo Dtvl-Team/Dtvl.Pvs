@@ -1,10 +1,48 @@
 ﻿
 
+<v-menu>
+    <template v-slot:activator="{ props }">
+        <v-btn v-bind="props">123</v-btn>
+    </template>
+    <div class="bg-blue">
+        123
+    </div>
+</v-menu>
+
+<dtvl-pv pv-type="Menu">
+    <pv-slot slot="MenuSlot.Activator">
+        <v-btn v-bind="props">btn</v-btn>
+    </pv-slot>
+    <pv-slot slot="MenuSlot.Content">
+        <section class="bg-success">
+            <dtvl-pv pv-type="List">
+
+            </dtvl-pv>
+        </section>
+    </pv-slot>
+</dtvl-pv>
+
+
+
+
+@* <dtvl-pv pv-type="Menu">
+
+</dtvl-pv> *@
+
+@* 
+<dtvl-pv pv-type="Input">
+    <pv-slot slot="InputSlot.Label">AAA</pv-slot>
+</dtvl-pv>
+
 <dtvl-pv pv-type="Textarea"
          pv-name="MyInput">
     <pv-slot slot="TextAreaSlot.Label">123</pv-slot>
 </dtvl-pv>
 
+<dtvl-pv pv-type="Select">
+    <pv-slot slot="SelectSlot.Label">123</pv-slot>
+</dtvl-pv>
+ *@
 
 @* 
 <dtvl-pv pv-type="DataTable"

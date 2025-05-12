@@ -789,7 +789,7 @@ body {
   padding-right: var(--Card-padding-x);
 }
 
-.Card.v-card {
+.Card .v-card {
   background: var(--Card-bg);
 }
 
@@ -1169,6 +1169,7 @@ body {
 --InputVar, :root {
   --Input-bg-color: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
+  --Input-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
 .Input .v-field {
@@ -1177,12 +1178,7 @@ body {
 }
 
 .Input .v-label {
-  font-weight: bold;
-}
-
-.InputTitle {
-  font-size: 0.8rem;
-  font-weight: bold;
+  font-weight: var(--Input-label-font-weight);
 }
 
 .v-input__append {
@@ -1192,11 +1188,16 @@ body {
 --TextareaVar, :root {
   --Textarea-bg-color: var(--DefaultTheme-bg3);
   --Textarea-text-color: var(--DefaultTheme-text-color3);
+  --Textarea-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
 .Textarea .v-field {
   background-color: var(--Textarea-bg-color);
   color: var(--Textarea-text-color);
+}
+
+.Textarea .v-label {
+  font-weight: var(--Textarea-label-font-weight);
 }
 
 --InfoCardVar, :root {
@@ -1226,20 +1227,18 @@ body {
 }
 
 --SelectVar, :root {
-  --Select-bg: var(--DefaultTheme-bg);
+  --Select-bg-color: var(--DefaultTheme-bg);
+  --Select-text-color: var(--DefaultTheme-text-color3);
+  --Select-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
 .Select .v-field {
-  background: var(--Select-bg);
+  background-color: var(--Select-bg-color);
+  color: var(--Select-text-color);
 }
 
 .Select .v-label {
-  font-weight: bold;
-}
-
-.SelectTitle {
-  font-size: 0.8rem;
-  font-weight: bold;
+  font-weight: var(--Select-label-font-weight);
 }
 
 --RequiredTipVar, :root {
@@ -1299,4 +1298,8 @@ body {
 
 --CollapseVar, :root {
   --Collapse-animation-duration: 500ms;
+}
+
+.List {
+  padding: 0;
 }

@@ -2,6 +2,8 @@
 import { DtvlPv } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
 
+let UserName = 'Rugal';
+
 Model.AddV_Click('Btn', () => {
 
     //DtvlPv.AddPv_AnimatePush('View', {
@@ -23,10 +25,24 @@ Model.AddV_Click('Btn', () => {
     //    fill: 'forwards',
     //});
 })
+    .UpdateStore('App.UserName', UserName)
+    .AddV_Text('HeaderUserName', 'App.UserName');
+
+
+
+
+
 console.warn()
 
-DtvlPv.AddPv_Input('MyInput', {
-    Store: 'Test.MyA',
-})
- 
+DtvlPv
+    .AddPv_Input('MyInput', {
+        Store: 'Test.MyA',
+    })
+    .AddPv_Select('Select', {
+        Datas: [1, 2, 3, 4]
+    })
+
+
+
+
 

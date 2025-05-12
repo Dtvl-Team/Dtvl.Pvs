@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Rugal.PartialViewRender.Models
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -24,11 +25,27 @@
     <script type="module" src="~/app/setup.js"></script>
 
     <dtvl-pv pv-type="App" app id="app">
+        @{
+            var ListDatas = new List<PvListItem>()
+        {
+        new PvListItem("登出") { PvName = "UserLogout" }
+        };
+        }
         @if (ViewBag.HiddenLayout == null)
         {
             <pv-slot slot="AppSlot.Header">
                 <dtvl-pv pv-type="Header">
                     <pv-slot slot="HeaderSlot.Title"></pv-slot>
+                    <pv-slot slot="HeaderSlot.ProfileStart">
+                        <div class="col-auto Fw-2"
+                             pv-name="HeaderUserName">
+                        </div>
+                    </pv-slot>
+                    <pv-slot slot="HeaderSlot.ProfileMenu">
+                        <dtvl-pv pv-type="List" class="px-5">
+                            <pv-slot slot="ListSlot.Datas" pass-data="ListDatas"></pv-slot>
+                        </dtvl-pv>
+                    </pv-slot>
                 </dtvl-pv>
             </pv-slot>
 

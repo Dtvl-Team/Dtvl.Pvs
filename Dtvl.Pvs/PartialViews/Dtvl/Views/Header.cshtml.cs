@@ -6,5 +6,9 @@ public enum HeaderSlot
     ImageUrl,
     Title,
     RouteUrl,
+
+
     ProfileUrl,
+    ProfileStart,
+    ProfileMenu,
 }
