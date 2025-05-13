@@ -1,80 +1,15 @@
-﻿
+﻿Home-Index
 
-<dtvl-pv pv-type="Select">
-    <pv-slot slot="SelectSlot.Label">123</pv-slot>
-</dtvl-pv>
-<dtvl-pv pv-type="Input">
-    <pv-slot slot="SelectSlot.Label">123</pv-slot>
-</dtvl-pv>
-
-
-
-@* 
-<dtvl-pv pv-type="Menu">
-    <pv-slot slot="MenuSlot.Activator">
-        <v-btn v-bind="props">btn</v-btn>
-    </pv-slot>
-    <pv-slot slot="MenuSlot.Content">
-        <dtvl-pv pv-type="List"
-                 class="bg-success">
-            @{
-                var Datas = new List<PvListItem>();
-                Datas.Add(new PvListItem("A"));
-            }
-            <pv-slot slot="ListSlot.Datas"
-                     pass-data="Datas"></pv-slot>
-        </dtvl-pv>
+<dtvl-pv pv-type="Modal"
+         pv-name="SendModal">
+    <pv-slot slot="SendModalSlot.Content">
+        123
     </pv-slot>
 </dtvl-pv>
-<dtvl-pv pv-type="DataTable"
-         pv-name="Table">
-    <pv-slot slot="DataTableSlot.Buttons">
-        <dtvl-pv pv-type="Btn">
-            <pv-slot slot="BtnSlot.Content">123</pv-slot>
-        </dtvl-pv>
-    </pv-slot>
-</dtvl-pv>
-*@
 
-@*
-<dtvl-pv pv-type="Menu">
+<dtvl-pv pv-type="Btn">
+    <pv-slot slot="BtnSlot.Content">123</pv-slot>
 </dtvl-pv>
-*@
 
-@* 
-<dtvl-pv pv-type="Input">
-    <pv-slot slot="InputSlot.Label">AAA</pv-slot>
-</dtvl-pv>
-<dtvl-pv pv-type="Textarea"
-         pv-name="MyInput">
-    <pv-slot slot="TextAreaSlot.Label">123</pv-slot>
-</dtvl-pv>
-<dtvl-pv pv-type="Select">
-    <pv-slot slot="SelectSlot.Label">123</pv-slot>
-</dtvl-pv>
-*@
-
-@*
-<dtvl-pv pv-type="DataTable"
-         pv-name="Table">
-</dtvl-pv>
-*@
-
-@* 
-<div pv-name="Page">
-    <div class="row">
-        <div pv-name="LeftView"
-             class="col bg-success">
-            <dtvl-pv pv-type="Btn"
-                     pv-name="Btn">
-            </dtvl-pv>
-        </div>
-        <div class="col-3 bg-danger"
-             pv-name="View">
-            123
-        </div>
-    </div>
-</div>
-*@
 
 <script type="module" src="~/scripts/Home/Index.js" asp-append-version="true"></script>

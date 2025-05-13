@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Dtvl.Pvs.Controllers
 {
-    public class HomeController : Controller
+    public class ProfileController : Controller
     {
         public IActionResult Index()
         {

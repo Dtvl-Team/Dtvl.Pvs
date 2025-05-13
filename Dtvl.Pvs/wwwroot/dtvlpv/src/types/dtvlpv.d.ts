@@ -3,12 +3,12 @@ export type SidebarItemSet = {
     title: string;
     icon?: string;
     children?: SidebarItemSet[];
-    href?: string;
+    href?: string | string[];
     show?: () => boolean;
     clicked?: Function;
 };
 export type SidebarOption = {
-    openAll?: boolean;
+    OpenMode?: 'current' | 'all' | 'single';
 };
 export type DataTableHeader = {
     title?: string;
@@ -78,7 +78,6 @@ type InputOption = {
 type InputStore = {
     Value?: any;
     ReadOnly?: boolean | ((Store?: InputStore) => boolean);
-    Clearable?: boolean | ((Store?: InputStore) => boolean);
     Secure?: {
         Securing: boolean;
     } & SecureOption;
@@ -105,6 +104,7 @@ type PushAnimateOption = {
 declare class DtvlPvIniter {
     protected $PvStore: string;
     constructor();
+    UseShowOnMounted(): this;
     UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
     private $InitSidebar;
     private $CreateSidebar;

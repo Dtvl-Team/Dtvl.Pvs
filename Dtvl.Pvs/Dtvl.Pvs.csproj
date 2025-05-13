@@ -29,6 +29,8 @@
     <Folder Include="wwwroot\dtvlpv\dist\js\" />
     <Folder Include="wwwroot\dtvlpv\src\types\" />
     <Folder Include="wwwroot\scripts\Home\" />
+    <Folder Include="wwwroot\scripts\Project\" />
+    <Folder Include="wwwroot\scripts\Profile\" />
   </ItemGroup>
 
   <ItemGroup>

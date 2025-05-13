@@ -25,28 +25,39 @@ class DtvlPvIniter {
     }
     $InitSidebar(PvName, StorePath, RouterData, Option) {
         Option ??= {};
+        Option.OpenMode ??= 'current';
         let RouterList = [];
         let RouterDatas = this.$CreateSidebar(RouterData, RouterList);
         let CurrentPath = document.location.pathname;
-        let FindRouter = RouterList.find(Item => Item.href != null && Item.href.toLowerCase() == CurrentPath.toLowerCase());
-        let CurrentRouter = [];
-        if (FindRouter != null) {
-            if (FindRouter != null) {
-                while (FindRouter) {
-                    CurrentRouter.push(FindRouter);
-                    FindRouter = FindRouter.parent;
+        let FindCurrentRouter = RouterList.find(Item => {
+            if (Item.href == null)
+                return false;
+            if (typeof (Item.href) == 'string')
+                return Item.href.toLowerCase() == CurrentPath.toLowerCase();
+            let GetHref = Item.href.find(Val => Val.toLowerCase() == CurrentPath.toLowerCase());
+            return GetHref != null;
+        });
+        let CurrentRouters = [];
+        if (FindCurrentRouter != null) {
+            if (FindCurrentRouter != null) {
+                while (FindCurrentRouter) {
+                    CurrentRouters.push(FindCurrentRouter);
+                    FindCurrentRouter = FindCurrentRouter.parent;
                 }
-                CurrentRouter = CurrentRouter.reverse();
+                CurrentRouters = CurrentRouters.reverse();
             }
-            CurrentRouter.forEach(Item => Item.isSelect = true);
+            CurrentRouters.forEach(Item => Item.isSelect = true);
         }
-        let OpenRotuer = Option.openAll ? RouterList : CurrentRouter;
+        let OpenRotuer = CurrentRouters;
+        if (Option.OpenMode == 'all')
+            OpenRotuer = RouterList;
         let RouterStoreData = {
+            OpenMode: Option.OpenMode,
             IsMobileOpen: false,
             IsShow: true,
-            List: RouterList,
-            Datas: RouterDatas,
-            Current: CurrentRouter,
+            Source: RouterDatas,
+            Current: CurrentRouters,
+            RouterList: RouterList,
             OpenIds: OpenRotuer.map(Item => Item.id),
             Click: (Item, event) => {
                 if (Item == null)
@@ -54,6 +65,8 @@ class DtvlPvIniter {
                 let GoPath = Item.href;
                 if (GoPath == null)
                     return;
+                if (Array.isArray(GoPath) && GoPath.length > 0)
+                    GoPath = GoPath[0];
                 let HasCtrlKey = event.ctrlKey;
                 if (HasCtrlKey) {
                     Model.NavigateBlank(GoPath);
@@ -62,6 +75,16 @@ class DtvlPvIniter {
                 if (GoPath == CurrentPath)
                     return;
                 Model.NavigateTo(GoPath);
+            },
+            GroupClick: (Item) => {
+                let RouterStore = Model.GetStore('App.Router');
+                if (RouterStore == null)
+                    return;
+                if (RouterStore.OpenMode != 'single')
+                    return;
+                if (Item == null || Item.value == false)
+                    return;
+                RouterStore.OpenIds.splice(0, RouterStore.OpenIds.length);
             },
             MobileOpen: () => {
                 let TargetPaths = Model.Paths(StorePath, 'IsMobileOpen');
@@ -113,11 +136,12 @@ class DtvlPvIniter {
             }
         };
         Model.AddV_Tree(SidebarTreePath, {
-            'v-bind:items': `${StorePath}?.Datas ?? []`,
+            'v-bind:items': `${StorePath}?.Source ?? []`,
             'v-on:update:activated': `${StorePath}?.Click`,
+            'v-on:click:open': `${StorePath}?.GroupClick`,
             'v-model:opened': `${StorePath}.OpenIds`,
             ':SidebarContent': {
-                'v-for': `${StorePath}?.Datas ?? []`,
+                'v-for': `${StorePath}?.Source ?? []`,
             },
             ':SidebarGroup': {
                 'v-if': 'item.children && item.children.length > 0 && item.children.every(val => val.show && val.show())',
@@ -190,7 +214,7 @@ class DtvlPvIniter {
             }
         }
         Model.AddV_Tree(PvName, {
-            "v-bind:items": this.RootPath(PvName, 'Datas'),
+            'v-bind:items': this.RootPath(PvName, 'Datas'),
             'v-bind:headers': this.RootPath(PvName, 'Headers'),
         });
         return this;
@@ -302,13 +326,13 @@ class DtvlPvIniter {
             });
         Model.AddV_Tree(PvName, {
             ':BtnCancel': {
-                "v-on:click": (event) => {
+                'v-on:click': (event) => {
                     let ModalStore = Model.GetStore(this.RootPath(PvName));
                     ModalStore.BtnCancel(ModalStore, event);
                 }
             },
             ':Title': {
-                "v-text": this.RootPath(PvName, 'Title'),
+                'v-text': this.RootPath(PvName, 'Title'),
             },
         });
         if (!Option.Title) {

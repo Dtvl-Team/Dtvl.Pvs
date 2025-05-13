@@ -518,11 +518,32 @@ body {
   --Sidebar-Layer-padding-3: 0 0.5rem 0 2rem;
   --Sidebar-Layer-padding-4: 0 0.5rem 0 2.5rem;
   --Sidebar-Layer-padding-5: 0 0.5rem 0 3rem;
+  --Sidebar-Layer-bg-1: var(--Sidebar-bg);
+  --Sidebar-Layer-bg-2: var(--Sidebar-bg);
+  --Sidebar-Layer-bg-3: var(--Sidebar-bg);
+  --Sidebar-Layer-bg-4: var(--Sidebar-bg);
+  --Sidebar-Layer-bg-5: var(--Sidebar-bg);
+  --Sidebar-Layer-text-color-1: var(--Sidebar-text-color);
+  --Sidebar-Layer-text-color-2: var(--Sidebar-text-color);
+  --Sidebar-Layer-text-color-3: var(--Sidebar-text-color);
+  --Sidebar-Layer-text-color-4: var(--Sidebar-text-color);
+  --Sidebar-Layer-text-color-5: var(--Sidebar-text-color);
+  --Sidebar-Layer-Select-bg-1: var(--Sidebar-Select-bg);
+  --Sidebar-Layer-Select-bg-2: var(--Sidebar-Select-bg);
+  --Sidebar-Layer-Select-bg-3: var(--Sidebar-Select-bg);
+  --Sidebar-Layer-Select-bg-4: var(--Sidebar-Select-bg);
+  --Sidebar-Layer-Select-bg-5: var(--Sidebar-Select-bg);
+  --Sidebar-Layer-Select-text-color-1: var(--Sidebar-Select-text-color);
+  --Sidebar-Layer-Select-text-color-2: var(--Sidebar-Select-text-color);
+  --Sidebar-Layer-Select-text-color-3: var(--Sidebar-Select-text-color);
+  --Sidebar-Layer-Select-text-color-4: var(--Sidebar-Select-text-color);
+  --Sidebar-Layer-Select-text-color-5: var(--Sidebar-Select-text-color);
   --Sidebar-Icon-font-size: var(--DefaultTheme-font-size);
 }
 
 .Sidebar {
   background: var(--Sidebar-bg);
+  color: var(--Sidebar-text-color);
   padding-bottom: var(--Sidebar-padding-bottom);
   overflow-y: scroll;
   overflow-x: hidden;
@@ -531,9 +552,18 @@ body {
   border-bottom: 0px;
   border-left: var(--Sidebar-border-width) solid var(--DefaultTheme-border-color);
   border-right: var(--Sidebar-border-width) solid var(--DefaultTheme-border-color);
-  color: var(--Sidebar-text-color);
   z-index: 600;
   position: fixed;
+}
+
+.Sidebar .v-list {
+  background-color: var(--Sidebar-bg);
+  color: var(--Sidebar-text-color);
+}
+
+.SidebarSelect {
+  background: var(--Sidebar-Select-bg);
+  color: var(--Sidebar-Select-text-color);
 }
 
 .Sidebar-Block {
@@ -634,11 +664,6 @@ body {
   margin: 10px 0;
 }
 
-.Sidebar .v-list {
-  background-color: var(--Sidebar-bg);
-  color: var(--Sidebar-text-color);
-}
-
 .SidebarFooter {
   width: inherit;
   overflow-y: scroll;
@@ -647,11 +672,6 @@ body {
 
 .SidebarFooter::-webkit-scrollbar {
   display: none;
-}
-
-.SidebarSelect {
-  background: var(--Sidebar-Select-bg);
-  color: var(--Sidebar-Select-text-color);
 }
 
 .SidebarIcon {
@@ -681,6 +701,56 @@ body {
 
 .Sidebar-Layer-5 .v-list-item {
   padding: var(--Sidebar-Layer-padding-5) !important;
+}
+
+.Sidebar-Layer-1 .v-list-item {
+  background: var(--Sidebar-Layer-bg-1);
+  color: var(--Sidebar-Layer-text-color-1);
+}
+
+.Sidebar-Layer-2 .v-list-item {
+  background: var(--Sidebar-Layer-bg-2);
+  color: var(--Sidebar-Layer-text-color-2);
+}
+
+.Sidebar-Layer-3 .v-list-item {
+  background: var(--Sidebar-Layer-bg-3);
+  color: var(--Sidebar-Layer-text-color-3);
+}
+
+.Sidebar-Layer-4 .v-list-item {
+  background: var(--Sidebar-Layer-bg-4);
+  color: var(--Sidebar-Layer-text-color-4);
+}
+
+.Sidebar-Layer-5 .v-list-item {
+  background: var(--Sidebar-Layer-bg-5);
+  color: var(--Sidebar-Layer-text-color-5);
+}
+
+.Sidebar-Layer-1 .SidebarSelect.v-list-item {
+  background: var(--Sidebar-Layer-Select-bg-1);
+  color: var(--Sidebar-Layer-Select-text-color-1);
+}
+
+.Sidebar-Layer-2 .SidebarSelect.v-list-item {
+  background: var(--Sidebar-Layer-Select-bg-2);
+  color: var(--Sidebar-Layer-Select-text-color-2);
+}
+
+.Sidebar-Layer-3 .SidebarSelect.v-list-item {
+  background: var(--Sidebar-Layer-Select-bg-3);
+  color: var(--Sidebar-Layer-Select-text-color-3);
+}
+
+.Sidebar-Layer-4 .SidebarSelect.v-list-item {
+  background: var(--Sidebar-Layer-Select-bg-4);
+  color: var(--Sidebar-Layer-Select-text-color-4);
+}
+
+.Sidebar-Layer-5 .SidebarSelect.v-list-item {
+  background: var(--Sidebar-Layer-Select-bg-5);
+  color: var(--Sidebar-Layer-Select-text-color-5);
 }
 
 --BreadVar, :root {

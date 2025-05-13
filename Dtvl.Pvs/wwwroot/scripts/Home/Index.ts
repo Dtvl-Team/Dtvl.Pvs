@@ -2,48 +2,33 @@
 import { DtvlPv } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
 
+DtvlPv.AddPv_SendModal('SendModal');
+
 let UserName = 'Rugal';
 
-Model.AddV_Click('Btn', () => {
-
-    //DtvlPv.AddPv_AnimatePush('View', {
-    //    PositionFrom: 'Right',
-    //});
-
-    //LeftView.animate([
-    //    { right: '0px' },
-    //    { right: '-100px' },
-    //],)
-
-    //View.animate([
-    //    { width: '25%' },
-    //    { width: '1%' },
-    //], {
-    //    duration: 500,
-    //    easing: 'ease-in-out',
-    //    iterations: 1,
-    //    fill: 'forwards',
-    //});
-})
+Model
+    .AddV_Click('Btn', () => {
+        DtvlPv.Modal('SendModal', true);
+    })
     .UpdateStore('App.UserName', UserName)
     .AddV_Text('HeaderUserName', 'App.UserName');
 
-DtvlPv
-    .AddPv_DataTable('Table', {
-        Headers: [
-            {
-                title: 'a',
-            }
-        ],
-        HasButton: true,
-        Datas: [{}],
-    })
-    .AddPv_Input('MyInput', {
-        Store: 'Test.MyA',
-    })
-    .AddPv_Select('Select', {
-        Datas: [1, 2, 3, 4]
-    })
+//DtvlPv
+//    .AddPv_DataTable('Table', {
+//        Headers: [
+//            {
+//                title: 'a',
+//            }
+//        ],
+//        HasButton: true,
+//        Datas: [{}],
+//    })
+//    .AddPv_Input('MyInput', {
+//        Store: 'Test.MyA',
+//    })
+//    .AddPv_Select('Select', {
+//        Datas: [1, 2, 3, 4]
+//    })
 
 
 

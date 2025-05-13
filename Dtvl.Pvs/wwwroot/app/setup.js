@@ -11,34 +11,54 @@ Model.WithVueUse(VuetifyInit)
     .WithQueryDomName('pv-name');
 DtvlPv.UseRouter('Router', [
     {
-        title: 'AAA',
+        title: 'Home',
+        icon: 'fa-solid fa-house',
+        children: [
+            {
+                title: 'Index',
+                href: ['/Home/Index', '/'],
+                icon: 'fa-solid fa-house',
+            },
+            {
+                title: 'Detail',
+                href: '/Home/Detail',
+                icon: 'fa-solid fa-house',
+            }
+        ],
+    },
+    {
+        title: 'Profile',
         icon: 'fa-solid fa-user',
         children: [
             {
-                title: 'BBB',
-                icon: 'fa-solid fa-house',
-                href: '/Home/Index',
-                children: [
-                    {
-                        title: 'EEE',
-                        icon: 'fa-solid fa-house',
-                        href: '/Home/Index',
-                        children: [
-                            {
-                                show: () => false,
-                                title: 'FFF',
-                                icon: 'fa-solid fa-house',
-                                href: '/Home/Index',
-                            }
-                        ]
-                    }
-                ]
+                title: 'Index',
+                href: '/Profile/Index',
+                icon: 'fa-solid fa-user',
             },
-            //{
-            //    title: 'CCC',
-            //    href: '/',
-            //},
-        ]
-    }
-], { openAll: true });
+            {
+                title: 'Detail',
+                href: '/Profile/Detail',
+                icon: 'fa-solid fa-user',
+            }
+        ],
+    },
+    {
+        title: 'Project',
+        icon: 'fa-solid fa-diagram-project',
+        children: [
+            {
+                title: 'Index',
+                href: '/Project/Index',
+                icon: 'fa-solid fa-diagram-project',
+            },
+            {
+                title: 'Detail',
+                href: '/Project/Detail',
+                icon: 'fa-solid fa-diagram-project',
+            }
+        ],
+    },
+], {
+    OpenMode: 'single',
+});
 //# sourceMappingURL=setup.js.map
