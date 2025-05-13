@@ -323,7 +323,7 @@ class DtvlPvIniter {
             IsCalling: false,
         };
         Model.UpdateStore(this.RootPath(PvName), StoreData)
-            .AddStore(PvName);
+            .AddStore(PvName, {});
         return this;
     }
     Modal(PvName, Option) {

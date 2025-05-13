@@ -1,9 +1,13 @@
 ﻿
+
 <dtvl-pv pv-type="Select">
+    <pv-slot slot="SelectSlot.Label">123</pv-slot>
 </dtvl-pv>
 <dtvl-pv pv-type="Input">
-
+    <pv-slot slot="SelectSlot.Label">123</pv-slot>
 </dtvl-pv>
+
+
 
 @* 
 <dtvl-pv pv-type="Menu">
@@ -22,7 +26,6 @@
         </dtvl-pv>
     </pv-slot>
 </dtvl-pv>
-
 <dtvl-pv pv-type="DataTable"
          pv-name="Table">
     <pv-slot slot="DataTableSlot.Buttons">
@@ -31,37 +34,31 @@
         </dtvl-pv>
     </pv-slot>
 </dtvl-pv>
- *@
+*@
 
-
-
-
-
-
-@* <dtvl-pv pv-type="Menu">
-
-</dtvl-pv> *@
+@*
+<dtvl-pv pv-type="Menu">
+</dtvl-pv>
+*@
 
 @* 
 <dtvl-pv pv-type="Input">
     <pv-slot slot="InputSlot.Label">AAA</pv-slot>
 </dtvl-pv>
-
 <dtvl-pv pv-type="Textarea"
          pv-name="MyInput">
     <pv-slot slot="TextAreaSlot.Label">123</pv-slot>
 </dtvl-pv>
-
 <dtvl-pv pv-type="Select">
     <pv-slot slot="SelectSlot.Label">123</pv-slot>
 </dtvl-pv>
- *@
+*@
 
-@* 
+@*
 <dtvl-pv pv-type="DataTable"
          pv-name="Table">
-
-</dtvl-pv> *@
+</dtvl-pv>
+*@
 
 @* 
 <div pv-name="Page">
@@ -70,16 +67,14 @@
              class="col bg-success">
             <dtvl-pv pv-type="Btn"
                      pv-name="Btn">
-
             </dtvl-pv>
         </div>
-
         <div class="col-3 bg-danger"
              pv-name="View">
             123
         </div>
     </div>
 </div>
- *@
+*@
 
 <script type="module" src="~/scripts/Home/Index.js" asp-append-version="true"></script>
