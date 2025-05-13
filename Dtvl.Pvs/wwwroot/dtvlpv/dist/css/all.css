@@ -1229,7 +1229,7 @@ body {
 
 --SelectVar, :root {
   --Select-bg: var(--DefaultTheme-bg3);
-  --Select-text-color: var(--DefaultTheme-text-color2);
+  --Select-text-color: var(--DefaultTheme-text-color3);
   --Select-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
