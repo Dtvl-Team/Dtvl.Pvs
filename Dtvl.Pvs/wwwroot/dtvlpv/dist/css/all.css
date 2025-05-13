@@ -1168,13 +1168,13 @@ body {
 }
 
 --InputVar, :root {
-  --Input-bg-color: var(--DefaultTheme-bg3);
+  --Input-bg: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
   --Input-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
 .Input .v-field {
-  background-color: var(--Input-bg-color);
+  background-color: var(--Input-bg);
   color: var(--Input-text-color);
 }
 
@@ -1187,13 +1187,13 @@ body {
 }
 
 --TextareaVar, :root {
-  --Textarea-bg-color: var(--DefaultTheme-bg3);
+  --Textarea-bg: var(--DefaultTheme-bg3);
   --Textarea-text-color: var(--DefaultTheme-text-color3);
   --Textarea-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
 .Textarea .v-field {
-  background-color: var(--Textarea-bg-color);
+  background-color: var(--Textarea-bg);
   color: var(--Textarea-text-color);
 }
 
@@ -1228,13 +1228,18 @@ body {
 }
 
 --SelectVar, :root {
-  --Select-bg-color: var(--DefaultTheme-bg);
-  --Select-text-color: var(--DefaultTheme-text-color3);
+  --Select-bg: var(--DefaultTheme-bg3);
+  --Select-text-color: var(--DefaultTheme-text-color2);
   --Select-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
+.v-menu > .v-autocomplete__content > .v-list {
+  background: var(--Select-bg);
+  color: var(--Select-text-color);
+}
+
 .Select .v-field {
-  background-color: var(--Select-bg-color);
+  background-color: var(--Select-bg);
   color: var(--Select-text-color);
 }
 
@@ -1314,7 +1319,7 @@ body {
   padding: 0;
 }
 
-.v-menu > .v-overlay__content > .v-list {
+.v-menu > .v-overlay__content > .List.v-list {
   background: var(--List-bg);
   color: var(--List-text-color);
 }

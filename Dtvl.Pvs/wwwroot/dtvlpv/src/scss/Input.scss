@@ -1,5 +1,5 @@
 --InputVar {
-    --Input-bg-color: var(--DefaultTheme-bg3);
+    --Input-bg: var(--DefaultTheme-bg3);
     --Input-text-color: var(--DefaultTheme-text-color3);
     --Input-label-font-weight: var(--DefaultTheme-font-weight);
 }
@@ -8,7 +8,7 @@
 }
 
 .Input .v-field {
-    background-color: var(--Input-bg-color);
+    background-color: var(--Input-bg);
     color: var(--Input-text-color);
 }
 

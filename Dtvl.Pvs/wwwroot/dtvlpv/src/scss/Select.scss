@@ -1,14 +1,19 @@
 --SelectVar {
-    --Select-bg-color: var(--DefaultTheme-bg);
-    --Select-text-color: var(--DefaultTheme-text-color3);
+    --Select-bg: var(--DefaultTheme-bg3);
+    --Select-text-color: var(--DefaultTheme-text-color2);
     --Select-label-font-weight: var(--DefaultTheme-font-weight);
 }
 
 .Select {
 }
 
+.v-menu > .v-autocomplete__content > .v-list {
+    background: var(--Select-bg);
+    color: var(--Select-text-color);
+}
+
 .Select .v-field {
-    background-color: var(--Select-bg-color);
+    background-color: var(--Select-bg);
     color: var(--Select-text-color);
 }
 
