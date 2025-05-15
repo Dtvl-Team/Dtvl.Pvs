@@ -2,14 +2,52 @@
 
 <dtvl-pv pv-type="Modal"
          pv-name="SendModal">
-    <pv-slot slot="SendModalSlot.Content">
+    <div class="bg-success">
         123
-    </pv-slot>
+    </div>
+    <pv-slot slot="ModalSlot.CenterHeader">333</pv-slot>
 </dtvl-pv>
 
 <dtvl-pv pv-type="Btn">
-    <pv-slot slot="BtnSlot.Content">123</pv-slot>
+    123
 </dtvl-pv>
 
+<dtvl-pv pv-type="Tabbed">
+    @* <pv-slot slot="TabbedSlot.TabsCenter"></pv-slot> *@
+    @* <pv-slot slot="TabbedSlot.TabsStacked"></pv-slot> *@
+    <pv-slot slot="TabbedSlot.Tabs">
+        <dtvl-pv pv-type="Tab">
+            <pv-slot slot="TabSlot.PrependIcon">fa-solid fa-house</pv-slot>
+            <pv-slot slot="TabSlot.Content">
+                首頁
+            </pv-slot>
+        </dtvl-pv>
+        <dtvl-pv pv-type="Tab">
+            <pv-slot slot="TabSlot.PrependIcon">fa-solid fa-user</pv-slot>
+            <pv-slot slot="TabSlot.Content">
+                <span>人員資料</span>
+            </pv-slot>
+        </dtvl-pv>
+    </pv-slot>
+
+    <pv-slot slot="TabbedSlot.Contents">
+        <dtvl-pv pv-type="TabContent">
+            <pv-slot slot="TabContentSlot.Content">
+                <div class="row p-2">
+                    <div class="col">123</div>
+                    <div class="col">123</div>
+                    <div class="col">123</div>
+                    <div class="col">123</div>
+                </div>
+            </pv-slot>
+        </dtvl-pv>
+
+        <dtvl-pv pv-type="TabContent">
+            <pv-slot slot="TabContentSlot.Content">
+                bbb
+            </pv-slot>
+        </dtvl-pv>
+    </pv-slot>
+</dtvl-pv>
 
 <script type="module" src="~/scripts/Home/Index.js" asp-append-version="true"></script>

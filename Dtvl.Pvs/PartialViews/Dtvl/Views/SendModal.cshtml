@@ -1,6 +1,8 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-    Model.FillSlot(SendModalSlot.BtnSendContent, "確認送出");
+    Model
+        .FillSlotFromDefault(SendModalSlot.Content)
+        .FillSlot(SendModalSlot.BtnSendContent, "確認送出");
 }
 
 @if (!Model.HasSlot(SendModalSlot.BtnCancel))

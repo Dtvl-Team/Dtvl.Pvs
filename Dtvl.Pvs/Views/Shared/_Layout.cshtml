@@ -26,10 +26,7 @@
 
     <dtvl-pv pv-type="App" app id="app">
         @{
-            var ListDatas = new List<PvListItem>()
-        {
-        new PvListItem("登出") { PvName = "UserLogout" }
-        };
+            var ListDatas = new List<PvListItem>() { new PvListItem("UserLogout", "登出") };
         }
         @if (ViewBag.HiddenLayout == null)
         {

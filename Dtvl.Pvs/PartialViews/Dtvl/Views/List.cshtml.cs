@@ -11,11 +11,12 @@ public enum ListSlot
 
 public class PvListItem
 {
+    public string PvName { get; set; }
     public string Title { get; set; }
     public string Href { get; set; }
-    public string PvName { get; set; }
-    public PvListItem(string Title, string Href = null)
+    public PvListItem(string PvName, string Title, string Href = null)
     {
+        this.PvName = PvName;
         this.Title = Title;
         this.Href = Href;
     }

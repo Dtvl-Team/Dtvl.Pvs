@@ -98,6 +98,13 @@ type DatePickerOption = {
     ValueStore?: string;
     IsOpen?: boolean;
 };
+type TabbedOption = {
+    Tabs: TabsOption[];
+};
+type TabsOption = {
+    Id?: string;
+    Title: string;
+};
 type PushAnimateOption = {
     PositionFrom: 'Left' | 'Right';
 };
@@ -122,6 +129,7 @@ declare class DtvlPvIniter {
     AddPv_Input(PvName: PathType, Option?: InputOption): this;
     AddPv_Select(PvName: PathType, Option?: SelectOption): this;
     AddPv_DatePicker(PvName: PathType, Option?: DatePickerOption): this;
+    AddPv_Tabbed(PvName: PathType, Option?: TabbedOption): this;
     AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption): void;
     Animate(PvName: PathType): void;
     protected RootPath(...PushPath: PathType[]): string[];

@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-dialog")
+        .FillSlotFromDefault(ModalSlot.Content)
         .AddParentAttr("scroll-strategy", "none")
         .AddParentAttr(new
         {

@@ -30,6 +30,7 @@
 @import 'Collapse.scss';
 @import 'List.scss';
 @import 'Menu.scss';
+@import 'Tabbed.scss';
 
 :root {
     @extend --DefaultThemeVar;
@@ -62,4 +63,5 @@
     @extend --CollapseVar;
     @extend --MenuVar;
     @extend --ListVar;
+    @extend --TabbedVar;
 }

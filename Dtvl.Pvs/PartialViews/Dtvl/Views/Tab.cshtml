@@ -1,0 +1,28 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-tab")
+        .FillSlotFromDefault(TabSlot.Content)
+        .AddParentAttr(new
+        {
+            @class = "Tab",
+        });
+
+    if (Model.TryGetSlotContent(TabSlot.Value, out var Value))
+        Model.AddParentAttr("value", Value);
+}
+
+@if (Model.TryGetSlotContent(TabSlot.PrependIcon, out var PreependIcon))
+{
+    <i class="@PreependIcon TabIcon"></i>
+}
+
+@if (Model.TryGetSlotRender(TabSlot.Content, out var ContentRender))
+{
+    @ContentRender
+}
+
+@if (Model.TryGetSlotContent(TabSlot.AppendIcon, out var AppendIcon))
+{
+    <i class="@AppendIcon TabIcon"></i>
+}

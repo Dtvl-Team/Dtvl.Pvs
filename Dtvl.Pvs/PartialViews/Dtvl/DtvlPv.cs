@@ -28,6 +28,12 @@ public enum DtvlPvs
     Collapse,
     #endregion
 
+    #region Tabbed
+    Tabbed,
+    Tab,
+    TabContent,
+    #endregion
+
     #region Btn
     Btn,
     #endregion

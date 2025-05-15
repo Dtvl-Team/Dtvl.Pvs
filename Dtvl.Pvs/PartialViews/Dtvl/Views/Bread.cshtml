@@ -11,7 +11,7 @@
 <section class="col-auto row">
     <div class="col-auto me-2 BreadcrumbItem" v-for="(item, index) in App.Router?.Current ?? []">
         <a style="text-decoration:none;"
-           v-on:click="App.Router.Click(item)"
+           v-on:click="App.Router.Click(item, $event)"
            class="BreadcrumbText">
             <i v-if="item.icon" v-bind:class="item.icon" class="me-2"></i>
             <span class="Pointer" v-text="item.title"></span>

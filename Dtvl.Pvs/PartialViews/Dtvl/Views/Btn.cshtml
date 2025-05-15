@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-btn")
+        .FillSlotFromDefault(BtnSlot.Content)
         .AddParentAttr(new
         {
             @class = "Btn",

@@ -1,0 +1,62 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model.AddParentAttr(new
+    {
+        @class = "Tabbed",
+    });
+
+    var IsTabsStart = Model.HasSlot(TabbedSlot.TabsStart);
+    var IsTabsCenter = Model.HasSlot(TabbedSlot.TabsCenter);
+    var IsTabsEnd = Model.HasSlot(TabbedSlot.TabsEnd);
+    var IsTabsStacked = Model.HasSlot(TabbedSlot.TabsStacked);
+}
+
+<pv-tag tag="v-tabs"
+        pv-name="Tabs"
+        class="Tabs">
+    @if (Model.TryGetSlot(TabbedSlot.TabsAttr, out var TabsAttrSlot))
+    {
+        <pv-attr pass-attr="TabsAttrSlot.Attrs"/>
+    }
+
+    @if (IsTabsStart)
+    {
+        <pv-attr v-bind:align-tabs="'start'" />
+    }
+    else if (IsTabsCenter)
+    {
+        <pv-attr v-bind:align-tabs="'center'" />
+    }
+    else if (IsTabsEnd)
+    {
+        <pv-attr v-bind:align-tabs="'end'" />
+    }
+
+    @if (IsTabsStacked)
+    {
+        <pv-attr v-bind:stacked="true" />
+    }
+
+    @if (Model.TryGetSlotRender(TabbedSlot.Tabs, out var TabsRender))
+    {
+        @TabsRender
+    }
+    else
+    {
+        <dtvl-pv pv-type="Tab"
+                 pv-name="TabItems"></dtvl-pv>
+    }
+</pv-tag>
+
+
+<v-tabs-window pv-name="Contents">
+    @if (Model.TryGetSlotRender(TabbedSlot.Contents, out var ContentsSlots))
+    {
+        @ContentsSlots
+    }
+    else
+    {
+        <dtvl-pv pv-type="TabContent"
+                 pv-name="ContentItems"></dtvl-pv>
+    }
+</v-tabs-window>

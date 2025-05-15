@@ -1,7 +1,7 @@
 namespace Dtvl.Pvs;
 
-public enum FilterCardSlot
+public enum TabContentSlot
 {
+    Value,
     Content,
 }
-

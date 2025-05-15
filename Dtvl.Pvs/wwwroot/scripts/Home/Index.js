@@ -1,6 +1,7 @@
 import { DtvlPv } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
-DtvlPv.AddPv_SendModal('SendModal');
+DtvlPv.AddPv_SendModal('SendModal')
+    .AddPv_Tabbed('Tabbed');
 let UserName = 'Rugal';
 Model
     .AddV_Click('Btn', () => {

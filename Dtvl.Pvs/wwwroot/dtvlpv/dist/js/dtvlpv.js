@@ -718,6 +718,20 @@ class DtvlPvIniter {
         return this;
     }
     //#endregion
+    //#region
+    AddPv_Tabbed(PvName, Option) {
+        let TabbedPath = Model.ToJoin(this.RootPath(PvName));
+        Model.AddV_Tree(PvName, {
+            ':Tabs': {
+                'v-model': `${TabbedPath}.Value`,
+            },
+            ':Contents': {
+                'v-model': `${TabbedPath}.Value`,
+            }
+        });
+        return this;
+    }
+    //#endregion
     //#region Collapse
     //#endregion
     //#region Animate

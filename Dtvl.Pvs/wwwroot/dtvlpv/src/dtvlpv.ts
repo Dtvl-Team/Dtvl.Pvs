@@ -148,12 +148,23 @@ type SelectStore = SelectOption & {
 };
 //#endregion
 
-//#region DatePicker
+//#region DatePicker Type
 type DatePickerOption = {
     ValueStore?: string,
     IsOpen?: boolean,
 }
 type DatePickerStore = DatePickerOption & {
+}
+//#endregion
+
+//#region Tabbed Type
+type TabbedOption = {
+    Tabs: TabsOption[],
+
+};
+type TabsOption = {
+    Id?: string,
+    Title: string,
 }
 //#endregion
 
@@ -984,6 +995,21 @@ class DtvlPvIniter {
             ':DatePicker': {
                 'v-model': this.RootPath(PvName, 'Selected'),
             },
+        });
+        return this;
+    }
+    //#endregion
+
+    //#region
+    public AddPv_Tabbed(PvName: PathType, Option?: TabbedOption) {
+        let TabbedPath = Model.ToJoin(this.RootPath(PvName));
+        Model.AddV_Tree(PvName, {
+            ':Tabs': {
+                'v-model': `${TabbedPath}.Value`,
+            },
+            ':Contents': {
+                'v-model': `${TabbedPath}.Value`,
+            }
         });
         return this;
     }
