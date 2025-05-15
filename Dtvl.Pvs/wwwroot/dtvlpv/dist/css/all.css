@@ -1434,7 +1434,7 @@ body {
   --Tab-font-weight: var(--DefaultTheme-font-weight);
   --Tab-font-size: var(--DefaultTheme-font-size);
   --Tab-Icon-font-size: var(--DefaultTheme-font-size3);
-  --Tab-Icon-margin: 0 0 2px 0;
+  --Tab-Icon-margin: 0 2px 2px 2px;
   --Tab-bg: var(--DefaultTheme-bg3);
   --TabContent-bg: var(--DefaultTheme-bg2-2);
 }
