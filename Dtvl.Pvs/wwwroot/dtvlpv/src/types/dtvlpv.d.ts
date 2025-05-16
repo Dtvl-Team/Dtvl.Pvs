@@ -20,14 +20,20 @@ export type DataTableHeader = {
 };
 export type DataTableOption = {
     Index?: boolean | DataTableIndexOption;
-    HasButton?: boolean;
-    ButtonHeader?: DataTableHeader;
+    Buttons?: boolean | DataTableHeader;
     Headers: DataTableHeader[];
     Datas?: any[];
     ApiKey?: string;
+    Select?: {
+        ItemValue: string;
+        Store?: string;
+        ReturnObject?: boolean;
+        Mode?: 'single' | 'page' | 'all';
+        RowClicked?: boolean;
+    };
 };
-type DataTableIndexOption = {
-    Type: 'Page' | 'Total';
+type DataTableIndexOption = DataTableHeader & {
+    type?: 'Page' | 'Total';
 };
 export type TreeOption = {
     openAll?: boolean;
@@ -83,13 +89,12 @@ type InputStore = {
     } & SecureOption;
 };
 export type SelectOption = {
-    ValueStore?: PathType;
     Datas?: any[];
     ApiKey?: PathType;
     ItemName?: string;
     ItemValue?: string;
+    ValueStore?: PathType;
     ReturnObject?: boolean;
-    Selected?: any;
     SelectedValue?: any;
     Multiple?: boolean;
     OnChange?: Function | string;
@@ -110,6 +115,8 @@ type PushAnimateOption = {
 };
 declare class DtvlPvIniter {
     protected $PvStore: string;
+    protected $ApiStore: string;
+    protected $LoadingDelay: number;
     constructor();
     UseShowOnMounted(): this;
     UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
@@ -133,6 +140,8 @@ declare class DtvlPvIniter {
     AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption): void;
     Animate(PvName: PathType): void;
     protected RootPath(...PushPath: PathType[]): string[];
+    protected ApiPath(...PushPath: PathType[]): string[];
+    protected WatchApi(Paths: PathType[], Func: Function): void;
 }
 declare const DtvlPv: DtvlPvIniter;
 export { DtvlPv };

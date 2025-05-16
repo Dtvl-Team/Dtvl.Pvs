@@ -21,7 +21,6 @@
 @import 'Input.scss';
 @import 'Textarea.scss';
 @import 'InfoCard.scss';
-@import 'TableColumnNumberInput.scss';
 @import 'Select.scss';
 @import 'RequiredTip.scss';
 @import 'Checkbox.scss';
@@ -35,6 +34,7 @@
 :root {
     @extend --DefaultThemeVar;
     @extend --DefaultFontVar;
+    @extend --DefaultRadiusVar;
 
     @extend --HeaderVar;
     @extend --SidebarVar;
@@ -55,7 +55,6 @@
     @extend --TextareaVar;
     @extend --SelectVar;
     @extend --InfoCardVar;
-    @extend --TableColumnNumberInput;
     @extend --RequiredTipVar;
     @extend --CheckboxVar;
     @extend --OverLayerVar;

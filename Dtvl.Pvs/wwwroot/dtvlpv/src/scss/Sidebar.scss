@@ -7,9 +7,9 @@
     --Sidebar-font-size: var(--DefaultTheme-font-size);
     --Sidebar-Select-text-color: var(--DefaultTheme-bg2);
     --Sidebar-padding-bottom: var(--Header-height);
-    --Sidebar-radius-1: 10px;
-    --Sidebar-radius-2: 20px;
-    --Sidebar-radius-3: 30px;
+    --Sidebar-radius-1: var(--DefaultTheme-radius);
+    --Sidebar-radius-2: var(--DefaultTheme-radius2);
+    --Sidebar-radius-3: var(--DefaultTheme-radius3);
     --Sidebar-Layer-padding-1: 0 0.5rem 0 1rem;
     --Sidebar-Layer-padding-2: 0 0.5rem 0 1.5rem;
     --Sidebar-Layer-padding-3: 0 0.5rem 0 2rem;

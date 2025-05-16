@@ -12,9 +12,13 @@
     123
 </dtvl-pv>
 
+<dtvl-pv pv-type="Select">
+</dtvl-pv>
+<dtvl-pv pv-type="Select"
+         pv-name="Select2">
+</dtvl-pv>
+
 <dtvl-pv pv-type="Tabbed">
-    @* <pv-slot slot="TabbedSlot.TabsCenter"></pv-slot> *@
-    @* <pv-slot slot="TabbedSlot.TabsStacked"></pv-slot> *@
     <pv-slot slot="TabbedSlot.Tabs">
         <dtvl-pv pv-type="Tab">
             <pv-slot slot="TabSlot.PrependIcon">fa-solid fa-house</pv-slot>
@@ -32,22 +36,30 @@
 
     <pv-slot slot="TabbedSlot.Contents">
         <dtvl-pv pv-type="TabContent">
-            <pv-slot slot="TabContentSlot.Content">
-                <div class="row p-2">
-                    <div class="col">123</div>
-                    <div class="col">123</div>
-                    <div class="col">123</div>
-                    <div class="col">123</div>
-                </div>
-            </pv-slot>
-        </dtvl-pv>
+            <dtvl-pv pv-type="DataTable">
+                <pv-slot slot="DataTableSlot.Columns">
+                    <dtvl-pv pv-type="TableColumn" pv-name="all">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row">
+                                    <span>11</span>
+                                </div>
+                                <div class="row">
+                                    <span>bb</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                button
+                            </div>
+                        </div>
 
-        <dtvl-pv pv-type="TabContent">
-            <pv-slot slot="TabContentSlot.Content">
-                bbb
-            </pv-slot>
+
+                    </dtvl-pv>
+                </pv-slot>
+            </dtvl-pv>
         </dtvl-pv>
     </pv-slot>
 </dtvl-pv>
+
 
 <script type="module" src="~/scripts/Home/Index.js" asp-append-version="true"></script>

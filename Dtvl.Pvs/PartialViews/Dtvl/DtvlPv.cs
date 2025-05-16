@@ -40,6 +40,7 @@ public enum DtvlPvs
 
     #region Table
     DataTable,
+    TableColumn,
     #endregion
 
     #region Items

@@ -1,38 +1,49 @@
 import { DtvlPv } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
 
-DtvlPv.AddPv_SendModal('SendModal')
-    .AddPv_Tabbed('Tabbed');
+DtvlPv.AddPv_Tabbed('Tabbed');
 
 let UserName = 'Rugal';
 
 Model
-    .AddV_Click('Btn', () => {
-        DtvlPv.Modal('SendModal', true);
+    .AddApi({
+        Test: {
+            Method: 'GET',
+            Url: '/',
+        },
     })
+    .AddV_Click('TestBtn', (props: any, item: any) => {
+    }, 'props, item')
     .UpdateStore('App.UserName', UserName)
     .AddV_Text('HeaderUserName', 'App.UserName');
 
 
-
-
-
-//DtvlPv
-//    .AddPv_DataTable('Table', {
-//        Headers: [
-//            {
-//                title: 'a',
-//            }
-//        ],
-//        HasButton: true,
-//        Datas: [{}],
-//    })
-//    .AddPv_Input('MyInput', {
-//        Store: 'Test.MyA',
-//    })
-//    .AddPv_Select('Select', {
-//        Datas: [1, 2, 3, 4]
-//    })
+DtvlPv
+    .AddPv_Select('Select', {
+        ApiKey: 'Test',
+    })
+    .AddPv_Select('Select2', {
+        ApiKey: 'Test',
+    })
+    .AddPv_DataTable('DataTable', {
+        ApiKey: 'Test',
+        Headers: [
+            {
+                key: 'all',
+                width: '*',
+                value: 'a'
+            },
+        ],
+        Index: {
+            width: '5px',
+            align: 'center',
+        },
+        Select: {
+            ItemValue: 'a',
+            Store: 'aaaa',
+        },
+        Datas: [{ a: 'A1', b: 'B1' }, { a: 'a2', b: 'b2' }],
+    })
 
 
 

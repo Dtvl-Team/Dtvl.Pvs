@@ -63,6 +63,22 @@
   color: var(--DefaultTheme-text-color3);
 }
 
+.Radius-0 {
+  border-radius: 0 !important;
+}
+
+.Radius-1 {
+  border-radius: var(--DefaultTheme-radius);
+}
+
+.Radius-2 {
+  border-radius: var(--DefaultTheme-radius2);
+}
+
+.Radius-3 {
+  border-radius: var(--DefaultTheme-radius3);
+}
+
 .HideScrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -455,6 +471,12 @@ body {
   --DefaultTheme-font-weight2: bolder;
 }
 
+--DefaultRadiusVar, :root {
+  --DefaultTheme-radius: 0.6rem;
+  --DefaultTheme-radius2: 1.2rem;
+  --DefaultTheme-radius3: 1.8rem;
+}
+
 --HeaderVar, :root {
   --Header-height: 3rem;
   --Header-bg: var(--DefaultTheme-bg2);
@@ -538,9 +560,9 @@ body {
   --Sidebar-font-size: var(--DefaultTheme-font-size);
   --Sidebar-Select-text-color: var(--DefaultTheme-bg2);
   --Sidebar-padding-bottom: var(--Header-height);
-  --Sidebar-radius-1: 10px;
-  --Sidebar-radius-2: 20px;
-  --Sidebar-radius-3: 30px;
+  --Sidebar-radius-1: var(--DefaultTheme-radius);
+  --Sidebar-radius-2: var(--DefaultTheme-radius2);
+  --Sidebar-radius-3: var(--DefaultTheme-radius3);
   --Sidebar-Layer-padding-1: 0 0.5rem 0 1rem;
   --Sidebar-Layer-padding-2: 0 0.5rem 0 1.5rem;
   --Sidebar-Layer-padding-3: 0 0.5rem 0 2rem;
@@ -877,19 +899,17 @@ body {
 
 --CardVar, :root {
   --Card-bg: var(--DefaultTheme-bg2-2);
-  --Card-padding-x: 12px;
-  --Card-padding-y: 8px;
+  --Card-padding: 8px 12px;
+  --Card-border-radius: var(--DefaultTheme-radius);
   --Card-Header-text-color: var(--DefaultTheme-text-color2);
   --Card-Content-text-color: var(--DefaultTheme-text-color);
   --Card-Footer-text-color: var(--DefaultTheme-text-color3);
 }
 
-.CardBody {
-  padding-top: var(--Card-padding-y);
-  padding-bottom: var(--Card-padding-y);
-  padding-left: var(--Card-padding-x);
-  padding-right: var(--Card-padding-x);
+.Card {
+  padding: var(--Card-padding);
   background: var(--Card-bg);
+  border-radius: var(--Card-border-radius);
 }
 
 .CardHeader {
@@ -1083,6 +1103,7 @@ body {
   --DataTable-Head-font-size: var(--DefaultTheme-font-size2);
   --DataTable-Body-font-size: var(--DefaultTheme-font-size);
   --DataTable-Stripe-bg: #edeff7;
+  --DataTable-Column-NumberInput-text-align: end;
 }
 
 .DataTable {
@@ -1126,6 +1147,10 @@ body {
 
 .DataTable-Stripe {
   background: var(--DataTable-Stripe-bg);
+}
+
+.TableColumnNumberInput input {
+  text-align: var(--DataTable-Column-NumberInput-text-align);
 }
 
 --InfoLineVar, :root {
@@ -1315,14 +1340,6 @@ body {
   font-size: var(--InfoCard-Chip-font-size) !important;
   padding-left: var(--InfoCard-Chip-padding-x) !important;
   padding-right: var(--InfoCard-Chip-padding-x) !important;
-}
-
---TableColumnNumberInput, :root {
-  --TableColumnNumberInput-text-align: end;
-}
-
-.TableColumnNumberInput input {
-  text-align: var(--TableColumnNumberInput-text-align);
 }
 
 --SelectVar, :root {

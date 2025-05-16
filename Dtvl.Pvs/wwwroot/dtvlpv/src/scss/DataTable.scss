@@ -6,6 +6,7 @@
     --DataTable-Head-font-size: var(--DefaultTheme-font-size2);
     --DataTable-Body-font-size: var(--DefaultTheme-font-size);
     --DataTable-Stripe-bg: #edeff7;
+    --DataTable-Column-NumberInput-text-align: end;
 }
 
 .DataTable {
@@ -50,4 +51,11 @@
 
 .DataTable-Stripe {
     background: var(--DataTable-Stripe-bg);
+}
+
+.TableColumnNumberInput {
+}
+
+.TableColumnNumberInput input {
+    text-align: var(--DataTable-Column-NumberInput-text-align);
 }

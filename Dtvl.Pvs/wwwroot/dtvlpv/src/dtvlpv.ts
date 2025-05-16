@@ -44,17 +44,26 @@ export type DataTableHeader = {
 };
 export type DataTableOption = {
     Index?: boolean | DataTableIndexOption,
-    HasButton?: boolean,
-    ButtonHeader?: DataTableHeader,
+    Buttons?: boolean | DataTableHeader,
     Headers: DataTableHeader[],
     Datas?: any[],
     ApiKey?: string,
+    Select?: {
+        ItemValue: string,
+        Store?: string,
+        ReturnObject?: boolean,
+        Mode?: 'single' | 'page' | 'all'
+        RowClicked?: boolean,
+    }
 };
-type DataTableIndexOption = {
-    Type: 'Page' | 'Total',
+type DataTableIndexOption = DataTableHeader & {
+    type?: 'Page' | 'Total',
 };
 type DataTableStore = DataTableOption & {
-
+    Selected: any[],
+    Selectable?: boolean,
+    Loading?: boolean,
+    LoadingTime?: Date,
 };
 //#endregion
 
@@ -132,19 +141,20 @@ type InputStore = {
 
 //#region Select Type
 export type SelectOption = {
-    ValueStore?: PathType,
     Datas?: any[],
     ApiKey?: PathType,
     ItemName?: string,
     ItemValue?: string,
+    ValueStore?: PathType,
     ReturnObject?: boolean,
-    Selected?: any,
     SelectedValue?: any,
     Multiple?: boolean,
     OnChange?: Function | string,
 };
 type SelectStore = SelectOption & {
     IsInited: boolean,
+    Loading?: boolean,
+    LoadingTime?: Date,
 };
 //#endregion
 
@@ -181,8 +191,12 @@ type AnimateStore = {
 //#endregion
 class DtvlPvIniter {
     protected $PvStore: string;
+    protected $ApiStore: string;
+    protected $LoadingDelay: number;
     constructor() {
         this.$PvStore = 'pv';
+        this.$ApiStore = 'api';
+        this.$LoadingDelay = 800;
         this.UseShowOnMounted();
     }
 
@@ -371,41 +385,108 @@ class DtvlPvIniter {
     //#region DataTable
     public AddPv_DataTable(PvName: PathType, Option: DataTableOption) {
 
-        Option.Index ??= true;
-        Option.HasButton ??= true;
         Option.Datas ??= [];
-
         let TableStore: DataTableStore = {
             ...Option,
+            Selected: [],
         };
 
-        Model.UpdateStore(this.RootPath(PvName), TableStore)
+        let StorePath = Model.ToJoin(this.RootPath(PvName));
+        Model.UpdateStore(StorePath, TableStore);
 
-        if (TableStore.HasButton) {
-            TableStore.ButtonHeader ??= {};
-            TableStore.ButtonHeader.title ??= '';
-            TableStore.ButtonHeader.value ??= 'buttons';
-            TableStore.ButtonHeader.sortable = false;
-            TableStore.Headers.push(TableStore.ButtonHeader);
+        TableStore.Buttons ??= {};
+        if (TableStore.Buttons != null && TableStore.Buttons != false) {
+            if (TableStore.Buttons == true) {
+                TableStore.Buttons = {};
+            }
+            TableStore.Buttons.title ??= '';
+            TableStore.Buttons.value ??= 'buttons';
+            TableStore.Buttons.sortable ??= false;
+            TableStore.Headers.push(TableStore.Buttons);
         }
-
         if (TableStore.ApiKey) {
             Model.AddV_Property(TableStore.ApiKey, {
-                Target: this.RootPath(PvName, 'Datas'),
+                Target: `${StorePath}.Datas`,
             });
+
+            this.WatchApi([TableStore.ApiKey, 'IsCalling'], (Value: boolean) => {
+                let Store = Model.GetStore<DataTableStore>(StorePath);
+                if (Value == true) {
+                    Store.Loading = Value;
+                    Store.LoadingTime = new Date();
+                }
+                else {
+                    let TimeDiff = 0;
+                    if (Store.LoadingTime != null)
+                        TimeDiff = new Date().getTime() - Store.LoadingTime.getTime();
+
+                    if (TimeDiff >= this.$LoadingDelay)
+                        Store.Loading = false;
+                    else {
+                        setTimeout(() => {
+                            Store.Loading = false;
+                        }, this.$LoadingDelay - TimeDiff);
+                    }
+                }
+            });
+
+            Model.AddV_Tree(PvName, {
+                'v-bind:loading': `${StorePath}.Loading`,
+            });
+        }
+        if (TableStore.Select != null) {
+            TableStore.Selectable = true;
+            TableStore.Select.ReturnObject ??= false;
+            TableStore.Select.Mode ??= 'all';
+            TableStore.Select.RowClicked ??= true;
+
+            if (TableStore.Select.RowClicked == true) {
+                Model.AddV_On(PvName, 'click:row', (Event: Event, Row: any) => {
+                    let RowItem = Row.item;
+                    let ValueItem = RowItem;
+                    let Store = Model.GetStore<DataTableStore>(StorePath);
+                    if (!Store.Select.ReturnObject)
+                        ValueItem = ValueItem[Store.Select.ItemValue];
+
+                    let IsSelected = Store.Selected.includes(ValueItem);
+                    if (IsSelected) {
+                        let SelectedIndex = Store.Selected.indexOf(ValueItem);
+                        Store.Selected.splice(SelectedIndex, 1);
+                    }
+                    else
+                        Store.Selected.push(ValueItem);
+                });
+            }
+
+            Model.AddV_Tree(PvName, {
+                'v-model': `${StorePath}.Selected`,
+                'v-bind:show-select': `${StorePath}.Selectable`,
+                'v-bind:item-value': `${StorePath}.Select.ItemValue`,
+                'v-bind:return-object': `${StorePath}.Select.ReturnObject`,
+                'v-bind:select-strategy': `${StorePath}.Select.Mode`,
+            });
+
+            if (TableStore.Select.Store != null) {
+                Model.AddV_Property(`${StorePath}.Selected`, {
+                    Target: TableStore.Select.Store,
+                    Value: [],
+                });
+            }
         }
 
         this.$FillDataTableHeaders(TableStore.Headers);
 
+        TableStore.Index ??= true;
         if (TableStore.Index != null && TableStore.Index != false) {
-            if (typeof (TableStore.Index) == 'boolean') {
+            if (TableStore.Index == true) {
                 TableStore.Index = {
-                    Type: 'Total',
+                    type: 'Total',
                 };
             }
 
+            TableStore.Index.type ??= 'Total';
             let IndexPath = null;
-            switch (TableStore.Index.Type) {
+            switch (TableStore.Index.type) {
                 case 'Page':
                     IndexPath = 'props.index + 1';
                     break;
@@ -415,15 +496,13 @@ class DtvlPvIniter {
                 default:
                     break;
             }
-            if (IndexPath != null) {
-                Model.AddV_Text(Model.Paths(PvName, 'IndexColumn'), IndexPath)
-                TableStore.Headers.unshift({
-                    title: '#',
-                    value: 'index',
-                });
-            }
-        }
 
+            Model.AddV_Text(Model.Paths(PvName, 'IndexColumn'), IndexPath);
+            TableStore.Index.title ??= '#';
+            TableStore.Index.value ??= 'index';
+            TableStore.Index.key ??= 'index';
+            TableStore.Headers.unshift(TableStore.Index);
+        }
 
         Model.AddV_Tree(PvName, {
             'v-bind:items': this.RootPath(PvName, 'Datas'),
@@ -800,11 +879,12 @@ class DtvlPvIniter {
         Option.Multiple ??= false;
         Option.Datas ??= [];
 
+        let StorePath = Model.ToJoin(this.RootPath(PvName));
         let Store: SelectStore = {
             IsInited: false,
             ...Option,
         };
-        Model.UpdateStore(this.RootPath(PvName), Store);
+        Model.UpdateStore(StorePath, Store);
 
         let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
         let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
@@ -862,7 +942,7 @@ class DtvlPvIniter {
             }
         });
         if (Option.ApiKey) {
-            Model.AddV_Property(this.RootPath(PvName, 'Datas'), {
+            Model.AddV_Property(`${StorePath}.Datas`, {
                 Target: Option.ApiKey,
                 Value: Option.Datas,
                 get() {
@@ -906,6 +986,31 @@ class DtvlPvIniter {
                     return GetDatas;
                 }
             });
+
+            this.WatchApi([Option.ApiKey, 'IsCalling'], (Value: boolean) => {
+                let Store = Model.GetStore<SelectStore>(StorePath);
+                if (Value == true) {
+                    Store.Loading = Value;
+                    Store.LoadingTime = new Date();
+                }
+                else {
+                    let TimeDiff = 0;
+                    if (Store.LoadingTime != null)
+                        TimeDiff = new Date().getTime() - Store.LoadingTime.getTime();
+
+                    if (TimeDiff >= this.$LoadingDelay)
+                        Store.Loading = false;
+                    else {
+                        setTimeout(() => {
+                            Store.Loading = false;
+                        }, this.$LoadingDelay - TimeDiff);
+                    }
+                }
+            });
+
+            Model.AddV_Tree(PvName, {
+                'v-bind:loading': `${StorePath}.Loading`,
+            });
         }
 
         if (Option.OnChange)
@@ -915,10 +1020,10 @@ class DtvlPvIniter {
 
 
         Model.AddV_Tree(PvName, {
-            'v-bind:items': this.RootPath(PvName, 'Datas'),
-            'v-bind:item-title': this.RootPath(PvName, 'ItemName'),
-            'v-bind:item-value': this.RootPath(PvName, 'ItemValue'),
-            'v-model': this.RootPath(PvName, 'SelectedValue'),
+            'v-bind:items': `${StorePath}.Datas`,
+            'v-bind:item-title': `${StorePath}.ItemName`,
+            'v-bind:item-value': `${StorePath}.ItemValue`,
+            'v-model': `${StorePath}.SelectedValue`,
             'v-bind:return-object': `false`,
             'v-bind:multiple': `${Option.Multiple}`,
         });
@@ -1055,6 +1160,14 @@ class DtvlPvIniter {
     protected RootPath(...PushPath: PathType[]): string[] {
         let RootPath = Model.Paths([this.$PvStore, PushPath]);
         return RootPath;
+    }
+
+    protected ApiPath(...PushPath: PathType[]): string[] {
+        let RootPath = Model.Paths([this.$ApiStore, PushPath]);
+        return RootPath;
+    }
+    protected WatchApi(Paths: PathType[], Func: Function) {
+        Model.AddV_Watch(this.ApiPath(Model.Paths(Paths)), Func);
     }
     //#endregion
 }
