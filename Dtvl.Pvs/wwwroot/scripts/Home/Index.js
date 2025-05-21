@@ -75,23 +75,4 @@ DtvlPv
     },
     Datas: [{ id: 'a', name: 'userA', checked: true }, { id: 'b', name: 'userB', checked: false, }],
 });
-fetch('api/Staff/GetStaff', {
-    method: 'POST',
-    body: JSON.stringify({
-        StaffNo: '001'
-    }),
-}).then(response => {
-    return response.json();
-}).then(jsonResult => {
-    //update Store
-});
-Model.AddApi({
-    GetStaff: {
-        Method: 'POST',
-        Url: 'api/Staff/GetStaff',
-        Body: {
-            StaffNo: '001',
-        }
-    }
-});
 //# sourceMappingURL=Index.js.map

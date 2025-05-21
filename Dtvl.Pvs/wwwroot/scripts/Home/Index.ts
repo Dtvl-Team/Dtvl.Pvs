@@ -81,28 +81,3 @@ DtvlPv
         },
         Datas: [{ id: 'a', name: 'userA', checked: true }, { id: 'b', name: 'userB', checked: false, }],
     });
-
-fetch('api/Staff/GetStaff', {
-    method: 'POST',
-    body: JSON.stringify({
-        StaffNo: '001'
-    }),
-    headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    }
-}).then(response => {
-    return response.json()
-}).then(jsonResult => {
-    //update Store
-});
-
-Model.AddApi({
-    GetStaff: {
-        Method: 'POST',
-        Url: 'api/Staff/GetStaff',
-        Body: {
-            StaffNo: '001',
-        }
-    }
-}).ApiCall('GetStaff');
