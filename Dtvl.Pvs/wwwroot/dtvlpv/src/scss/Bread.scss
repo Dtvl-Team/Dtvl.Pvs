@@ -1,0 +1,33 @@
+
+--BreadVar {
+    --Bread-font-size: 1.2rem;
+    --Bread-text-color: var(--DefaultTheme-text-color2);
+    --Bread-height: 3rem;
+    --Bread-bg: var(--DefaultTheme-bg);
+    --Bread-padding-x: 10px !important;
+}
+
+.Bread {
+    background-color: var(--Bread-bg);
+    height: var(--Bread-height);
+    padding-left: var(--Bread-padding-x) !important;
+    padding-right: var(--Bread-padding-x) !important;
+    width: 100%;
+}
+
+.PtForBread {
+    padding-top: var(--Bread-height);
+}
+
+.BreadItem {
+    font-size: var(--Bread-font-size);
+    font-weight: bolder;
+}
+
+.BreadText {
+    color: var(--Bread-text-color);
+}
+
+.BreadArrow {
+    color: var(--Bread-text-color);
+}

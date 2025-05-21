@@ -1,0 +1,49 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.AddParentAttr("class", "App");
+
+    var HasHeader = Model.HasSlot(AppSlot.Header) && !this.TryLoadSlotRender(AppSlot.DisableHeader, out _);
+    var HasSidebar = Model.HasSlot(AppSlot.Sidebar) && !this.TryLoadSlotRender(AppSlot.DisableSidebar, out _);
+    var HasBreadcrumb = Model.HasSlot(AppSlot.Bread) && !this.TryLoadSlotRender(AppSlot.DisableBread, out _);
+    var HasSidebarString = HasSidebar.ToString().ToLower();
+    var HasContent = Model.HasSlot(AppSlot.Content);
+}
+
+@if (Model.TryGetSlotRender(AppSlot.Shared, out var SharedSlot) && !this.TryLoadSlotRender(AppSlot.DisableShared, out _))
+{
+    <section style="display:none;">
+        @SharedSlot
+    </section>
+}
+
+@if (HasHeader)
+{
+    @Model.RenderSlot(AppSlot.Header)
+}
+
+<section class="d-inline-flex AppLayout @(HasHeader ? "MtForHeader" : "")">
+    @if (HasSidebar)
+    {
+        @Model.RenderSlot(AppSlot.Sidebar)
+    }
+
+    <section v-show="App.IsMounted"
+             style="display:none;"
+             class="AppBody"
+             v-bind:class="{ MsForSidebar : (@HasSidebarString && !mobile) }">
+
+        @if (HasBreadcrumb)
+        {
+            <div class="AppBreadcrumb"
+                 v-bind:class="[ (@HasSidebarString && !mobile) ? 'AppBreadcrumb-MsForSidebar' : 'AppBreadcrumb-NoSidebar' ]">
+                @Model.RenderSlot(AppSlot.Bread)
+            </div>
+        }
+
+        <main role="main" class="AppContent @(HasBreadcrumb ? "MtForBreadcrumb": "")">
+            @Model.RenderSlot(AppSlot.Content)
+        </main>
+    </section>
+
+</section>

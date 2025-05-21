@@ -1,0 +1,32 @@
+
+--RequiredTipVar {
+    --RequiredTip-Icon-height: 20px;
+    --RequiredTip-Icon-width: 20px;
+    --RequiredTip-Icon-color: #B00020;
+}
+
+
+.RequiredTip {
+    position: relative !important;
+    margin-left: -39px !important;
+    animation-name: RequiredTipAni;
+    animation-duration: 0.2s;
+}
+
+@keyframes RequiredTipAni {
+    from {
+        opacity: 0;
+        left: 10px;
+    }
+
+    to {
+        opacity: 1;
+        left: 0px;
+    }
+}
+
+.RequiredTip-Icon {
+    width: var(--RequiredTip-Icon-width);
+    height: var(--RequiredTip-Icon-height);
+    color: var(--RequiredTip-Icon-color);
+}

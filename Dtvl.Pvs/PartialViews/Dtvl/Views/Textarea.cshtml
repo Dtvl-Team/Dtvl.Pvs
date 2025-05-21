@@ -1,0 +1,15 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-textarea")
+        .UsingInputBase()
+        .AddParentAttr(new
+        {
+            @class = "Textarea",
+        })
+        .FillSlot(TextAreaSlot.Rows, "3")
+        .FillSlot(TextAreaSlot.AutoGrow, "true");
+
+    Model.AddParentAttr("rows", Model.GetSlotContent(TextAreaSlot.Rows));
+    Model.AddParentAttr("v-bind:auto-grow", Model.GetSlotContent(TextAreaSlot.AutoGrow));
+}

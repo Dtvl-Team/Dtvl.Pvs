@@ -1,0 +1,52 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-data-table")
+        .AddParentAttr("items-per-page-text", "每頁筆數")
+        .AddParentAttr("no-data-text", "查無資料")
+        .AddParentAttr("hover")
+        .AddParentAttr("page-text", "{0}-{1} / {2}")
+        .AddParentAttr("v-bind:mobile", "mobile")
+        .AddParentAttr("v-bind:select-strategy", "'all'")
+        .AddParentAttr(new
+        {
+            @class = "DataTable text-break",
+        });
+
+    if (Model.HasSlot(DataTableSlot.HideHeader))
+        Model.AddParentAttr("v-bind:hide-default-header", "true");
+}
+
+@* <template v-slot:item="props, item = props.item">
+    <tr v-if="mobile">
+
+    </tr>
+    <tr v-if="!mobile">
+
+    </tr>
+</template> *@
+
+<template v-slot:loading>
+    <v-skeleton-loader class="SkeletonLoader"
+                       type="table-row@@10"></v-skeleton-loader>
+</template>
+
+<dtvl-pv pv-type="TableColumn">
+    <pv-slot slot="TableColumnSlot.ItemKey">index</pv-slot>
+    <span pv-name="IndexColumn"></span>
+</dtvl-pv>
+
+@if (Model.TryGetSlotRender(DataTableSlot.Buttons, out var ButtonsRender))
+{
+    <dtvl-pv pv-type="TableColumn">
+        <pv-slot slot="TableColumnSlot.ItemKey">buttons</pv-slot>
+        <div class="row w-100 justify-content-sm-center justify-content-evenly">
+            @ButtonsRender
+        </div>
+    </dtvl-pv>
+}
+
+@if (Model.TryGetSlotRender(DataTableSlot.Columns, out var ColumnsRender))
+{
+    @ColumnsRender
+}

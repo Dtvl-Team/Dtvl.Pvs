@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "vue": "/npm/vue/dist/vue.esm-browser.js",
+    "@rugal.tu/vuemodel3": "/npm/@rugal.tu/vuemodel3/dist/VueModel.esm.js",
+    "vuetify": "/npm/vuetify/dist/vuetify.esm.js",
+    "vuetify/components": "/npm/vuetify/dist/vuetify.esm.js",
+    "vuetify/directives": "/npm/vuetify/dist/vuetify.esm.js",
+    "vuetify/labs/components": "/npm/vuetify/dist/vuetify-labs.esm.js",
+    "vuetify/vuetify-labs": "/npm/vuetify/dist/vuetify-labs.esm.js",
+    "dtvlpv": "/dtvlpv/src/dtvlpv.js"
+  }
+}

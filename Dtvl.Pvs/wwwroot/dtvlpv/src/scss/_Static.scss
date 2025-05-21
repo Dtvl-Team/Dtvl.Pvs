@@ -1,0 +1,46 @@
+
+.HideScrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.HideScrollbar .v-list::-webkit-scrollbar {
+    display: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    color: var(--DefaultTheme-text-color);
+    background: var(--DefaultTheme-bg);
+    font-size: var(--DefaultTheme-font-size);
+}
+
+.row {
+    padding: 0;
+    margin: 0;
+}
+
+.row > * {
+    padding: 0;
+}
+
+.col {
+    padding: 0;
+}
+
+@for $i from 1 through 12 {
+    .col-#{$i} {
+        padding: 0;
+    }
+}
+
+$breakpoints: xs, sm, md, lg, xl, xxl;
+@each $bp in $breakpoints {
+    @for $i from 1 through 12 {
+        .col-#{$bp}-#{$i} {
+            padding: 0;
+        }
+    }
+}

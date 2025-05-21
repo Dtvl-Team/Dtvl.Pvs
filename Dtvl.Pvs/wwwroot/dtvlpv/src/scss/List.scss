@@ -1,0 +1,22 @@
+--ListVar {
+    --List-bg: var(--DefaultTheme-bg2-2);
+    --List-text-color: var(--DefaultTheme-text-color2);
+    --List-font-size: var(--DefaultTheme-font-size);
+    --List-font-weight: var(--DefaultTheme-font-weight);
+}
+
+.List {
+    background: var(--List-bg);
+    color: var(--List-text-color);
+    padding: 0;
+}
+
+.v-menu > .v-overlay__content > .List.v-list {
+    background: var(--List-bg);
+    color: var(--List-text-color);
+}
+
+.List .v-list-item-title {
+    font-size: var(--List-font-size);
+    font-weight: var(--List-font-weight);
+}

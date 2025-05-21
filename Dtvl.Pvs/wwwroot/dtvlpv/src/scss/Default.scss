@@ -1,0 +1,34 @@
+--DefaultThemeVar {
+    //bg
+    --DefaultTheme-bg: #121212; //內容底
+    --DefaultTheme-bg2: #212121; //容器底
+    --DefaultTheme-bg2-2: #212121; //容器底
+    --DefaultTheme-bg3: #424242; //物件底
+    //text
+    --DefaultTheme-text-color: #FFFFFF; //內容字
+    --DefaultTheme-text-color2: #FFFFFF; //容器(標題)
+    --DefaultTheme-text-color3: #FFFFFF; //物件字
+    //border
+    --DefaultTheme-border-color: #5C5C5C; //border
+    //type color
+    --DefaultTheme-color-success: #81C784;
+    --DefaultTheme-color-warning: #FFD54F;
+    --DefaultTheme-color-error: #E57373;
+    --DefaultTheme-color-confirm: #CFD8DC;
+}
+
+--DefaultFontVar {
+    /* -----------------------------------------------------font-size */
+    --DefaultTheme-font-size: 1rem;
+    --DefaultTheme-font-size2: 1.2rem;
+    --DefaultTheme-font-size3: 1.3rem;
+    /* -----------------------------------------------------font-weight */
+    --DefaultTheme-font-weight: bold; //內容
+    --DefaultTheme-font-weight2: bolder; //容器(標題)
+}
+
+--DefaultRadiusVar {
+    --DefaultTheme-radius: 0.6rem;
+    --DefaultTheme-radius2: 1.2rem;
+    --DefaultTheme-radius3: 1.8rem;
+}

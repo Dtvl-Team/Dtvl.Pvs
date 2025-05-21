@@ -1,0 +1,50 @@
+
+--DialogAlertVar {
+    --DialogAlert-Card-bg: var(--DefaultTheme-bg);
+    --DialogAlert-Card-text-color: var(--DefaultTheme-text-color);
+    --DialogAlert-Icon-font-size: 3rem;
+    --DialogAlert-Content-font-size: 1.4rem;
+}
+
+--DialogAlert-TypeVar {
+    --DialogAlert-Success-Icon-color: #2A9061;
+    --DialogAlert-Error-Icon-color: #DF4554;
+    --DialogAlert-Warning-Icon-color: #FFC519;
+    --DialogAlert-Info-Icon-color: #1ECEF1;
+    --DialogAlert-Confirm-Icon-color: #7A8289;
+}
+
+.DialogAlertCard {
+    background: var(--DialogAlert-Card-bg);
+}
+
+.DialogAlertIcon {
+    font-size: var(--DialogAlert-Icon-font-size);
+}
+
+.DialogAlertContent {
+    color: var(--DialogAlert-Card-text-color);
+    font-size: var(--DialogAlert-Content-font-size);
+    font-weight: bolder;
+    white-space: pre-line !important;
+}
+
+.DialogAlertIcon-Success {
+    color: var(--DialogAlert-Success-Icon-color);
+}
+
+.DialogAlertIcon-Error {
+    color: var(--DialogAlert-Error-Icon-color);
+}
+
+.DialogAlertIcon-Warning {
+    color: var(--DialogAlert-Warning-Icon-color);
+}
+
+.DialogAlertIcon-Info {
+    color: var(--DialogAlert-Info-Icon-color);
+}
+
+.DialogAlertIcon-Confirm {
+    color: var(--DialogAlert-Confirm-Icon-color);
+}

@@ -1,0 +1,17 @@
+--InfoCardVar {
+    --InfoCard-Chip-text-color: var(--DefaultTheme-text-color2);
+    --InfoCard-Chip-bg: var(--DefaultTheme-bg3);
+    --InfoCard-Chip-font-size: var(--DefaultTheme-font-size2);
+    --InfoCard-Chip-font-weight: var(--DefaultTheme-font-weight2);
+    --InfoCard-Chip-padding-x: 40px;
+}
+
+.InfoCardChip {
+    user-select: none;
+    color: var(--InfoCard-Chip-text-color);
+    background: var(--InfoCard-Chip-bg);
+    font-weight: var(--InfoCard-Chip-font-weight);
+    font-size: var(--InfoCard-Chip-font-size) !important;
+    padding-left: var(--InfoCard-Chip-padding-x) !important;
+    padding-right: var(--InfoCard-Chip-padding-x) !important;
+}

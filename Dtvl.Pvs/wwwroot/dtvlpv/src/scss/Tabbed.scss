@@ -1,0 +1,61 @@
+--TabbedVar {
+    --Tabbed-bg: var(--DefaultTheme-bg2);
+    --Tabs-prev-bg: var(--DefaultTheme-bg3);
+    --Tabs-next-bg: var(--DefaultTheme-bg3);
+    --Tab-font-weight: var(--DefaultTheme-font-weight);
+    --Tab-font-size: var(--DefaultTheme-font-size);
+    --Tab-Icon-font-size: var(--DefaultTheme-font-size3);
+    --Tab-Icon-margin: 0 2px 2px 2px;
+    --Tab-bg: var(--DefaultTheme-bg3);
+    --TabContent-bg: var(--DefaultTheme-bg2-2);
+}
+
+.Tabbed {
+}
+
+.Tabs {
+}
+
+.Tabs .v-slide-group__prev {
+    background: var(--Tabs-prev-bg);
+}
+
+.Tabs .v-slide-group__prev--disabled {
+    opacity: 1;
+}
+
+.Tabs .v-slide-group__prev--disabled i {
+    opacity: 0.38;
+}
+
+
+.Tabs .v-slide-group__next {
+    background: var(--Tabs-next-bg);
+}
+
+.Tabs .v-slide-group__next--disabled {
+    opacity: 1;
+}
+
+.Tabs .v-slide-group__next--disabled i {
+    opacity: 0.38;
+}
+
+.Tab {
+    font-weight: var(--Tab-font-weight);
+    background: var(--Tab-bg);
+}
+
+.Tab .v-btn__content {
+    font-size: var(--Tab-font-size);
+}
+
+.TabIcon {
+    font-size: var(--Tab-Icon-font-size);
+    margin: var(--Tab-Icon-margin);
+}
+
+
+.TabContent {
+    background: var(--TabContent-bg);
+}

@@ -1,0 +1,62 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-dialog")
+        .FillSlotFromDefault(ModalSlot.Content)
+        .AddParentAttr("scroll-strategy", "none")
+        .AddParentAttr(new
+        {
+            @class = "Modal",
+            width = "auto",
+        });
+
+    if (!Model.TryGetSlotContent(ModalSlot.WidthColumn, out var WidthColumn))
+    {
+        WidthColumn = "col-xs-12 col-sm-10 col-md-8 col-lg-6";
+    }
+
+    var PassHeader = new[]
+    {
+        ModalSlot.HeaderView,
+        ModalSlot.CenterHeader,
+        ModalSlot.HeaderStart,
+        ModalSlot.HeaderEnd,
+    };
+    var PassFooter = new[]
+    {
+        ModalSlot.FooterView,
+        ModalSlot.CenterFooter,
+        ModalSlot.FooterStart,
+        ModalSlot.FooterEnd,
+    };
+
+    var PassSlots = Model.QuerySlot(PassHeader.Concat(PassFooter));
+    var HasAnyHeader = Model.HasSlotAny(PassHeader);
+    var HasAnyFooter = Model.HasSlotAny(PassFooter);
+}
+
+@if (Model.TryGetSlotRender(ModalSlot.Activator, out var Activator))
+{
+    <template v-slot:activator="{ props: activatorProps }">
+        @Activator
+    </template>
+}
+
+<section class="row justify-content-center HideScrollbar"
+         style="overflow-y:auto">
+    <div pv-name="Overlayer" class="w-100 h-100" style="position:fixed"></div>
+    <dtvl-pv pv-type="Card" pass-slot="PassSlots"
+             class="ModalCard @WidthColumn">
+        <pv-slot slot="CardSlot.Content">
+            @if (HasAnyHeader)
+            {
+                <hr class="my-3" />
+            }
+            <div class="pb-2">
+                @Model.RenderSlot(ModalSlot.Content)
+            </div>
+        </pv-slot>
+    </dtvl-pv>
+
+</section>
+

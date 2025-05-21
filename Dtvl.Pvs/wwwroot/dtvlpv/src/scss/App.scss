@@ -1,0 +1,62 @@
+
+
+--AppVar {
+    --AppContent-padding: 10px;
+    --MtForHeader: var(--Header-height);
+    --MsForSidebar: var(--Sidebar-width);
+    --MtForBreadcrumb: var(--Breadcrumb-height);
+}
+
+.App {
+    height: 100vh;
+}
+
+.AppLayout {
+    min-height: 100vh;
+    height: 100%;
+    width: 100vh;
+    min-width: 100%;
+}
+
+.MtForHeader {
+    margin-top: var(--MtForHeader);
+}
+
+.AppBody {
+    width: 100%;
+    min-width: 0;
+}
+
+.MsForSidebar {
+    margin-left: var(--MsForSidebar);
+}
+
+.AppBreadcrumb {
+    position: fixed;
+    z-index: 500;
+}
+
+.AppBreadcrumb-NoSidebar {
+    width: 100%;
+}
+
+.AppBreadcrumb-MsForSidebar {
+    width: calc(100% - var(--Sidebar-width));
+}
+
+.MtForBreadcrumb {
+    margin-top: var(--MtForBreadcrumb);
+}
+
+.AppContent {
+    padding: var(--AppContent-padding) !important;
+    min-height: 100vh;
+    height: 100%;
+    width: 100%;
+}
+
+.Sticky-AppContent {
+    position: sticky;
+    align-self: flex-start;
+    top: calc(var(--Header-height) + var(--Breadcrumb-height) + var(--AppContent-padding));
+}

@@ -1,0 +1,18 @@
+
+--ModalVar {
+    --Modal-bg: var(--DefaultTheme-bg);
+}
+
+
+.Modal .v-overlay__content {
+    width: 100% !important;
+}
+
+.Modal .ModalCard {
+    background-color: var(--Modal-bg);
+}
+
+.Modal .CardHeader {
+    font-size: var(--DefaultTheme-font-size2);
+    font-weight: bolder;
+}

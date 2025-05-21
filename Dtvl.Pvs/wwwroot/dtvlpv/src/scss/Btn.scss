@@ -1,0 +1,176 @@
+
+--BtnVar {
+    --Btn-padding-x: 12px;
+    //Btn
+    --Btn-bg: var(--DefaultTheme-bg3);
+    --Btn-text-color: var(--DefaultTheme-text-color3);
+    //BtnAdd
+    --BtnAdd-bg: var(--DefaultTheme-bg3);
+    --BtnAdd-text-color: var(--DefaultTheme-text-color3);
+    //BtnCancel
+    --BtnCancel-bg: var(--DefaultTheme-bg3);
+    --BtnCancel-text-color: var(--DefaultTheme-text-color3);
+    //BtnClear
+    --BtnClear-bg: var(--DefaultTheme-bg3);
+    --BtnClear-text-color: var(--DefaultTheme-text-color3);
+    //BtnDelete
+    --BtnDelete-bg: var(--DefaultTheme-bg3);
+    --BtnDelete-text-color: var(--DefaultTheme-text-color3);
+    //BtnDetail
+    --BtnDetail-bg: var(--DefaultTheme-bg3);
+    --BtnDetail-text-color: var(--DefaultTheme-text-color3);
+    //BtnEdit
+    --BtnEdit-bg: var(--DefaultTheme-bg3);
+    --BtnEdit-text-color: var(--DefaultTheme-text-color3);
+    //BtnOk
+    --BtnOk-bg: var(--DefaultTheme-bg3);
+    --BtnOk-text-color: var(--DefaultTheme-text-color3);
+    //BtnReview
+    --BtnReview-bg: var(--DefaultTheme-bg3);
+    --BtnReview-text-color: var(--DefaultTheme-text-color3);
+    //BtnSearch
+    --BtnSearch-bg: var(--DefaultTheme-bg3);
+    --BtnSearch-text-color: var(--DefaultTheme-text-color3);
+    //BtnSend
+    --BtnSend-bg: var(--DefaultTheme-bg3);
+    --BtnSend-text-color: var(--DefaultTheme-text-color3);
+    //BtnSubmit
+    --BtnSubmit-bg: var(--DefaultTheme-bg3);
+    --BtnSubmit-text-color: var(--DefaultTheme-text-color3);
+    //BtnUpload
+    --BtnUpload-bg: var(--DefaultTheme-bg3);
+    --BtnUpload-text-color: var(--DefaultTheme-text-color3);
+    //BtnEnable
+    --BtnEnable-bg: var(--DefaultTheme-bg3);
+    --BtnEnable-text-color: var(--DefaultTheme-text-color3);
+    //BtnDisable
+    --BtnDisable-bg: var(--DefaultTheme-bg3);
+    --BtnDisable-text-color: var(--DefaultTheme-text-color3);
+    //BtnSignIn
+    --BtnSignIn-bg: var(--DefaultTheme-bg3);
+    --BtnSignIn-text-color: var(--DefaultTheme-text-color3);
+    //BtnSignOut
+    --BtnSignOut-bg: var(--DefaultTheme-bg3);
+    --BtnSignOut-text-color: var(--DefaultTheme-text-color3);
+    //BtnRegister
+    --BtnRegister-bg: var(--DefaultTheme-bg3);
+    --BtnRegister-text-color: var(--DefaultTheme-text-color3);
+    //BtnReturnBack
+    --BtnReturnBack-bg: var(--DefaultTheme-bg3);
+    --BtnReturnBack-text-color: var(--DefaultTheme-text-color3);
+}
+
+.Btn {
+    background: var(--Btn-bg);
+    color: var(--Btn-text-color);
+    font-size: var(--DefaultTheme-font-size);
+    font-weight: var(--DefaultTheme-font-weight);
+    padding-left: var(--Btn-padding-x);
+    padding-right: var(--Btn-padding-x);
+}
+
+.v-btn__prepend {
+    margin-inline: 0;
+}
+
+.v-btn__append {
+    margin-inline: 0;
+}
+
+.BtnMsForPrepend {
+    margin-left: 5px;
+}
+
+.BtnMsForAppend {
+    margin-right: 5px;
+}
+
+.BtnAdd {
+    background-color: var(--BtnAdd-bg);
+    color: var(--BtnAdd-text-color);
+}
+
+.BtnCancel {
+    background-color: var(--BtnCancel-bg);
+    color: var(--BtnCancel-text-color);
+}
+
+.BtnClear {
+    background-color: var(--BtnClear-bg);
+    color: var(--BtnClear-text-color);
+}
+
+.BtnDelete {
+    background-color: var(--BtnDelete-bg);
+    color: var(--BtnDelete-text-color);
+}
+
+.BtnDetail {
+    background-color: var(--BtnDetail-bg);
+    color: var(--BtnDetail-text-color);
+}
+
+.BtnEdit {
+    background-color: var(--BtnEdit-bg);
+    color: var(--BtnEdit-text-color);
+}
+
+.BtnOk {
+    background-color: var(--BtnOk-bg);
+    color: var(--BtnOk-text-color);
+}
+
+.BtnReview {
+    background-color: var(--BtnReview-bg);
+    color: var(--BtnReview-text-color);
+}
+
+.BtnSearch {
+    background-color: var(--BtnSearch-bg);
+    color: var(--BtnSearch-text-color);
+}
+
+.BtnSend {
+    background-color: var(--BtnSend-bg);
+    color: var(--BtnSend-text-color);
+}
+
+.BtnSubmit {
+    background-color: var(--BtnSubmit-bg);
+    color: var(--BtnSubmit-text-color);
+}
+
+.BtnUpload {
+    background-color: var(--BtnUpload-bg);
+    color: var(--BtnUpload-text-color);
+}
+
+.BtnEnable {
+    background-color: var(--BtnEnable-bg);
+    color: var(--BtnEnable-text-color);
+}
+
+.BtnDisable {
+    background-color: var(--BtnDisable-bg);
+    color: var(--BtnDisable-text-color);
+}
+
+.BtnSignIn {
+    background-color: var(--BtnSignIn-bg);
+    color: var(--BtnSignIn-text-color);
+}
+
+.BtnSignOut {
+    background-color: var(--BtnSignOut-bg);
+    color: var(--BtnSignOut-text-color);
+}
+
+.BtnRegister {
+    background-color: var(--BtnRegister-bg);
+    color: var(--BtnRegister-text-color);
+}
+
+.BtnReturnBack {
+    background-color: var(--BtnReturnBack-bg);
+    color: var(--BtnReturnBack-text-color);
+}

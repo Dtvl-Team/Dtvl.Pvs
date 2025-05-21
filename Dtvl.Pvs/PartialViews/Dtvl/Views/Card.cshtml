@@ -1,0 +1,76 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model
+        .WithParentTag("v-card")
+        .FillSlotFromDefault(CardSlot.Content)
+        .AddParentAttr(new
+        {
+            @class = "Card",
+        });
+
+    var HeaderRowJustify =
+        Model.HasSlot(CardSlot.HeaderView) ? "" :
+        Model.HasSlot(CardSlot.CenterHeader) ? "justify-content-center" :
+        Model.HasSlot(CardSlot.HeaderStart) ? "justify-content-between" :
+        "justify-content-end";
+
+    var BottomRowJustify =
+        Model.HasSlot(CardSlot.FooterView) ? "" :
+        Model.HasSlot(CardSlot.CenterFooter) ? "justify-content-center" :
+        Model.HasSlot(CardSlot.FooterStart) ? "justify-content-between" :
+        "justify-content-end";
+}
+
+<div class="row align-items-center align-content-center CardHeader @HeaderRowJustify">
+    @if (Model.TryGetSlotRender(CardSlot.HeaderView, out var HeaderView))
+    {
+        @HeaderView
+    }
+    else if (Model.TryGetSlotRender(CardSlot.CenterHeader, out var CenterHeader))
+    {
+        @CenterHeader
+    }
+    else
+    {
+        if (Model.TryGetSlotRender(CardSlot.HeaderStart, out var HeaderStart))
+        {
+            <div class="col-auto">
+                @HeaderStart
+            </div>
+        }
+        if (Model.TryGetSlotRender(CardSlot.HeaderEnd, out var HeaderEnd))
+        {
+            <div class="col-auto">
+                @HeaderEnd
+            </div>
+        }
+    }
+</div>
+<div class="CardContent">
+    @Model.RenderSlot(CardSlot.Content)
+</div>
+<div class="row align-items-center align-content-center CardFooter @BottomRowJustify">
+    @if (Model.TryGetSlotRender(CardSlot.FooterView, out var FooterView))
+    {
+        @FooterView
+    }
+    else if (Model.TryGetSlotRender(CardSlot.CenterFooter, out var CenterFooter))
+    {
+        @CenterFooter
+    }
+    else
+    {
+        if (Model.TryGetSlotRender(CardSlot.FooterStart, out var FooterStart))
+        {
+            <div class="col-auto">
+                @FooterStart
+            </div>
+        }
+        if (Model.HasSlot(CardSlot.FooterEnd))
+        {
+            <div class="col-auto">
+                @Model.RenderSlot(CardSlot.FooterEnd)
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,44 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model
+        .FillSlotFromDefault(SendModalSlot.Content)
+        .FillSlot(SendModalSlot.BtnSendContent, "確認送出");
+}
+
+@if (!Model.HasSlot(SendModalSlot.BtnCancel))
+{
+    <pv-slot slot="SendModalSlot.BtnCancel" export-option="Model">
+        <dtvl-pv pv-type="Btn" pv-name="BtnCancel"
+                 class="ms-2">
+            取消
+            <pv-slot slot="BtnSlot.BtnCancel"></pv-slot>
+        </dtvl-pv>
+    </pv-slot>
+}
+@if (!Model.HasSlot(SendModalSlot.BtnSend))
+{
+    <pv-slot slot="SendModalSlot.BtnSend" export-option="Model">
+        <dtvl-pv pv-type="Btn" pv-name="BtnSend"
+                 class="ms-2">
+            @if (Model.TryGetSlotRender(SendModalSlot.BtnSendContent, out var BtnSendContent))
+            {
+                <pv-slot slot="BtnSlot.Content">@BtnSendContent</pv-slot>
+            }
+            <pv-slot slot="BtnSlot.BtnSend"></pv-slot>
+        </dtvl-pv>
+    </pv-slot>
+}
+
+<pv-slot slot="SendModalSlot.Title" export-slot="Model.GetSlotCreate(SendModalSlot.Title)">
+    <div pv-name="Title">
+        @Model.RenderSlot(SendModalSlot.Title)
+    </div>
+</pv-slot>
+
+@{
+    Model.AddSlot(ModalSlot.FooterEnd, Model.GetSlotContent(SendModalSlot.BtnCancel));
+    Model.AddSlot(ModalSlot.FooterEnd, Model.GetSlotContent(SendModalSlot.BtnSend));
+    Model.AddSlot(ModalSlot.HeaderStart, Model.GetSlot(SendModalSlot.Title));
+}
+
+@DtvlPvRender.Render(DtvlPvs.Modal, Model)

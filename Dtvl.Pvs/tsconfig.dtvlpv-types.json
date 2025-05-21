@@ -1,0 +1,21 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "outDir": "wwwroot/dtvlpv/src/types"
+  },
+  "exclude": [ "node_modules" ],
+  "include": [ // NOTE: put types ts path in here
+    "wwwroot/dtvlpv/src/dtvlpv.ts"
+  ],
+  "charset": "utf8"
+}

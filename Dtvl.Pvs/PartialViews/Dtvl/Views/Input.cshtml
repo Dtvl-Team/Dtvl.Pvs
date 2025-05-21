@@ -1,0 +1,22 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-text-field")
+        .FillSlotFromDefault(InputSlot.Label)
+        .UsingInputBase()
+        .AddParentAttr(new
+        {
+            @class = "Input",
+        });
+}
+
+<template v-slot:append-inner>
+    <div pv-name="HidingSecure">
+        <i pv-name="Icon"
+           class="Pointer"></i>
+    </div>
+    <div pv-name="ShowingSecure">
+        <i pv-name="Icon"
+           class="Pointer"></i>
+    </div>
+</template>

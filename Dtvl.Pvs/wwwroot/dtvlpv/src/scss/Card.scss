@@ -1,0 +1,28 @@
+--CardVar {
+    --Card-bg: var(--DefaultTheme-bg2-2);
+    --Card-padding: 8px 12px;
+    --Card-border-radius: var(--DefaultTheme-radius);
+    --Card-Header-text-color: var(--DefaultTheme-text-color2);
+    --Card-Content-text-color: var(--DefaultTheme-text-color);
+    --Card-Footer-text-color: var(--DefaultTheme-text-color3);
+}
+
+.Card {
+    padding: var(--Card-padding);
+    background: var(--Card-bg);
+    border-radius: var(--Card-border-radius);
+}
+
+.CardHeader {
+    color: var(--Card-Header-text-color);
+}
+
+.CardContent {
+    color: var(--Card-Content-text-color);
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.CardFooter {
+    color: var(--Card-Footer-text-color);
+}

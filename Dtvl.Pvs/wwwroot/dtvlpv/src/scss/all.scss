@@ -1,0 +1,66 @@
+@import '_Class.scss';
+@import '_Static.scss';
+
+@import 'Default.scss';
+
+@import 'Header.scss';
+@import 'Sidebar.scss';
+@import 'Bread.scss';
+@import 'App.scss';
+@import 'Card.scss';
+@import 'Btn.scss';
+@import 'FilterCard.scss';
+@import 'DataTable.scss';
+@import 'InfoLine.scss';
+@import 'Tree.scss';
+@import 'Modal.scss';
+@import 'Alert.scss';
+@import 'DatePicker.scss';
+
+@import 'SkeletonLoader.scss';
+@import 'Input.scss';
+@import 'Textarea.scss';
+@import 'InfoCard.scss';
+@import 'Select.scss';
+@import 'RequiredTip.scss';
+@import 'Checkbox.scss';
+@import 'OverLayer.scss';
+@import 'TimePicker.scss';
+@import 'Collapse.scss';
+@import 'List.scss';
+@import 'Menu.scss';
+@import 'Tabbed.scss';
+
+:root {
+    @extend --DefaultThemeVar;
+    @extend --DefaultFontVar;
+    @extend --DefaultRadiusVar;
+
+    @extend --HeaderVar;
+    @extend --SidebarVar;
+    @extend --BreadVar;
+    @extend --AppVar;
+    @extend --CardVar;
+    @extend --BtnVar;
+    @extend --InfoLineVar;
+    @extend --TreeVar;
+    @extend --ModalVar;
+    @extend --AlertVar;
+    @extend --DatePickerVar;
+
+    @extend --FilterCardVar;
+    @extend --DataTableVar;
+    @extend --SkeletonLoaderVar;
+    @extend --InputVar;
+    @extend --TextareaVar;
+    @extend --SelectVar;
+    @extend --InfoCardVar;
+    @extend --RequiredTipVar;
+    @extend --CheckboxVar;
+    @extend --OverLayerVar;
+    @extend --TimePickerVar;
+    @extend --CollapseVar;
+    @extend --MenuVar;
+    @extend --ListVar;
+    @extend --TabbedVar;
+}

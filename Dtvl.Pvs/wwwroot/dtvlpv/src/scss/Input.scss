@@ -1,0 +1,21 @@
+--InputVar {
+    --Input-bg: var(--DefaultTheme-bg3);
+    --Input-text-color: var(--DefaultTheme-text-color3);
+    --Input-label-font-weight: var(--DefaultTheme-font-weight);
+}
+
+.Input {
+}
+
+.Input .v-field {
+    background-color: var(--Input-bg);
+    color: var(--Input-text-color);
+}
+
+.Input .v-label {
+    font-weight: var(--Input-label-font-weight);
+}
+
+.v-input__append {
+    margin-inline-start: 0px !important;
+}
