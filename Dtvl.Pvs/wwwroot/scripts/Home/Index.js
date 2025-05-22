@@ -49,16 +49,16 @@ DtvlPv
     .AddPv_DataTable('StaffTable', {
     Headers: [
         {
-            title: '價格',
+            title: '����',
             key: 'name',
         },
         {
-            title: '是否啟用',
+            title: '�O�_�ҥ�',
             key: 'checked',
         },
         {
             key: 'btn',
-            title: '測試按鈕'
+            title: '���ի��s'
         }
     ],
     Index: {
@@ -66,8 +66,8 @@ DtvlPv
         align: 'center',
     },
     Select: {
-        //ItemValue: '', //指向選擇後的值
-        //Store: 'SelectResult', //改成選擇的儲存區 < Store.SelectResult
+        //ItemValue: '', //���V��ܫ᪺��
+        //Store: 'SelectResult', //�令��ܪ��x�s�� < Store.SelectResult
         ItemValue: 'id',
         Store: 'SelectStaff',
         ReturnObject: true,

@@ -79,6 +79,10 @@
   border-radius: var(--DefaultTheme-radius3);
 }
 
+.Square {
+  aspect-ratio: 1/1;
+}
+
 .HideScrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -840,7 +844,7 @@ body {
   --AppContent-padding: 10px;
   --MtForHeader: var(--Header-height);
   --MsForSidebar: var(--Sidebar-width);
-  --MtForBreadcrumb: var(--Breadcrumb-height);
+  --MtForBread: var(--Bread-height);
 }
 
 .App {
@@ -850,8 +854,7 @@ body {
 .AppLayout {
   min-height: 100vh;
   height: 100%;
-  width: 100vh;
-  min-width: 100%;
+  width: 100%;
 }
 
 .MtForHeader {
@@ -881,7 +884,7 @@ body {
 }
 
 .MtForBreadcrumb {
-  margin-top: var(--MtForBreadcrumb);
+  margin-top: var(--MtForBread);
 }
 
 .AppContent {

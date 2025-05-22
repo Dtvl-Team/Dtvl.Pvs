@@ -8,7 +8,13 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddPartialViews<DtvlPvs>(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("all", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 var app = builder.Build();
+
+app.UseCors("all");
 
 app.UseStaticFiles();
 app.UseRouting();

@@ -1,6 +1,18 @@
 ﻿Home-Index
 
-<dtvl-pv pv-type="Modal" pv-name="SelectStaffModal">
+
+<dtvl-pv pv-type="Collection">
+    <pv-slot slot="CollectionSlot.Items" pass-type="Multi">
+        <dtvl-pv pv-type="Image" class="bg-success">
+            https://blog.thepetlabco.com/wp-content/uploads/2024/06/shutterstock_2272555627-1.jpg
+        </dtvl-pv>
+    </pv-slot>
+
+</dtvl-pv>
+
+
+
+@* <dtvl-pv pv-type="Modal" pv-name="SelectStaffModal">
     <pv-slot slot="ModalSlot.HeaderStart">選擇人員</pv-slot>
 
     <dtvl-pv pv-type="DataTable" pv-name="StaffTable">
@@ -77,5 +89,8 @@
         </dtvl-pv>
     </pv-slot>
 </dtvl-pv>
+ *@
+
+
 
 <script type="module" src="~/scripts/Home/Index.js" asp-append-version="true"></script>

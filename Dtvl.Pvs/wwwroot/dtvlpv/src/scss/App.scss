@@ -4,7 +4,7 @@
     --AppContent-padding: 10px;
     --MtForHeader: var(--Header-height);
     --MsForSidebar: var(--Sidebar-width);
-    --MtForBreadcrumb: var(--Breadcrumb-height);
+    --MtForBread: var(--Bread-height);
 }
 
 .App {
@@ -14,8 +14,7 @@
 .AppLayout {
     min-height: 100vh;
     height: 100%;
-    width: 100vh;
-    min-width: 100%;
+    width: 100%;
 }
 
 .MtForHeader {
@@ -45,7 +44,7 @@
 }
 
 .MtForBreadcrumb {
-    margin-top: var(--MtForBreadcrumb);
+    margin-top: var(--MtForBread);
 }
 
 .AppContent {

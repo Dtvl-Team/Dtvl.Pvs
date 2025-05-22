@@ -1,6 +1,6 @@
 
 import { Model } from '@rugal.tu/vuemodel3';
-import { createVuetify, directives } from 'vuetify/vuetify-labs'
+import { createVuetify, directives } from 'vuetify/vuetify-labs';
 import { DtvlPv } from 'dtvlpv';
 
 let VuetifyInit = createVuetify({

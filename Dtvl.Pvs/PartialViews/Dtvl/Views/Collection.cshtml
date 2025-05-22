@@ -1,0 +1,56 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model
+        .FillSlotFromDefault(CollectionSlot.Items)
+        .AddParentAttr(new
+        {
+            @class = "row",
+        });
+
+    var ColumnMap = new Dictionary<string, string>() { { "_", "12" } };
+    if (Model.HasSlot(CollectionSlot.Column3))
+    {
+        ColumnMap.Add("xl", "4");
+        ColumnMap.Add("lg", "6");
+    }
+    else if (Model.HasSlot(CollectionSlot.Column2))
+    {
+        ColumnMap.Add("xl", "3");
+        ColumnMap.Add("lg", "4");
+        ColumnMap.Add("md", "6");
+    }
+    else
+    {
+        ColumnMap.Add("xl", "2");
+        ColumnMap.Add("lg", "3");
+        ColumnMap.Add("md", "4");
+        ColumnMap.Add("sm", "6");
+    }
+
+    if (Model.TryGetSlotContent(CollectionSlot.ColXl, out var ColXlContent))
+        ColumnMap["xl"] = ColXlContent;
+    if (Model.TryGetSlotContent(CollectionSlot.ColLg, out var ColLgContent))
+        ColumnMap["lg"] = ColLgContent;
+    if (Model.TryGetSlotContent(CollectionSlot.ColMd, out var ColMdContent))
+        ColumnMap["md"] = ColMdContent;
+    if (Model.TryGetSlotContent(CollectionSlot.ColSm, out var ColSmContent))
+        ColumnMap["sm"] = ColSmContent;
+    if (Model.TryGetSlotContent(CollectionSlot.ColXs, out var ColXsContent))
+        ColumnMap["xs"] = ColXsContent;
+    if (Model.TryGetSlotContent(CollectionSlot.Col, out var ColContent))
+        ColumnMap["_"] = ColContent;
+
+    var ColumnClass = string.Join(' ',
+        ColumnMap.Select(Item => $"col-{Item.Key}-{Item.Value}".Replace("-_", "")));
+}
+
+@if (Model.TryGetSlotRenderMulti(CollectionSlot.Items, out var ItemRenders))
+{
+    foreach (var ItemRender in ItemRenders)
+    {
+        <div pv-name="Items"
+             class="@ColumnClass Square">
+            @ItemRender
+        </div>
+    }
+}

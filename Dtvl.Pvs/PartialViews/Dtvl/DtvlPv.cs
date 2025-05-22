@@ -26,6 +26,7 @@ public enum DtvlPvs
     Card,
     FilterCard,
     Collapse,
+    Collection,
     #endregion
 
     #region Tabbed
@@ -67,6 +68,10 @@ public enum DtvlPvs
 
     #region Tree
     Tree,
+    #endregion
+
+    #region Image
+    Image,
     #endregion
 
     #region Pop

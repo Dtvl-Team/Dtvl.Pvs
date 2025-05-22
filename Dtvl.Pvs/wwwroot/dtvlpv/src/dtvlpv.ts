@@ -555,24 +555,26 @@ class DtvlPvIniter {
     //#endregion
 
     //#region Tree
-    public AddPv_Tree(PvName: PathType, Option: TreeOption) {
-        Option.openAll ??= true;
-        Option.children ??= 'children';
 
-        let StoreData: TreeStore = {
-            Option: Option,
-            Datas: [],
-        };
+    //public AddPv_Tree(PvName: PathType, Option: TreeOption) {
+    //    Option.openAll ??= true;
+    //    Option.children ??= 'children';
 
-        let PvNames = Model.Paths(PvName);
-        Model.UpdateStore(PvName, StoreData)
-            .AddV_For([...PvName, 'Datas'], `${PvName}.Datas`)
-            .AddV_If([...PvName, 'Group'], `item.${Option.children} != null`)
-            .AddV_Bind([...PvName, 'GroupItem'], `title`, `item.${Option.children}`)
-            .AddV_For([...PvName, 'ChildrenItem'], `${PvName}.Datas`);
+    //    let StoreData: TreeStore = {
+    //        Option: Option,
+    //        Datas: [],
+    //    };
 
-        return this;
-    }
+    //    let PvNames = Model.Paths(PvName);
+    //    Model.UpdateStore(PvName, StoreData)
+    //        .AddV_For([...PvName, 'Datas'], `${PvName}.Datas`)
+    //        .AddV_If([...PvName, 'Group'], `item.${Option.children} != null`)
+    //        .AddV_Bind([...PvName, 'GroupItem'], `title`, `item.${Option.children}`)
+    //        .AddV_For([...PvName, 'ChildrenItem'], `${PvName}.Datas`);
+
+    //    return this;
+    //}
+
     //#endregion
 
     //#region Modal
