@@ -2,13 +2,13 @@
 
 namespace Dtvl.Pvs.Controllers
 {
-    public class ProfileController : Controller
+    public class SampleController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Flex()
         {
             return View();
         }
-        public IActionResult Detail()
+        public IActionResult ImageFlex()
         {
             return View();
         }

@@ -5,4 +5,5 @@ public enum ImageSlot
     Ratio,
     Src,
     LazySrc,
+    Cover,
 }

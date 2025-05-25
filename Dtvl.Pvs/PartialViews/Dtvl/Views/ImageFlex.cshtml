@@ -1,0 +1,27 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model.FillSlot(ImageFlexSlot.ItemSquare, "true");
+}
+
+<dtvl-pv pv-type="Flex" pass-slot="Model.Slots">
+    @if (Model.TryGetSlotMulti(ImageFlexSlot.ImageSrcs, out var ImageSrcs))
+    {
+        foreach (var Src in ImageSrcs)
+        {
+            <pv-slot slot="FlexSlot.Items" pass-type="Multi">
+                <dtvl-pv pv-type="Image"
+                         pv-name="Images">
+                    @Src.Content
+                </dtvl-pv>
+            </pv-slot>
+        }
+    }
+    else
+    {
+        <pv-slot slot="FlexSlot.Items">
+            <dtvl-pv pv-type="Image"
+                     pv-name="Images">
+            </dtvl-pv>
+        </pv-slot>
+    }
+</dtvl-pv>

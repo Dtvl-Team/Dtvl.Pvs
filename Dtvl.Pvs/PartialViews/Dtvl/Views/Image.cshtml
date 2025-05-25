@@ -2,22 +2,24 @@
 @{
     Model.WithParentTag("v-img")
         .FillSlotFromDefault(ImageSlot.Src)
-        .FillSlot(ImageSlot.Ratio, "1")
-        .AddParentAttr(new
-        {
-        });
+        .FillSlot(ImageSlot.Ratio, "1");
 
     if (Model.TryGetSlotContent(ImageSlot.Ratio, out var RatioContent))
         Model.AddParentAttr("v-bind:aspect-ratio", RatioContent);
 
     if (Model.TryGetSlotContent(ImageSlot.Src, out var SrcContent))
     {
-        Model.AddParentAttr("src", SrcContent);
+        SrcContent = $"'{SrcContent}'";
+        Model.AddParentAttr("v-bind:src", SrcContent);
         if (Model.TryGetSlotContent(ImageSlot.LazySrc, out var LazySrcContent))
-            Model.AddParentAttr("lazy-src", LazySrcContent);
+            Model.AddParentAttr("v-bind:lazy-src", $"'{LazySrcContent}'");
         else
-            Model.AddParentAttr("lazy-src", SrcContent);
+            Model.AddParentAttr("v-bind:lazy-src", SrcContent);
     }
 
-    Model.AddParentAttr("cover");
+    if (Model.TryGetSlotContent(ImageSlot.Cover, out var CoverContent) && bool.TryParse(CoverContent, out var CoverValue) && !CoverValue)
+        Model.AddParentAttr("v-bind:cover", "false");
+    else
+        Model.AddParentAttr("v-bind:cover", "true");
 }
+

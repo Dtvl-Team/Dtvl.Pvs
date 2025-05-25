@@ -35,14 +35,6 @@ export type DataTableOption = {
 type DataTableIndexOption = DataTableHeader & {
     type?: 'Page' | 'Total';
 };
-export type TreeOption = {
-    openAll?: boolean;
-    title: string;
-    subTitle?: string;
-    children?: string;
-    icon?: string;
-    datas: any[];
-};
 type ModalOption = {
     IsShow?: boolean;
 };
@@ -66,7 +58,6 @@ export type AlertOption = {
 } & ApiCallback;
 export type AlertStore = AlertOption & CallingLockType;
 type FilterCardOption = {
-    Store?: PathType;
     ApiKey?: string;
     BtnClear?: () => void;
     BtnSearch?: () => void;
@@ -78,6 +69,7 @@ type SecureOption = boolean | {
 };
 type InputOption = {
     Store?: PathType;
+    Value?: any;
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     Secure?: SecureOption;
     BindOnly?: boolean;
@@ -94,14 +86,15 @@ export type SelectOption = {
     ApiKey?: PathType;
     ItemName?: string;
     ItemValue?: string;
-    ValueStore?: PathType;
+    Store?: PathType;
     ReturnObject?: boolean;
     SelectedValue?: any;
     Multiple?: boolean;
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     OnChange?: Function | string;
 };
 type DatePickerOption = {
-    ValueStore?: string;
+    Store?: PathType;
     IsOpen?: boolean;
 };
 type TabbedOption = {
@@ -111,10 +104,20 @@ type TabsOption = {
     Id?: string;
     Title: string;
 };
+type FlexOption = {
+    ApiKey?: PathType;
+    Datas?: any[];
+};
+type ImageFlexOption = {
+    ApiKey?: PathType;
+    Datas?: any[];
+    ItemSrc: string;
+};
 type PushAnimateOption = {
     PositionFrom: 'Left' | 'Right';
 };
 declare class DtvlPvIniter {
+    protected $AppStore: string;
     protected $PvStore: string;
     protected $ApiStore: string;
     protected $LoadingDelay: number;
@@ -127,7 +130,6 @@ declare class DtvlPvIniter {
     private $SetSidebarTreeCommand;
     AddPv_DataTable(PvName: PathType, Option: DataTableOption): this;
     private $FillDataTableHeaders;
-    AddPv_Tree(PvName: PathType, Option: TreeOption): this;
     AddPv_Modal(PvName: PathType, Option?: ModalOption): this;
     AddPv_SendModal(PvName: PathType, Option?: SendModalOption): this;
     Modal(PvName: PathType, Option: boolean | SendModalStore): this;
@@ -138,6 +140,8 @@ declare class DtvlPvIniter {
     AddPv_Select(PvName: PathType, Option?: SelectOption): this;
     AddPv_DatePicker(PvName: PathType, Option?: DatePickerOption): this;
     AddPv_Tabbed(PvName: PathType, Option?: TabbedOption): this;
+    AddPv_Flex(PvName: PathType, Option: FlexOption): this;
+    AddPv_ImageFlex(PvName: PathType, Option: ImageFlexOption): this;
     AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption): void;
     Animate(PvName: PathType): void;
     protected RootPath(...PushPath: PathType[]): string[];

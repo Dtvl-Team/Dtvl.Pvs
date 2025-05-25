@@ -68,7 +68,7 @@ type DataTableStore = DataTableOption & {
 //#endregion
 
 //#region Tree Type
-export type TreeOption = {
+type TreeOption = {
     openAll?: boolean,
     title: string,
     subTitle?: string,
@@ -112,7 +112,6 @@ export type AlertStore = AlertOption & CallingLockType;
 
 //#region FilterCard Type
 type FilterCardOption = {
-    Store?: PathType,
     ApiKey?: string,
     BtnClear?: () => void,
     BtnSearch?: () => void,
@@ -127,6 +126,7 @@ type SecureOption = boolean | {
 };
 type InputOption = {
     Store?: PathType,
+    Value?: any,
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     Secure?: SecureOption,
     BindOnly?: boolean,
@@ -146,10 +146,11 @@ export type SelectOption = {
     ApiKey?: PathType,
     ItemName?: string,
     ItemValue?: string,
-    ValueStore?: PathType,
+    Store?: PathType,
     ReturnObject?: boolean,
     SelectedValue?: any,
     Multiple?: boolean,
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     OnChange?: Function | string,
 };
 type SelectStore = SelectOption & {
@@ -161,7 +162,7 @@ type SelectStore = SelectOption & {
 
 //#region DatePicker Type
 type DatePickerOption = {
-    ValueStore?: string,
+    Store?: PathType,
     IsOpen?: boolean,
 }
 type DatePickerStore = DatePickerOption & {
@@ -171,12 +172,30 @@ type DatePickerStore = DatePickerOption & {
 //#region Tabbed Type
 type TabbedOption = {
     Tabs: TabsOption[],
-
 };
 type TabsOption = {
     Id?: string,
     Title: string,
 }
+//#endregion
+
+//#region Flex Type
+type FlexOption = {
+    ApiKey?: PathType,
+    Datas?: any[],
+};
+type FlexStore = {
+
+} & FlexOption;
+//#endregion
+
+//#region ImageFilex Type
+type ImageFlexOption = {
+    ApiKey?: PathType,
+    Datas?: any[],
+    ItemSrc: string,
+};
+type ImageFlexStore = {} & FlexOption;
 //#endregion
 
 //#region Animation
@@ -188,7 +207,6 @@ type AnimateStore = {
     Width?: number,
     Height?: number,
 };
-
 //#endregion
 class DtvlPvIniter {
     protected $AppStore: string;
@@ -555,7 +573,6 @@ class DtvlPvIniter {
     //#endregion
 
     //#region Tree
-
     //public AddPv_Tree(PvName: PathType, Option: TreeOption) {
     //    Option.openAll ??= true;
     //    Option.children ??= 'children';
@@ -574,7 +591,6 @@ class DtvlPvIniter {
 
     //    return this;
     //}
-
     //#endregion
 
     //#region Modal
@@ -777,7 +793,6 @@ class DtvlPvIniter {
     //#region Card
     public AddPv_FilterCard(PvName: PathType, Option?: FilterCardOption) {
         Option ??= {};
-        Option.Store ??= PvName;
 
         let FullPath = Model.ToJoin(PvName);
         PvName = Model.Paths(PvName);
@@ -821,11 +836,17 @@ class DtvlPvIniter {
         Model.UpdateStore(PvStorePath, Store);
 
         let ValuePath = this.RootPath(PvName, 'Value');
-        Model.AddV_Model(PvName, ValuePath)
-            .AddStore(Option.Store, null)
-            .AddV_Property(ValuePath, {
-                Target: Option.Store,
-            });
+        Model.AddV_Model(PvName, ValuePath);
+        if (Option.Store != null) {
+            Model.AddStore(ValuePath, null)
+                .AddV_Property(ValuePath, {
+                    Target: Option.Store,
+                });
+        }
+
+        if (Option.Value != null)
+            Model.UpdateStore(ValuePath, Option.Value);
+
 
         if (Option.ReadOnly != null) {
             let ReadOnlyPath = null;
@@ -905,10 +926,10 @@ class DtvlPvIniter {
         let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
         let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
 
-        if (Option.ValueStore) {
-            let Target = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
-            Model.AddV_Property(Option.ValueStore, {
-                Target,
+        if (Option.Store) {
+            let ValuePath = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
+            Model.AddV_Property(ValuePath, {
+                Target: Option.Store,
             });
         }
 
@@ -1058,8 +1079,8 @@ class DtvlPvIniter {
         };
         Model.UpdateStore(PvName, Store);
 
-        if (Store.ValueStore) {
-            Model.AddV_Property(Store.ValueStore, {
+        if (Store.Store) {
+            Model.AddV_Property(Store.Store, {
                 Target: this.RootPath(PvName, 'Date'),
                 get() {
                     let PickerStore = Model.GetStore(DtvlPv.RootPath(PvName));
@@ -1121,7 +1142,7 @@ class DtvlPvIniter {
     }
     //#endregion
 
-    //#region
+    //#region Tabbed
     public AddPv_Tabbed(PvName: PathType, Option?: TabbedOption) {
         let TabbedPath = Model.ToJoin(this.RootPath(PvName));
         Model.AddV_Tree(PvName, {
@@ -1135,6 +1156,53 @@ class DtvlPvIniter {
         return this;
     }
     //#endregion
+
+    //#region Collection
+    public AddPv_Flex(PvName: PathType, Option: FlexOption) {
+        let RootStorePath = Model.ToJoin(this.RootPath(PvName));
+
+        Option.Datas ??= [];
+        let RootStore: FlexStore = {
+            ...Option,
+        };
+        Model.UpdateStore(RootStorePath, RootStore);
+
+        if (RootStore.ApiKey != null) {
+            Model.AddV_Property(this.RootPath(PvName, 'Datas'), {
+                Target: Option.ApiKey,
+                Value: Option.Datas,
+            });
+        }
+
+        Model
+            .AddV_Tree(PvName, {
+                ':Items': {
+                    'v-for': `${RootStorePath}.Datas`,
+                },
+            });
+
+        return this;
+    }
+    public AddPv_ImageFlex(PvName: PathType, Option: ImageFlexOption) {
+        this.AddPv_Flex(PvName, Option);
+        let BindSrc = Option.ItemSrc;
+        if (Option.ItemSrc == null || Option.ItemSrc == '.' || Option.ItemSrc == '')
+            BindSrc = 'item';
+        else if (!Option.ItemSrc.includes('item.')) {
+            BindSrc = `item.${Option.ItemSrc}`;
+        }
+
+        Model.AddV_Tree(PvName, {
+            ':Items': {
+                ':Images': {
+                    'v-bind:src': BindSrc,
+                }
+            },
+        });
+        return this;
+    }
+    //#endregion
+
 
     //#region Collapse
 
@@ -1169,7 +1237,6 @@ class DtvlPvIniter {
         IsRun = IsRun ? false : true;
         Model.UpdateStore([StorePath, ''], true);
     }
-
     //#endregion
 
     //#region Protect Process
@@ -1177,7 +1244,6 @@ class DtvlPvIniter {
         let RootPath = Model.Paths([this.$PvStore, PushPath]);
         return RootPath;
     }
-
     protected ApiPath(...PushPath: PathType[]): string[] {
         let RootPath = Model.Paths([this.$ApiStore, PushPath]);
         return RootPath;

@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\scripts\Profile\**" />
+    <Compile Remove="wwwroot\scripts\Project\**" />
+    <Content Remove="wwwroot\scripts\Profile\**" />
+    <Content Remove="wwwroot\scripts\Project\**" />
+    <EmbeddedResource Remove="wwwroot\scripts\Profile\**" />
+    <EmbeddedResource Remove="wwwroot\scripts\Project\**" />
+    <None Remove="wwwroot\scripts\Profile\**" />
+    <None Remove="wwwroot\scripts\Project\**" />
     <TypeScriptCompile Remove="node_modules\**" />
+    <TypeScriptCompile Remove="wwwroot\scripts\Profile\**" />
+    <TypeScriptCompile Remove="wwwroot\scripts\Project\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,9 +38,7 @@
     <Folder Include="wwwroot\dtvlpv\dist\css\" />
     <Folder Include="wwwroot\dtvlpv\dist\js\" />
     <Folder Include="wwwroot\dtvlpv\src\types\" />
-    <Folder Include="wwwroot\scripts\Home\" />
-    <Folder Include="wwwroot\scripts\Project\" />
-    <Folder Include="wwwroot\scripts\Profile\" />
+    <Folder Include="wwwroot\scripts\Sample\" />
   </ItemGroup>
 
   <ItemGroup>

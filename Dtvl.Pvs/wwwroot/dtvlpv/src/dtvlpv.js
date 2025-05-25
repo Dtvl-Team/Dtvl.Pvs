@@ -519,7 +519,6 @@ class DtvlPvIniter {
     //#region Card
     AddPv_FilterCard(PvName, Option) {
         Option ??= {};
-        Option.Store ??= PvName;
         let FullPath = Model.ToJoin(PvName);
         PvName = Model.Paths(PvName);
         Model.UpdateStore(PvName, {});
@@ -551,11 +550,15 @@ class DtvlPvIniter {
         let Store = {};
         Model.UpdateStore(PvStorePath, Store);
         let ValuePath = this.RootPath(PvName, 'Value');
-        Model.AddV_Model(PvName, ValuePath)
-            .AddStore(Option.Store, null)
-            .AddV_Property(ValuePath, {
-            Target: Option.Store,
-        });
+        Model.AddV_Model(PvName, ValuePath);
+        if (Option.Store != null) {
+            Model.AddStore(ValuePath, null)
+                .AddV_Property(ValuePath, {
+                Target: Option.Store,
+            });
+        }
+        if (Option.Value != null)
+            Model.UpdateStore(ValuePath, Option.Value);
         if (Option.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
@@ -629,10 +632,10 @@ class DtvlPvIniter {
         Model.UpdateStore(StorePath, Store);
         let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
         let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
-        if (Option.ValueStore) {
-            let Target = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
-            Model.AddV_Property(Option.ValueStore, {
-                Target,
+        if (Option.Store) {
+            let ValuePath = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
+            Model.AddV_Property(ValuePath, {
+                Target: Option.Store,
             });
         }
         Model.AddV_Property(SelectedItemPath, {
@@ -756,8 +759,8 @@ class DtvlPvIniter {
             ...Option,
         };
         Model.UpdateStore(PvName, Store);
-        if (Store.ValueStore) {
-            Model.AddV_Property(Store.ValueStore, {
+        if (Store.Store) {
+            Model.AddV_Property(Store.Store, {
                 Target: this.RootPath(PvName, 'Date'),
                 get() {
                     let PickerStore = Model.GetStore(DtvlPv.RootPath(PvName));
@@ -815,7 +818,7 @@ class DtvlPvIniter {
         return this;
     }
     //#endregion
-    //#region
+    //#region Tabbed
     AddPv_Tabbed(PvName, Option) {
         let TabbedPath = Model.ToJoin(this.RootPath(PvName));
         Model.AddV_Tree(PvName, {
@@ -825,6 +828,46 @@ class DtvlPvIniter {
             ':Contents': {
                 'v-model': `${TabbedPath}.Value`,
             }
+        });
+        return this;
+    }
+    //#endregion
+    //#region Collection
+    AddPv_Flex(PvName, Option) {
+        let RootStorePath = Model.ToJoin(this.RootPath(PvName));
+        Option.Datas ??= [];
+        let RootStore = {
+            ...Option,
+        };
+        Model.UpdateStore(RootStorePath, RootStore);
+        if (RootStore.ApiKey != null) {
+            Model.AddV_Property(this.RootPath(PvName, 'Datas'), {
+                Target: Option.ApiKey,
+                Value: Option.Datas,
+            });
+        }
+        Model
+            .AddV_Tree(PvName, {
+            ':Items': {
+                'v-for': `${RootStorePath}.Datas`,
+            },
+        });
+        return this;
+    }
+    AddPv_ImageFlex(PvName, Option) {
+        this.AddPv_Flex(PvName, Option);
+        let BindSrc = Option.ItemSrc;
+        if (Option.ItemSrc == null || Option.ItemSrc == '.' || Option.ItemSrc == '')
+            BindSrc = 'item';
+        else if (!Option.ItemSrc.includes('item.')) {
+            BindSrc = `item.${Option.ItemSrc}`;
+        }
+        Model.AddV_Tree(PvName, {
+            ':Items': {
+                ':Images': {
+                    'v-bind:src': BindSrc,
+                }
+            },
         });
         return this;
     }

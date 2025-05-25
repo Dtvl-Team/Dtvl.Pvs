@@ -1,8 +1,10 @@
 namespace Dtvl.Pvs;
 
-public enum CollectionSlot
+public enum FlexSlot
 {
     Items,
+    ItemsAttr,
+    ItemSquare,
     Column1,
     Column2,
     Column3,

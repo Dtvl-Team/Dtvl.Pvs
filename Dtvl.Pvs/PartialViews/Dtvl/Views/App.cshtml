@@ -28,7 +28,7 @@
         @Model.RenderSlot(AppSlot.Sidebar)
     }
 
-    <section v-show="App.IsMounted"
+    <section v-show="app.IsMounted"
              style="display:none;"
              class="AppBody"
              v-bind:class="{ MsForSidebar : (@HasSidebarString && !mobile) }">

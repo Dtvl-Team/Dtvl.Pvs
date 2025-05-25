@@ -26,7 +26,8 @@ public enum DtvlPvs
     Card,
     FilterCard,
     Collapse,
-    Collection,
+    Flex,
+    ImageFlex,
     #endregion
 
     #region Tabbed
