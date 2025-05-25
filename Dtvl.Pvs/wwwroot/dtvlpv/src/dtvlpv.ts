@@ -1057,7 +1057,7 @@ class DtvlPvIniter {
                 'v-on:update:model-value': Option.OnChange,
             });
 
-        if (Option.ReadOnly == true) {
+        if (Option.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
                 Store.ReadOnly = Option.ReadOnly;
