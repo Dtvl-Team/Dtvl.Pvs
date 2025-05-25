@@ -22,6 +22,10 @@ DtvlPv.UseRouter('Router', [
         title: 'ImageFlex',
         href: '/Sample/ImageFlex',
     },
+    {
+        title: 'Select',
+        href: '/Sample/Select',
+    },
 ], {
     OpenMode: 'all',
 });

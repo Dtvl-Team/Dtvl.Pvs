@@ -2,30 +2,19 @@
 
 @{
     Model.WithParentTag("v-autocomplete")
-        .AddParentAttr("hide-details")
+        .FillSlotFromDefault(InputSlot.Label)
+        .UsingInputBase()
         .AddParentAttr("no-data-text", "查無資料")
         .AddParentAttr(new
         {
             @class = "Select",
-            label = Model.GetSlotContent(SelectSlot.Label),
-            density = "compact",
-            variant = "solo-filled",
         });
 
     if (Model.HasPvName)
         Model.AddParentAttr("ref", Model.PvName);
 
-    if (Model.HasSlot(SelectSlot.ReadOnly))
-        Model.AddParentAttr("readonly");
-
-    if (!Model.HasSlot(SelectSlot.ReadOnly) || Model.HasSlot(SelectSlot.Clearable))
-        Model.AddParentAttr("clearable");
-
     if (Model.HasSlot(SelectSlot.Chips))
         Model.AddParentAttr("chips");
-
-    if (Model.HasSlot(SelectSlot.InnerIcon))
-        Model.AddParentAttr("Prepend-inner-icon", Model.GetSlotContent(SelectSlot.InnerIcon));
 
     if (Model.HasSlot(SelectSlot.Multiple))
         Model.AddParentAttr("multiple");

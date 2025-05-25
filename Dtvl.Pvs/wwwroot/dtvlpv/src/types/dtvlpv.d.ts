@@ -91,6 +91,7 @@ export type SelectOption = {
     SelectedValue?: any;
     Multiple?: boolean;
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
+    BindOnly?: boolean;
     OnChange?: Function | string;
 };
 type DatePickerOption = {

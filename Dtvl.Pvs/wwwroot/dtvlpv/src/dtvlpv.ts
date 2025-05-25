@@ -151,6 +151,7 @@ export type SelectOption = {
     SelectedValue?: any,
     Multiple?: boolean,
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
+    BindOnly?: boolean,
     OnChange?: Function | string,
 };
 type SelectStore = SelectOption & {
@@ -825,28 +826,27 @@ class DtvlPvIniter {
             Option = { Store: Option };
 
         Option.Store ??= Model.ToJoin(PvName);
-
-        if (Option.BindOnly == true) {
-            Model.AddV_Model(PvName, Option.Store);
-            return this;
-        }
-
         let PvStorePath = this.RootPath(PvName);
         let Store: InputStore = {};
         Model.UpdateStore(PvStorePath, Store);
 
-        let ValuePath = this.RootPath(PvName, 'Value');
-        Model.AddV_Model(PvName, ValuePath);
         if (Option.Store != null) {
-            Model.AddStore(ValuePath, null)
-                .AddV_Property(ValuePath, {
-                    Target: Option.Store,
-                });
+            if (Option.BindOnly == true) {
+                Model.AddV_Model(PvName, Option.Store);
+            }
+            else {
+                let ValuePath = this.RootPath(PvName, 'Value');
+                Model
+                    .AddStore(ValuePath, null)
+                    .AddV_Model(PvName, ValuePath)
+                    .AddV_Property(ValuePath, {
+                        Target: Option.Store,
+                    });
+
+                if (Option.Value != null)
+                    Model.UpdateStore(ValuePath, Option.Value);
+            }
         }
-
-        if (Option.Value != null)
-            Model.UpdateStore(ValuePath, Option.Value);
-
 
         if (Option.ReadOnly != null) {
             let ReadOnlyPath = null;
@@ -904,7 +904,6 @@ class DtvlPvIniter {
                 'v-bind:type': `${SecuringPath} ? 'password' : 'text' `,
             });
         }
-
         return this;
     }
     //#endregion
@@ -916,70 +915,74 @@ class DtvlPvIniter {
         Option.Multiple ??= false;
         Option.Datas ??= [];
 
-        let StorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
         let Store: SelectStore = {
             IsInited: false,
             ...Option,
         };
-        Model.UpdateStore(StorePath, Store);
+        Model.UpdateStore(PvStorePath, Store);
 
-        let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
-        let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
-
-        if (Option.Store) {
-            let ValuePath = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
-            Model.AddV_Property(ValuePath, {
-                Target: Option.Store,
-            });
-        }
-
-        Model.AddV_Property(SelectedItemPath, {
-            get() {
-                let SelectedValue = this.SelectedValue;
-                if (SelectedValue == null)
-                    return null;
-
-                let Datas = this.Datas;
-                if (!Array.isArray(Datas))
-                    return null;
-
-                if (Array.isArray(SelectedValue)) {
-                    if (Datas == null)
-                        return null;
-
-                    let GetItems = SelectedValue
-                        .map(Value => Datas.find(Item => Item[this.ItemValue]) == Value)
-                        .filter(Item => Item != null);
-
-                    return GetItems;
-                }
-
-                return Datas.find(Item => Item[this.ItemValue] == SelectedValue);
-            },
-            set(Value) {
-
-                if (!Value) {
-                    this.SelectedValue = null;
-                    return;
-                }
-
-                let Datas = this.Datas;
-                if (!Array.isArray(Datas))
-                    return null;
-
-                if (Array.isArray(Value)) {
-                    let AllValues = Datas.map(Item => Item[this.ItemValue]);
-                    let SetValues = Value.map(Item => Item[this.ItemValue]);
-                    SetValues = SetValues.filter(Item => AllValues.includes(Item));
-                    this.SelectedValue = SetValues;
-                    return;
-                }
-
-                this.SelectedValue = Value[this.ItemValue];
+        if (Option.Store != null) {
+            if (Option.BindOnly == true) {
+                Model.AddV_Model(PvName, Option.Store);
             }
-        });
+            else {
+                let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
+                let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
+                let ValuePath = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
+                Model.AddV_Model(PvName, `${PvStorePath}.SelectedValue`);
+                Model.AddV_Property(ValuePath, {
+                    Target: Option.Store,
+                });
+                Model.AddV_Property(SelectedItemPath, {
+                    get() {
+                        let SelectedValue = this.SelectedValue;
+                        if (SelectedValue == null)
+                            return null;
+
+                        let Datas = this.Datas;
+                        if (!Array.isArray(Datas))
+                            return null;
+
+                        if (Array.isArray(SelectedValue)) {
+                            if (Datas == null)
+                                return null;
+
+                            let GetItems = SelectedValue
+                                .map(Value => Datas.find(Item => Item[this.ItemValue]) == Value)
+                                .filter(Item => Item != null);
+
+                            return GetItems;
+                        }
+
+                        return Datas.find(Item => Item[this.ItemValue] == SelectedValue);
+                    },
+                    set(Value) {
+
+                        if (!Value) {
+                            this.SelectedValue = null;
+                            return;
+                        }
+
+                        let Datas = this.Datas;
+                        if (!Array.isArray(Datas))
+                            return null;
+
+                        if (Array.isArray(Value)) {
+                            let AllValues = Datas.map(Item => Item[this.ItemValue]);
+                            let SetValues = Value.map(Item => Item[this.ItemValue]);
+                            SetValues = SetValues.filter(Item => AllValues.includes(Item));
+                            this.SelectedValue = SetValues;
+                            return;
+                        }
+
+                        this.SelectedValue = Value[this.ItemValue];
+                    }
+                });
+            }
+        }
         if (Option.ApiKey) {
-            Model.AddV_Property(`${StorePath}.Datas`, {
+            Model.AddV_Property(`${PvStorePath}.Datas`, {
                 Target: Option.ApiKey,
                 Value: Option.Datas,
                 get() {
@@ -1025,7 +1028,7 @@ class DtvlPvIniter {
             });
 
             this.WatchApi(Option.ApiKey, 'IsCalling', (Value: boolean) => {
-                let Store = Model.GetStore<SelectStore>(StorePath);
+                let Store = Model.GetStore<SelectStore>(PvStorePath);
                 if (Value == true) {
                     Store.Loading = Value;
                     Store.LoadingTime = new Date();
@@ -1046,21 +1049,38 @@ class DtvlPvIniter {
             });
 
             Model.AddV_Tree(PvName, {
-                'v-bind:loading': `${StorePath}.Loading`,
+                'v-bind:loading': `${PvStorePath}.Loading`,
             });
         }
-
         if (Option.OnChange)
             Model.AddV_Tree(PvName, {
                 'v-on:update:model-value': Option.OnChange,
             });
 
+        if (Option.ReadOnly == true) {
+            let ReadOnlyPath = null;
+            if (typeof (Option.ReadOnly) == 'function') {
+                Store.ReadOnly = Option.ReadOnly;
+                ReadOnlyPath = this.RootPath(PvName, `ReadOnly(${Model.ToJoin(PvStorePath)})`);
+            }
+            else if (typeof (Option.ReadOnly) == 'boolean') {
+                Store.ReadOnly = Option.ReadOnly;
+                ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
+            } else if (typeof (Option.ReadOnly == 'string')) {
+                ReadOnlyPath = Option.ReadOnly;
+            }
+
+            if (ReadOnlyPath != null) {
+                Model.AddV_Bind(PvName, 'readonly', ReadOnlyPath);
+                Model.AddV_Bind(PvName, 'clearable', `!${Model.ToJoin(ReadOnlyPath)}`);
+            }
+        }
+
 
         Model.AddV_Tree(PvName, {
-            'v-bind:items': `${StorePath}.Datas`,
-            'v-bind:item-title': `${StorePath}.ItemName`,
-            'v-bind:item-value': `${StorePath}.ItemValue`,
-            'v-model': `${StorePath}.SelectedValue`,
+            'v-bind:items': `${PvStorePath}.Datas`,
+            'v-bind:item-title': `${PvStorePath}.ItemName`,
+            'v-bind:item-value': `${PvStorePath}.ItemValue`,
             'v-bind:return-object': `false`,
             'v-bind:multiple': `${Option.Multiple}`,
         });
