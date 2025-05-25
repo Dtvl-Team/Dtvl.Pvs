@@ -1,5 +1,4 @@
-﻿
-<!--靜態-->
+﻿<!--靜態-->
 <dtvl-pv pv-type="ImageFlex"
          pv-name="StaticFlex">
     <pv-slot slot="ImageFlexSlot.ImageSrcs" pass-type="Multi">
@@ -32,5 +31,19 @@
     <pv-slot slot="ImageFlexSlot.ItemsAttr" class="px-1"></pv-slot>
     <pv-slot slot="ImageFlexSlot.Column2"></pv-slot>
 </dtvl-pv>
+
+<!--FilePicker + 預覽圖片-->
+<dtvl-pv pv-type="Btn"
+         pv-name="BtnSelectImage"
+         class="mt-2">
+    Select Image
+</dtvl-pv>
+<dtvl-pv pv-type="ImageFlex"
+         pv-name="SelectImageFlex"
+         class="mt-2">
+    <pv-slot slot="ImageFlexSlot.ItemsAttr" class="px-1"></pv-slot>
+    <pv-slot slot="ImageFlexSlot.Column3"></pv-slot>
+</dtvl-pv>
+
 
 <script type="module" src="~/scripts/Sample/ImageFlex.js"></script>

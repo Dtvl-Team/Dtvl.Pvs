@@ -18,3 +18,14 @@ DtvlPv.AddPv_ImageFlex('DynamicImageFlex', {
     ItemSrc: `Src`,
     ApiKey: 'SomeApi'
 })
+
+Model.AddV_FilePicker('BtnSelectImage', {
+    Store: 'Images',
+    Multiple: true,
+    ConvertType: ['base64'],
+});
+
+DtvlPv.AddPv_ImageFlex('SelectImageFlex', {
+    ItemSrc: 'Base64',
+    ApiKey: 'FileStore.Images'
+});
