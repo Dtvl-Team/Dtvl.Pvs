@@ -84,7 +84,7 @@ type InputStore = {
 export type SelectOption = {
     Datas?: any[];
     ApiKey?: PathType;
-    ItemName?: string;
+    ItemName?: string | Function;
     ItemValue?: string;
     Store?: PathType;
     ReturnObject?: boolean;

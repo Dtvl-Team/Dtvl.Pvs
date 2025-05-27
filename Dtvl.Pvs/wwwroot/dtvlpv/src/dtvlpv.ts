@@ -144,7 +144,7 @@ type InputStore = {
 export type SelectOption = {
     Datas?: any[],
     ApiKey?: PathType,
-    ItemName?: string | ((Item: any) => string),
+    ItemName?: string | Function,
     ItemValue?: string,
     Store?: PathType,
     ReturnObject?: boolean,

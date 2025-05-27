@@ -24,10 +24,10 @@ Model.AddV_Tree('Datas', {
 });
 DtvlPv.AddPv_Select(['Datas', 'Rows', 'Sel'], {
     Datas: SelectDatas,
-    ItemName: 'name',
+    ItemName: (Item) => {
+    },
     ItemValue: 'id',
     Store: 'item.SelectId',
-    ReadOnly: true,
     BindOnly: true,
 });
 //# sourceMappingURL=Select.js.map
