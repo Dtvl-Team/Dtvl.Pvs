@@ -144,7 +144,7 @@ type InputStore = {
 export type SelectOption = {
     Datas?: any[],
     ApiKey?: PathType,
-    ItemName?: string,
+    ItemName?: string | ((Item: any) => string),
     ItemValue?: string,
     Store?: PathType,
     ReturnObject?: boolean,
@@ -1056,7 +1056,6 @@ class DtvlPvIniter {
             Model.AddV_Tree(PvName, {
                 'v-on:update:model-value': Option.OnChange,
             });
-
         if (Option.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
@@ -1075,7 +1074,6 @@ class DtvlPvIniter {
                 Model.AddV_Bind(PvName, 'clearable', `!${Model.ToJoin(ReadOnlyPath)}`);
             }
         }
-
 
         Model.AddV_Tree(PvName, {
             'v-bind:items': `${PvStorePath}.Datas`,
