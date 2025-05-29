@@ -553,6 +553,7 @@ class DtvlPvIniter {
                 let ValuePath = this.RootPath(PvName, 'Value');
                 Model
                     .AddStore(ValuePath, null)
+                    .AddStore(Option.Store, null)
                     .AddV_Model(PvName, ValuePath)
                     .AddV_Property(ValuePath, {
                     Target: Option.Store,
@@ -638,11 +639,14 @@ class DtvlPvIniter {
                 let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
                 let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
                 let ValuePath = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
-                Model.AddV_Model(PvName, `${PvStorePath}.SelectedValue`);
-                Model.AddV_Property(ValuePath, {
+                Model
+                    .AddStore(ValuePath, null)
+                    .AddStore(Option.Store, null)
+                    .AddV_Model(PvName, `${PvStorePath}.SelectedValue`)
+                    .AddV_Property(ValuePath, {
                     Target: Option.Store,
-                });
-                Model.AddV_Property(SelectedItemPath, {
+                })
+                    .AddV_Property(SelectedItemPath, {
                     get() {
                         let SelectedValue = this.SelectedValue;
                         if (SelectedValue == null)
