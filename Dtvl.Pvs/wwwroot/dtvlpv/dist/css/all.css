@@ -1397,6 +1397,10 @@ body {
   opacity: var(--Select-Icon-opacity);
 }
 
+.SelectPrependInner {
+  padding-inline-start: 12px;
+}
+
 --RequiredTipVar, :root {
   --RequiredTip-Icon-height: 20px;
   --RequiredTip-Icon-width: 20px;
