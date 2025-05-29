@@ -31,6 +31,7 @@ DtvlPv.AddPv_Select(['Datas', 'Rows', 'Sel'], {
        
     },
     ItemValue: 'id',
-    Store: 'item.SelectId',
+    //Store: 'item.SelectId',
     BindOnly: true,
 });
+

@@ -3,7 +3,7 @@ namespace Dtvl.Pvs;
 public enum ImageSlot
 {
     Ratio,
-    Src,
-    LazySrc,
+    SrcUrl,
+    LazySrcUrl,
     Cover,
 }

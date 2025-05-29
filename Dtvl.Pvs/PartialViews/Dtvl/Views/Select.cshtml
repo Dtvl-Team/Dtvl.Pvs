@@ -19,3 +19,14 @@
     if (Model.HasSlot(SelectSlot.Multiple))
         Model.AddParentAttr("multiple");
 }
+
+<template v-slot:prepend-inner="props">
+    @if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
+    {
+        <dtvl-pv pv-type="Icon"
+                 pv-name="Icon"
+                 pass-slot="Model.PassSlot_InputToIcon()"
+                 class="InputIcon">
+        </dtvl-pv>
+    }
+</template>

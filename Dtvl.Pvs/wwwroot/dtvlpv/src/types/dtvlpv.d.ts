@@ -73,6 +73,7 @@ type InputOption = {
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     Secure?: SecureOption;
     BindOnly?: boolean;
+    Format?: string;
 } | string;
 type InputStore = {
     Value?: any;
@@ -81,7 +82,7 @@ type InputStore = {
         Securing: boolean;
     } & SecureOption;
 };
-export type SelectOption = {
+type SelectOption = {
     Datas?: any[];
     ApiKey?: PathType;
     ItemName?: string | Function;
@@ -114,6 +115,12 @@ type ImageFlexOption = {
     Datas?: any[];
     ItemSrc: string;
 };
+type ImageOption = {
+    SrcUrl?: string;
+    LazySrcUrl?: string;
+    Src?: string;
+    LazySrc?: string;
+};
 type PushAnimateOption = {
     PositionFrom: 'Left' | 'Right';
 };
@@ -143,6 +150,7 @@ declare class DtvlPvIniter {
     AddPv_Tabbed(PvName: PathType, Option?: TabbedOption): this;
     AddPv_Flex(PvName: PathType, Option: FlexOption): this;
     AddPv_ImageFlex(PvName: PathType, Option: ImageFlexOption): this;
+    AddPv_Image(PvName: PathType, Option: ImageOption): this;
     AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption): void;
     Animate(PvName: PathType): void;
     protected RootPath(...PushPath: PathType[]): string[];

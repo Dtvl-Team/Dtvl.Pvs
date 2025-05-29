@@ -40,6 +40,10 @@ public enum DtvlPvs
     Btn,
     #endregion
 
+    #region Icon
+    Icon,
+    #endregion
+
     #region Table
     DataTable,
     TableColumn,

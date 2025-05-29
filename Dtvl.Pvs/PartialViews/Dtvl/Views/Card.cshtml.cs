@@ -4,6 +4,7 @@ namespace Dtvl.Pvs;
 public enum CardSlot
 {
     BodyAttr,
+    Hover,
 
     HeaderView,
     FooterView,

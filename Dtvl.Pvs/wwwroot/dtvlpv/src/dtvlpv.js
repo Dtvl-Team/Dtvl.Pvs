@@ -536,7 +536,7 @@ class DtvlPvIniter {
         return this;
     }
     //#endregion
-    //#region Input
+    //#region Input, Select
     AddPv_Input(PvName, Option) {
         Option ??= {};
         if (typeof (Option) == 'string')
@@ -619,20 +619,18 @@ class DtvlPvIniter {
         }
         return this;
     }
-    //#endregion
-    //#region Select
     AddPv_Select(PvName, Option) {
         Option ??= {};
         Option.ReturnObject ??= false;
         Option.Multiple ??= false;
         Option.Datas ??= [];
         let PvStorePath = Model.ToJoin(this.RootPath(PvName));
-        let Store = {
+        let PvStore = {
             IsInited: false,
             ...Option,
         };
-        Model.UpdateStore(PvStorePath, Store);
-        if (Option.Store != null) {
+        Model.UpdateStore(PvStorePath, PvStore);
+        if (PvStore.Store != null) {
             if (Option.BindOnly == true) {
                 Model.AddV_Model(PvName, Option.Store);
             }
@@ -682,7 +680,7 @@ class DtvlPvIniter {
                 });
             }
         }
-        if (Option.ApiKey) {
+        if (PvStore.ApiKey) {
             Model.AddV_Property(`${PvStorePath}.Datas`, {
                 Target: Option.ApiKey,
                 Value: Option.Datas,
@@ -744,18 +742,18 @@ class DtvlPvIniter {
                 'v-bind:loading': `${PvStorePath}.Loading`,
             });
         }
-        if (Option.OnChange)
+        if (PvStore.OnChange)
             Model.AddV_Tree(PvName, {
                 'v-on:update:model-value': Option.OnChange,
             });
-        if (Option.ReadOnly != null) {
+        if (PvStore.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
-                Store.ReadOnly = Option.ReadOnly;
+                PvStore.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, `ReadOnly(${Model.ToJoin(PvStorePath)})`);
             }
             else if (typeof (Option.ReadOnly) == 'boolean') {
-                Store.ReadOnly = Option.ReadOnly;
+                PvStore.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
             }
             else if (typeof (Option.ReadOnly == 'string')) {
@@ -771,7 +769,7 @@ class DtvlPvIniter {
             'v-bind:item-title': `${PvStorePath}.ItemName`,
             'v-bind:item-value': `${PvStorePath}.ItemValue`,
             'v-bind:return-object': `false`,
-            'v-bind:multiple': `${Option.Multiple}`,
+            'v-bind:multiple': `${PvStore.Multiple}`,
         });
         return this;
     }
@@ -857,7 +855,7 @@ class DtvlPvIniter {
         return this;
     }
     //#endregion
-    //#region Collection
+    //#region Flex
     AddPv_Flex(PvName, Option) {
         let RootStorePath = Model.ToJoin(this.RootPath(PvName));
         Option.Datas ??= [];
@@ -893,6 +891,39 @@ class DtvlPvIniter {
                     'v-bind:src': BindSrc,
                 }
             },
+        });
+        return this;
+    }
+    //#endregion
+    //#region Image
+    AddPv_Image(PvName, Option) {
+        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStore = {};
+        Model.UpdateStore(PvStorePath, PvStore);
+        if (Option.Src != null) {
+            Model.AddV_Property([PvStorePath, 'Src'], {
+                Target: Option.Src,
+            });
+        }
+        else {
+            PvStore.Src = Option.SrcUrl;
+        }
+        if (Option.LazySrc == null && Option.LazySrcUrl == null) {
+            Model.AddV_Property([PvStorePath, 'LazySrc'], {
+                Target: [PvStorePath, 'Src'],
+            });
+        }
+        else if (Option.LazySrc != null) {
+            Model.AddV_Property([PvStorePath, 'LazySrc'], {
+                Target: Option.LazySrc,
+            });
+        }
+        else {
+            PvStore.LazySrc = Option.LazySrcUrl;
+        }
+        Model.AddV_Tree(PvName, {
+            'v-bind:src': [PvStorePath, 'Src'],
+            'v-bind:lazy-src': [PvStorePath, 'LazySrc'],
         });
         return this;
     }

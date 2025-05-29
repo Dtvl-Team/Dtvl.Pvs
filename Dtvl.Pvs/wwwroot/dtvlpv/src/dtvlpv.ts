@@ -130,6 +130,7 @@ type InputOption = {
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     Secure?: SecureOption,
     BindOnly?: boolean,
+    Format?: string,
 } | string;
 type InputStore = {
     Value?: any,
@@ -141,7 +142,7 @@ type InputStore = {
 //#endregion
 
 //#region Select Type
-export type SelectOption = {
+type SelectOption = {
     Datas?: any[],
     ApiKey?: PathType,
     ItemName?: string | Function,
@@ -197,6 +198,19 @@ type ImageFlexOption = {
     ItemSrc: string,
 };
 type ImageFlexStore = {} & FlexOption;
+//#endregion
+
+//#region Image Type
+type ImageOption = {
+    SrcUrl?: string,
+    LazySrcUrl?: string,
+    Src?: string,
+    LazySrc?: string,
+};
+type ImageStore = {
+    Src?: string,
+    LazySrc?: string,
+}
 //#endregion
 
 //#region Animation
@@ -818,9 +832,8 @@ class DtvlPvIniter {
     }
     //#endregion
 
-    //#region Input
+    //#region Input, Select
     public AddPv_Input(PvName: PathType, Option?: InputOption) {
-
         Option ??= {};
         if (typeof (Option) == 'string')
             Option = { Store: Option };
@@ -906,9 +919,6 @@ class DtvlPvIniter {
         }
         return this;
     }
-    //#endregion
-
-    //#region Select
     public AddPv_Select(PvName: PathType, Option?: SelectOption) {
         Option ??= {};
         Option.ReturnObject ??= false;
@@ -916,13 +926,13 @@ class DtvlPvIniter {
         Option.Datas ??= [];
 
         let PvStorePath = Model.ToJoin(this.RootPath(PvName));
-        let Store: SelectStore = {
+        let PvStore: SelectStore = {
             IsInited: false,
             ...Option,
         };
-        Model.UpdateStore(PvStorePath, Store);
+        Model.UpdateStore(PvStorePath, PvStore);
 
-        if (Option.Store != null) {
+        if (PvStore.Store != null) {
             if (Option.BindOnly == true) {
                 Model.AddV_Model(PvName, Option.Store);
             }
@@ -981,7 +991,7 @@ class DtvlPvIniter {
                 });
             }
         }
-        if (Option.ApiKey) {
+        if (PvStore.ApiKey) {
             Model.AddV_Property(`${PvStorePath}.Datas`, {
                 Target: Option.ApiKey,
                 Value: Option.Datas,
@@ -1052,18 +1062,18 @@ class DtvlPvIniter {
                 'v-bind:loading': `${PvStorePath}.Loading`,
             });
         }
-        if (Option.OnChange)
+        if (PvStore.OnChange)
             Model.AddV_Tree(PvName, {
                 'v-on:update:model-value': Option.OnChange,
             });
-        if (Option.ReadOnly != null) {
+        if (PvStore.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
-                Store.ReadOnly = Option.ReadOnly;
+                PvStore.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, `ReadOnly(${Model.ToJoin(PvStorePath)})`);
             }
             else if (typeof (Option.ReadOnly) == 'boolean') {
-                Store.ReadOnly = Option.ReadOnly;
+                PvStore.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
             } else if (typeof (Option.ReadOnly == 'string')) {
                 ReadOnlyPath = Option.ReadOnly;
@@ -1080,7 +1090,7 @@ class DtvlPvIniter {
             'v-bind:item-title': `${PvStorePath}.ItemName`,
             'v-bind:item-value': `${PvStorePath}.ItemValue`,
             'v-bind:return-object': `false`,
-            'v-bind:multiple': `${Option.Multiple}`,
+            'v-bind:multiple': `${PvStore.Multiple}`,
         });
 
         return this;
@@ -1175,7 +1185,7 @@ class DtvlPvIniter {
     }
     //#endregion
 
-    //#region Collection
+    //#region Flex
     public AddPv_Flex(PvName: PathType, Option: FlexOption) {
         let RootStorePath = Model.ToJoin(this.RootPath(PvName));
 
@@ -1221,6 +1231,42 @@ class DtvlPvIniter {
     }
     //#endregion
 
+    //#region Image
+    public AddPv_Image(PvName: PathType, Option: ImageOption) {
+
+        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStore: ImageStore = {};
+        Model.UpdateStore(PvStorePath, PvStore);
+
+        if (Option.Src != null) {
+            Model.AddV_Property([PvStorePath, 'Src'], {
+                Target: Option.Src,
+            });
+        } else {
+            PvStore.Src = Option.SrcUrl;
+        }
+
+        if (Option.LazySrc == null && Option.LazySrcUrl == null) {
+            Model.AddV_Property([PvStorePath, 'LazySrc'], {
+                Target: [PvStorePath, 'Src'],
+            });
+        }
+        else if (Option.LazySrc != null) {
+            Model.AddV_Property([PvStorePath, 'LazySrc'], {
+                Target: Option.LazySrc,
+            });
+        } else {
+            PvStore.LazySrc = Option.LazySrcUrl;
+        }
+
+        Model.AddV_Tree(PvName, {
+            'v-bind:src': [PvStorePath, 'Src'],
+            'v-bind:lazy-src': [PvStorePath, 'LazySrc'],
+        });
+
+        return this;
+    }
+    //#endregion
 
     //#region Collapse
 

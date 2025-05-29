@@ -8,6 +8,9 @@
             @class = "Card",
         });
 
+    if (Model.HasSlot(CardSlot.Hover))
+        Model.AddParentAttr("v-bind:hover", "true");
+
     var HeaderRowJustify =
         Model.HasSlot(CardSlot.HeaderView) ? "" :
         Model.HasSlot(CardSlot.CenterHeader) ? "justify-content-center" :

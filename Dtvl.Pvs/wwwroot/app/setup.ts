@@ -16,16 +16,25 @@ Model.WithVueUse(VuetifyInit)
 DtvlPv.UseRouter('Router', [
     {
         title: 'Flex',
-        href: '/Sample/Flex',
+        href: ['/Sample/Flex', '/'],
     },
     {
         title: 'ImageFlex',
         href: '/Sample/ImageFlex',
     },
     {
+        title: 'Input',
+        href: '/Sample/Input',
+    },
+    {
         title: 'Select',
         href: '/Sample/Select',
     },
+    {
+        title: 'Image',
+        href: '/Sample/Image',
+    },
+
 ], {
     OpenMode: 'all',
 });

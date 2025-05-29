@@ -1,20 +1,20 @@
 ﻿@model PvOption<DtvlPvs>
 @{
     Model.WithParentTag("v-img")
-        .FillSlotFromDefault(ImageSlot.Src)
+        .FillSlotFromDefault(ImageSlot.SrcUrl)
         .FillSlot(ImageSlot.Ratio, "1");
 
     if (Model.TryGetSlotContent(ImageSlot.Ratio, out var RatioContent))
         Model.AddParentAttr("v-bind:aspect-ratio", RatioContent);
 
-    if (Model.TryGetSlotContent(ImageSlot.Src, out var SrcContent))
+    if (Model.TryGetSlotContent(ImageSlot.SrcUrl, out var SrcUrlContent))
     {
-        SrcContent = $"'{SrcContent}'";
-        Model.AddParentAttr("v-bind:src", SrcContent);
-        if (Model.TryGetSlotContent(ImageSlot.LazySrc, out var LazySrcContent))
-            Model.AddParentAttr("v-bind:lazy-src", $"'{LazySrcContent}'");
+        SrcUrlContent = $"'{SrcUrlContent}'";
+        Model.AddParentAttr("v-bind:src", SrcUrlContent);
+        if (Model.TryGetSlotContent(ImageSlot.LazySrcUrl, out var LazySrcUrlContent))
+            Model.AddParentAttr("v-bind:lazy-src", $"'{LazySrcUrlContent}'");
         else
-            Model.AddParentAttr("v-bind:lazy-src", SrcContent);
+            Model.AddParentAttr("v-bind:lazy-src", SrcUrlContent);
     }
 
     if (Model.TryGetSlotContent(ImageSlot.Cover, out var CoverContent) && bool.TryParse(CoverContent, out var CoverValue) && !CoverValue)

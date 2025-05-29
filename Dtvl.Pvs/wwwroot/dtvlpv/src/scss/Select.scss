@@ -2,6 +2,9 @@
     --Select-bg: var(--DefaultTheme-bg3);
     --Select-text-color: var(--DefaultTheme-text-color3);
     --Select-label-font-weight: var(--DefaultTheme-font-weight);
+    --Select-Icon-color: var(--Select-text-color);
+    --Select-Icon-font-size: var(--Input-Icon-font-size);
+    --Select-Icon-opacity: var(--Input-Icon-opacity);
 }
 
 .Select {
@@ -19,4 +22,9 @@
 
 .Select .v-label {
     font-weight: var(--Select-label-font-weight);
+}
+
+.SelectIcon {
+    font-size: var(--Select-Icon-font-size);
+    opacity: var(--Select-Icon-opacity);
 }

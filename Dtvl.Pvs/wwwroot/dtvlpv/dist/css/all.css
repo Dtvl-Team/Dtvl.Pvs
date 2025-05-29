@@ -1297,8 +1297,19 @@ body {
   --Input-bg: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
   --Input-label-font-weight: var(--DefaultTheme-font-weight);
+  --Input-Icon-color: var(--Input-text-color);
+  --Input-Icon-font-size: 1.5rem;
+  --Input-Icon-opacity: 0.6;
 }
 
+/*.NumberInput {
+}
+.Input.NumberInput button {
+    color: var(--Input-Icon-color);
+}
+.v-number-input--split .v-field__input {
+    text-align: start;
+}*/
 .Input .v-field {
   background-color: var(--Input-bg);
   color: var(--Input-text-color);
@@ -1310,6 +1321,19 @@ body {
 
 .v-input__append {
   margin-inline-start: 0px !important;
+}
+
+.InputIcon {
+  font-size: var(--Input-Icon-font-size);
+  opacity: var(--Input-Icon-opacity);
+}
+
+.v-field--prepended {
+  padding-inline-start: 0;
+}
+
+.InputPrependInner {
+  padding-inline-start: 12px;
 }
 
 --TextareaVar, :root {
@@ -1349,6 +1373,9 @@ body {
   --Select-bg: var(--DefaultTheme-bg3);
   --Select-text-color: var(--DefaultTheme-text-color3);
   --Select-label-font-weight: var(--DefaultTheme-font-weight);
+  --Select-Icon-color: var(--Select-text-color);
+  --Select-Icon-font-size: var(--Input-Icon-font-size);
+  --Select-Icon-opacity: var(--Input-Icon-opacity);
 }
 
 .v-menu > .v-autocomplete__content > .v-list {
@@ -1363,6 +1390,11 @@ body {
 
 .Select .v-label {
   font-weight: var(--Select-label-font-weight);
+}
+
+.SelectIcon {
+  font-size: var(--Select-Icon-font-size);
+  opacity: var(--Select-Icon-opacity);
 }
 
 --RequiredTipVar, :root {

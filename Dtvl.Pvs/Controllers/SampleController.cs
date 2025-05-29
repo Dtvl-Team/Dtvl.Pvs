@@ -12,10 +12,17 @@ namespace Dtvl.Pvs.Controllers
         {
             return View();
         }
+        public IActionResult Image()
+        {
+            return View();
+        }
         public IActionResult Select()
         {
             return View();
         }
-
+        public IActionResult Input()
+        {
+            return View();
+        }
     }
 }

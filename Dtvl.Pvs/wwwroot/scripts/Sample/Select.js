@@ -27,7 +27,7 @@ DtvlPv.AddPv_Select(['Datas', 'Rows', 'Sel'], {
     ItemName: (Item) => {
     },
     ItemValue: 'id',
-    Store: 'item.SelectId',
+    //Store: 'item.SelectId',
     BindOnly: true,
 });
 //# sourceMappingURL=Select.js.map
