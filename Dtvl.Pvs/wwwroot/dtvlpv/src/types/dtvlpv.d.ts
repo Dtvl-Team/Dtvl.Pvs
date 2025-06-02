@@ -1,5 +1,5 @@
 import { PathType, ApiCallback } from '@rugal.tu/vuemodel3';
-export type SidebarItemSet = {
+type SidebarItemSet = {
     title: string;
     icon?: string;
     children?: SidebarItemSet[];
@@ -7,10 +7,10 @@ export type SidebarItemSet = {
     show?: () => boolean;
     clicked?: Function;
 };
-export type SidebarOption = {
+type SidebarOption = {
     OpenMode?: 'current' | 'all' | 'single';
 };
-export type DataTableHeader = {
+type DataTableHeader = {
     title?: string;
     align?: string;
     sortable?: boolean;
@@ -18,7 +18,7 @@ export type DataTableHeader = {
     value?: string;
     width?: string;
 };
-export type DataTableOption = {
+type DataTableOption = {
     Index?: boolean | DataTableIndexOption;
     Buttons?: boolean | DataTableHeader;
     Headers: DataTableHeader[];
@@ -41,22 +41,22 @@ type ModalOption = {
 type CallingLockType = {
     IsCalling?: boolean;
 };
-export type SendModalOption = ModalOption & {
+type SendModalOption = ModalOption & {
     ApiKey?: string;
     BtnSend?: Function;
     BtnCancel?: Function;
     Title?: string;
     Arg?: any;
 } & ApiCallback;
-export type SendModalStore = SendModalOption & CallingLockType;
-export type AlertOption = {
+type SendModalStore = SendModalOption & CallingLockType;
+type AlertOption = {
     IsShow?: boolean;
     Message?: string;
     ApiKey?: string;
     BtnOk?: Function;
     BtnCancel?: Function;
 } & ApiCallback;
-export type AlertStore = AlertOption & CallingLockType;
+type AlertStore = AlertOption & CallingLockType;
 type FilterCardOption = {
     ApiKey?: string;
     BtnClear?: () => void;
@@ -73,7 +73,8 @@ type InputOption = {
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     Secure?: SecureOption;
     BindOnly?: boolean;
-    Format?: string;
+    Format?: FormateFuncType | FormateFuncType[];
+    Number?: boolean | InputNumberOption;
 } | string;
 type InputStore = {
     Value?: any;
@@ -81,7 +82,23 @@ type InputStore = {
     Secure?: {
         Securing: boolean;
     } & SecureOption;
+    Number?: InputNumberOption;
+    Formats: FormateFuncType[];
 };
+type InputNumberOption = {
+    ThousandsSeparator?: boolean;
+};
+type FormateFuncType = (Value: string) => string;
+type DateFormatOption = {
+    Separator: string;
+    YearCount?: number;
+    MonthCount?: number;
+    DayCount?: number;
+};
+type FormatStore = {
+    AdDate: FormateFuncType;
+    TwDate: FormateFuncType;
+} | Record<string, FormateFuncType>;
 type SelectOption = {
     Datas?: any[];
     ApiKey?: PathType;
@@ -125,12 +142,17 @@ type PushAnimateOption = {
     PositionFrom: 'Left' | 'Right';
 };
 declare class DtvlPvIniter {
+    protected $LoadingDelay: number;
     protected $AppStore: string;
     protected $PvStore: string;
     protected $ApiStore: string;
-    protected $LoadingDelay: number;
+    protected $FormatStore: string;
     constructor();
+    get Formats(): FormatStore;
     UseShowOnMounted(): this;
+    protected $CreateDefaultFormat(): void;
+    protected $CreateAdDateFormat(): void;
+    protected $CreateTwDateFormat(): void;
     UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
     private $InitSidebar;
     private $CreateSidebar;
@@ -146,6 +168,9 @@ declare class DtvlPvIniter {
     AddPv_FilterCard(PvName: PathType, Option?: FilterCardOption): this;
     AddPv_Input(PvName: PathType, Option?: InputOption): this;
     AddPv_Select(PvName: PathType, Option?: SelectOption): this;
+    AddPv_Format(FormatKey: string, FormatFunc: FormateFuncType): this;
+    CreateDateFormat(Option: DateFormatOption): FormateFuncType;
+    GetFormat(FormatKey: string): FormateFuncType;
     AddPv_DatePicker(PvName: PathType, Option?: DatePickerOption): this;
     AddPv_Tabbed(PvName: PathType, Option?: TabbedOption): this;
     AddPv_Flex(PvName: PathType, Option: FlexOption): this;
@@ -158,4 +183,5 @@ declare class DtvlPvIniter {
     WatchApi(ApiKey: PathType, Status: string, Func: Function): void;
 }
 declare const DtvlPv: DtvlPvIniter;
-export { DtvlPv };
+declare const Formats: FormatStore;
+export { DtvlPv, Formats, };

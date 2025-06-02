@@ -1,16 +1,22 @@
 import { Model, Queryer } from '@rugal.tu/vuemodel3';
 //#endregion
 class DtvlPvIniter {
+    $LoadingDelay;
     $AppStore;
     $PvStore;
     $ApiStore;
-    $LoadingDelay;
+    $FormatStore;
     constructor() {
-        this.$AppStore = 'app';
-        this.$PvStore = 'pv';
-        this.$ApiStore = 'api';
         this.$LoadingDelay = 800;
+        this.$AppStore = 'app';
+        this.$ApiStore = 'api';
+        this.$PvStore = 'pv';
+        this.$FormatStore = 'pv._format';
         this.UseShowOnMounted();
+        this.$CreateDefaultFormat();
+    }
+    get Formats() {
+        return Model.GetStore(this.$FormatStore);
     }
     //#region App
     UseShowOnMounted() {
@@ -21,6 +27,23 @@ class DtvlPvIniter {
             }
         });
         return this;
+    }
+    $CreateDefaultFormat() {
+        Model.AddStore(this.$FormatStore, {});
+        this.$CreateAdDateFormat();
+        this.$CreateTwDateFormat();
+    }
+    $CreateAdDateFormat() {
+        this.AddPv_Format('AdDate', this.CreateDateFormat({
+            Separator: '/',
+            YearCount: 4,
+        }));
+    }
+    $CreateTwDateFormat() {
+        this.AddPv_Format('TwDate', this.CreateDateFormat({
+            Separator: '/',
+            YearCount: 3,
+        }));
     }
     //#endregion
     //#region Sidebar Method
@@ -543,7 +566,9 @@ class DtvlPvIniter {
             Option = { Store: Option };
         Option.Store ??= Model.ToJoin(PvName);
         let PvStorePath = this.RootPath(PvName);
-        let Store = {};
+        let Store = {
+            Formats: [],
+        };
         Model.UpdateStore(PvStorePath, Store);
         if (Option.Store != null) {
             if (Option.BindOnly == true) {
@@ -616,6 +641,39 @@ class DtvlPvIniter {
                     },
                 },
                 'v-bind:type': `${SecuringPath} ? 'password' : 'text' `,
+            });
+        }
+        if (Option.Number != null && Option.Number != false) {
+            if (Option.Number == true)
+                Option.Number = { ThousandsSeparator: true };
+            Store.Number = Option.Number;
+            Store.Formats.push(Value => {
+                if (Value == null || Value == '')
+                    return Value;
+                Value = Value.replace(/[^0-9]/g, '');
+                if (Value == '')
+                    return Value;
+                let InputStore = Model.GetStore(PvStorePath);
+                if (InputStore.Number.ThousandsSeparator == true)
+                    Value = Number(Value).toLocaleString();
+                return Value;
+            });
+        }
+        if (Option.Format != null) {
+            if (Array.isArray(Option.Format))
+                Store.Formats.push(...Option.Format);
+            else
+                Store.Formats.push(Option.Format);
+        }
+        if (Store.Formats.length > 0) {
+            Model.AddV_Bind(PvName, 'rules', () => {
+                let GetStore = Model.GetStore(PvStorePath);
+                if (GetStore.Formats != null) {
+                    let Value = GetStore.Value;
+                    for (let Format of GetStore.Formats)
+                        Value = Format(Value);
+                    GetStore.Value = Value;
+                }
             });
         }
         return this;
@@ -776,6 +834,41 @@ class DtvlPvIniter {
             'v-bind:multiple': `${PvStore.Multiple}`,
         });
         return this;
+    }
+    //#endregion
+    //#region Format
+    AddPv_Format(FormatKey, FormatFunc) {
+        let FormatStore = Model.GetStore(this.$FormatStore);
+        FormatStore[FormatKey] = FormatFunc;
+        return this;
+    }
+    CreateDateFormat(Option) {
+        Option.YearCount ??= 4;
+        Option.MonthCount ??= 2;
+        Option.DayCount ??= 2;
+        let DateFormat = Value => {
+            if (Value == null || Value == '')
+                return Value;
+            let AllNumber = Value.match(/\d+/g);
+            if (AllNumber == null)
+                return null;
+            let FullValue = AllNumber.join('');
+            let Year = FullValue.slice(0, Option.YearCount);
+            let MonthEnd = Option.YearCount + Option.MonthCount;
+            let Month = FullValue.slice(Option.YearCount, MonthEnd);
+            let DayEnd = MonthEnd + Option.DayCount;
+            let Day = FullValue.slice(MonthEnd, DayEnd);
+            let FullDate = [Year, Month, Day].join(Option.Separator);
+            let ReplaceReg = `[${Option.Separator}]+$`;
+            let Result = FullDate.replace(new RegExp(ReplaceReg), '');
+            return Result;
+        };
+        return DateFormat;
+    }
+    GetFormat(FormatKey) {
+        let FormatStore = Model.GetStore(this.$FormatStore);
+        let FormatResult = FormatStore[FormatKey];
+        return FormatResult;
     }
     //#endregion
     //#region DatePicker
@@ -975,6 +1068,7 @@ class DtvlPvIniter {
     }
 }
 const DtvlPv = new DtvlPvIniter();
+const Formats = DtvlPv.Formats;
 window.DtvlPv = DtvlPv;
-export { DtvlPv };
+export { DtvlPv, Formats, };
 //# sourceMappingURL=dtvlpv.js.map

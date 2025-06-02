@@ -130,7 +130,8 @@ type InputOption = {
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     Secure?: SecureOption,
     BindOnly?: boolean,
-    Format?: string,
+    Format?: FormateFuncType | FormateFuncType[],
+    Number?: boolean | InputNumberOption,
 } | string;
 type InputStore = {
     Value?: any,
@@ -138,13 +139,26 @@ type InputStore = {
     Secure?: {
         Securing: boolean,
     } & SecureOption,
-}
+    Number?: InputNumberOption,
+    Formats: FormateFuncType[],
+};
+type InputNumberOption = {
+    ThousandsSeparator?: boolean,
+};
 //#endregion
 
-//#region Rules Type
-type RulesOption = {
-
-}
+//#region Format Type
+type FormateFuncType = (Value: string) => string;
+type DateFormatOption = {
+    Separator: string,
+    YearCount?: number,
+    MonthCount?: number,
+    DayCount?: number,
+};
+type FormatStore = {
+    AdDate: FormateFuncType,
+    TwDate: FormateFuncType,
+} | Record<string, FormateFuncType>;
 //#endregion
 
 //#region Select Type
@@ -234,14 +248,20 @@ class DtvlPvIniter {
     protected $AppStore: string;
     protected $PvStore: string;
     protected $ApiStore: string;
-    protected $RulesStore: string;
+    protected $FormatStore: string;
     constructor() {
         this.$LoadingDelay = 800;
         this.$AppStore = 'app';
-        this.$PvStore = 'pv';
         this.$ApiStore = 'api';
-        this.$RulesStore = 'rules';
+        this.$PvStore = 'pv';
+        this.$FormatStore = 'pv._format';
+
         this.UseShowOnMounted();
+        this.$CreateDefaultFormat();
+    }
+
+    public get Formats() {
+        return Model.GetStore<FormatStore>(this.$FormatStore);
     }
 
     //#region App
@@ -253,6 +273,23 @@ class DtvlPvIniter {
             }
         });
         return this;
+    }
+    protected $CreateDefaultFormat() {
+        Model.AddStore(this.$FormatStore, {});
+        this.$CreateAdDateFormat();
+        this.$CreateTwDateFormat();
+    }
+    protected $CreateAdDateFormat() {
+        this.AddPv_Format('AdDate', this.CreateDateFormat({
+            Separator: '/',
+            YearCount: 4,
+        }));
+    }
+    protected $CreateTwDateFormat() {
+        this.AddPv_Format('TwDate', this.CreateDateFormat({
+            Separator: '/',
+            YearCount: 3,
+        }));
     }
     //#endregion
 
@@ -848,7 +885,9 @@ class DtvlPvIniter {
 
         Option.Store ??= Model.ToJoin(PvName);
         let PvStorePath = this.RootPath(PvName);
-        let Store: InputStore = {};
+        let Store: InputStore = {
+            Formats: [],
+        };
         Model.UpdateStore(PvStorePath, Store);
 
         if (Option.Store != null) {
@@ -869,7 +908,6 @@ class DtvlPvIniter {
                     Model.UpdateStore(ValuePath, Option.Value);
             }
         }
-
         if (Option.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
@@ -924,6 +962,43 @@ class DtvlPvIniter {
                     },
                 },
                 'v-bind:type': `${SecuringPath} ? 'password' : 'text' `,
+            });
+        }
+        if (Option.Number != null && Option.Number != false) {
+            if (Option.Number == true)
+                Option.Number = { ThousandsSeparator: true };
+
+            Store.Number = Option.Number;
+            Store.Formats.push(Value => {
+                if (Value == null || Value == '')
+                    return Value;
+
+                Value = Value.replace(/[^0-9]/g, '');
+                if (Value == '')
+                    return Value;
+
+                let InputStore = Model.GetStore<InputStore>(PvStorePath);
+                if (InputStore.Number.ThousandsSeparator == true)
+                    Value = Number(Value).toLocaleString();
+                return Value;
+            });
+        }
+        if (Option.Format != null) {
+            if (Array.isArray(Option.Format))
+                Store.Formats.push(...Option.Format);
+            else
+                Store.Formats.push(Option.Format);
+        }
+
+        if (Store.Formats.length > 0) {
+            Model.AddV_Bind(PvName, 'rules', () => {
+                let GetStore = Model.GetStore<InputStore>(PvStorePath);
+                if (GetStore.Formats != null) {
+                    let Value = GetStore.Value;
+                    for (let Format of GetStore.Formats)
+                        Value = Format(Value);
+                    GetStore.Value = Value;
+                }
             });
         }
         return this;
@@ -1107,6 +1182,46 @@ class DtvlPvIniter {
         });
 
         return this;
+    }
+    //#endregion
+
+    //#region Format
+    public AddPv_Format(FormatKey: string, FormatFunc: FormateFuncType) {
+        let FormatStore = Model.GetStore<Record<string, FormateFuncType>>(this.$FormatStore);
+        FormatStore[FormatKey] = FormatFunc;
+        return this;
+    }
+    public CreateDateFormat(Option: DateFormatOption) {
+        Option.YearCount ??= 4;
+        Option.MonthCount ??= 2;
+        Option.DayCount ??= 2;
+        let DateFormat: FormateFuncType = Value => {
+            if (Value == null || Value == '')
+                return Value;
+
+            let AllNumber = Value.match(/\d+/g);
+            if (AllNumber == null)
+                return null;
+
+            let FullValue = AllNumber.join('');
+            let Year = FullValue.slice(0, Option.YearCount);
+
+            let MonthEnd = Option.YearCount + Option.MonthCount;
+            let Month = FullValue.slice(Option.YearCount, MonthEnd);
+
+            let DayEnd = MonthEnd + Option.DayCount;
+            let Day = FullValue.slice(MonthEnd, DayEnd);
+            let FullDate = [Year, Month, Day].join(Option.Separator);
+            let ReplaceReg = `[${Option.Separator}]+$`;
+            let Result = FullDate.replace(new RegExp(ReplaceReg), '');
+            return Result;
+        }
+        return DateFormat;
+    }
+    public GetFormat(FormatKey: string) {
+        let FormatStore = Model.GetStore<Record<string, FormateFuncType>>(this.$FormatStore);
+        let FormatResult = FormatStore[FormatKey];
+        return FormatResult;
     }
     //#endregion
 
@@ -1334,7 +1449,9 @@ class DtvlPvIniter {
 }
 
 const DtvlPv = new DtvlPvIniter();
+const Formats = DtvlPv.Formats;
 (window as any).DtvlPv = DtvlPv;
 export {
-    DtvlPv
+    DtvlPv,
+    Formats,
 };
