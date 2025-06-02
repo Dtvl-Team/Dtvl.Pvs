@@ -13,3 +13,16 @@
     Model.AddParentAttr("rows", Model.GetSlotContent(TextAreaSlot.Rows));
     Model.AddParentAttr("v-bind:auto-grow", Model.GetSlotContent(TextAreaSlot.AutoGrow));
 }
+
+<template v-slot:prepend-inner="props">
+    <section class="InputPrependInner">
+        @if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
+        {
+            <dtvl-pv pv-type="Icon"
+                     pv-name="Icon"
+                     pass-slot="Model.PassSlot_InputToIcon()"
+                     class="InputIcon">
+            </dtvl-pv>
+        }
+    </section>
+</template>
