@@ -859,6 +859,7 @@ class DtvlPvIniter {
                 let ValuePath = this.RootPath(PvName, 'Value');
                 Model
                     .AddStore(ValuePath, null)
+                    .AddStore(Option.Store, null)
                     .AddV_Model(PvName, ValuePath)
                     .AddV_Property(ValuePath, {
                         Target: Option.Store,
@@ -948,55 +949,59 @@ class DtvlPvIniter {
                 let SelectedItemPath = this.RootPath(PvName, 'SelectedItem');
                 let SelectedValuePath = this.RootPath(PvName, 'SelectedValue');
                 let ValuePath = Option.ReturnObject ? SelectedItemPath : SelectedValuePath;
-                Model.AddV_Model(PvName, `${PvStorePath}.SelectedValue`);
-                Model.AddV_Property(ValuePath, {
-                    Target: Option.Store,
-                });
-                Model.AddV_Property(SelectedItemPath, {
-                    get() {
-                        let SelectedValue = this.SelectedValue;
-                        if (SelectedValue == null)
-                            return null;
 
-                        let Datas = this.Datas;
-                        if (!Array.isArray(Datas))
-                            return null;
-
-                        if (Array.isArray(SelectedValue)) {
-                            if (Datas == null)
+                Model
+                    .AddStore(ValuePath, null)
+                    .AddStore(Option.Store, null)
+                    .AddV_Model(PvName, `${PvStorePath}.SelectedValue`)
+                    .AddV_Property(ValuePath, {
+                        Target: Option.Store,
+                    })
+                    .AddV_Property(SelectedItemPath, {
+                        get() {
+                            let SelectedValue = this.SelectedValue;
+                            if (SelectedValue == null)
                                 return null;
 
-                            let GetItems = SelectedValue
-                                .map(Value => Datas.find(Item => Item[this.ItemValue]) == Value)
-                                .filter(Item => Item != null);
+                            let Datas = this.Datas;
+                            if (!Array.isArray(Datas))
+                                return null;
 
-                            return GetItems;
+                            if (Array.isArray(SelectedValue)) {
+                                if (Datas == null)
+                                    return null;
+
+                                let GetItems = SelectedValue
+                                    .map(Value => Datas.find(Item => Item[this.ItemValue]) == Value)
+                                    .filter(Item => Item != null);
+
+                                return GetItems;
+                            }
+
+                            return Datas.find(Item => Item[this.ItemValue] == SelectedValue);
+                        },
+                        set(Value) {
+
+                            if (!Value) {
+                                this.SelectedValue = null;
+                                return;
+                            }
+
+                            let Datas = this.Datas;
+                            if (!Array.isArray(Datas))
+                                return null;
+
+                            if (Array.isArray(Value)) {
+                                let AllValues = Datas.map(Item => Item[this.ItemValue]);
+                                let SetValues = Value.map(Item => Item[this.ItemValue]);
+                                SetValues = SetValues.filter(Item => AllValues.includes(Item));
+                                this.SelectedValue = SetValues;
+                                return;
+                            }
+
+                            this.SelectedValue = Value[this.ItemValue];
                         }
-
-                        return Datas.find(Item => Item[this.ItemValue] == SelectedValue);
-                    },
-                    set(Value) {
-
-                        if (!Value) {
-                            this.SelectedValue = null;
-                            return;
-                        }
-
-                        let Datas = this.Datas;
-                        if (!Array.isArray(Datas))
-                            return null;
-
-                        if (Array.isArray(Value)) {
-                            let AllValues = Datas.map(Item => Item[this.ItemValue]);
-                            let SetValues = Value.map(Item => Item[this.ItemValue]);
-                            SetValues = SetValues.filter(Item => AllValues.includes(Item));
-                            this.SelectedValue = SetValues;
-                            return;
-                        }
-
-                        this.SelectedValue = Value[this.ItemValue];
-                    }
-                });
+                    });
             }
         }
         if (PvStore.ApiKey) {
