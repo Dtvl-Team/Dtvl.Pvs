@@ -2,7 +2,6 @@ import { DtvlPv } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
 
 Model.AddV_Tree('Root', {
-
     ':Input': {
         'v-model': 'Root.Input',
         'v-bind:rules': (value: any, b: any) => {
