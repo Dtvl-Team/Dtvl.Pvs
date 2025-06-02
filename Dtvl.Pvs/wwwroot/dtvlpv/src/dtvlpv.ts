@@ -1,7 +1,7 @@
 import { Model, Queryer, PathType, ApiCallback } from '@rugal.tu/vuemodel3';
 
 //#region Router Type
-export type SidebarItemSet = {
+type SidebarItemSet = {
     title: string,
     icon?: string,
     children?: SidebarItemSet[],
@@ -9,7 +9,7 @@ export type SidebarItemSet = {
     show?: () => boolean,
     clicked?: Function,
 };
-export type SidebarOption = {
+type SidebarOption = {
     OpenMode?: 'current' | 'all' | 'single',
 };
 type SidebarItemData = SidebarItemSet & {
@@ -34,7 +34,7 @@ type SidebarStore = {
 //#endregion
 
 //#region DataTable Type
-export type DataTableHeader = {
+type DataTableHeader = {
     title?: string,
     align?: string,
     sortable?: boolean,
@@ -42,7 +42,7 @@ export type DataTableHeader = {
     value?: string,
     width?: string,
 };
-export type DataTableOption = {
+type DataTableOption = {
     Index?: boolean | DataTableIndexOption,
     Buttons?: boolean | DataTableHeader,
     Headers: DataTableHeader[],
@@ -89,25 +89,25 @@ type ModalOption = {
 type CallingLockType = {
     IsCalling?: boolean,
 };
-export type SendModalOption = ModalOption & {
+type SendModalOption = ModalOption & {
     ApiKey?: string;
     BtnSend?: Function;
     BtnCancel?: Function;
     Title?: string;
     Arg?: any;
 } & ApiCallback;
-export type SendModalStore = SendModalOption & CallingLockType;
+type SendModalStore = SendModalOption & CallingLockType;
 //#endregion
 
 //#region Alert Type
-export type AlertOption = {
+type AlertOption = {
     IsShow?: boolean,
     Message?: string,
     ApiKey?: string;
     BtnOk?: Function,
     BtnCancel?: Function,
 } & ApiCallback;
-export type AlertStore = AlertOption & CallingLockType;
+type AlertStore = AlertOption & CallingLockType;
 //#endregion
 
 //#region FilterCard Type
@@ -138,6 +138,12 @@ type InputStore = {
     Secure?: {
         Securing: boolean,
     } & SecureOption,
+}
+//#endregion
+
+//#region Rules Type
+type RulesOption = {
+
 }
 //#endregion
 
@@ -224,15 +230,17 @@ type AnimateStore = {
 };
 //#endregion
 class DtvlPvIniter {
+    protected $LoadingDelay: number;
     protected $AppStore: string;
     protected $PvStore: string;
     protected $ApiStore: string;
-    protected $LoadingDelay: number;
+    protected $RulesStore: string;
     constructor() {
+        this.$LoadingDelay = 800;
         this.$AppStore = 'app';
         this.$PvStore = 'pv';
         this.$ApiStore = 'api';
-        this.$LoadingDelay = 800;
+        this.$RulesStore = 'rules';
         this.UseShowOnMounted();
     }
 

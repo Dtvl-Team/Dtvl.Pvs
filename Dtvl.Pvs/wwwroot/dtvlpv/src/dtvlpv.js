@@ -1,15 +1,17 @@
 import { Model, Queryer } from '@rugal.tu/vuemodel3';
 //#endregion
 class DtvlPvIniter {
+    $LoadingDelay;
     $AppStore;
     $PvStore;
     $ApiStore;
-    $LoadingDelay;
+    $RulesStore;
     constructor() {
+        this.$LoadingDelay = 800;
         this.$AppStore = 'app';
         this.$PvStore = 'pv';
         this.$ApiStore = 'api';
-        this.$LoadingDelay = 800;
+        this.$RulesStore = 'rules';
         this.UseShowOnMounted();
     }
     //#region App
