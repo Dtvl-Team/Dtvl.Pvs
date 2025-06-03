@@ -650,7 +650,7 @@ class DtvlPvIniter {
             Store.Formats.push(Value => {
                 if (Value == null || Value == '')
                     return Value;
-                Value = Value.replace(/[^0-9]/g, '');
+                Value = Value.toString().replace(/[^0-9]/g, '');
                 if (Value == '')
                     return Value;
                 let InputStore = Model.GetStore(PvStorePath);
@@ -849,7 +849,7 @@ class DtvlPvIniter {
         let DateFormat = Value => {
             if (Value == null || Value == '')
                 return Value;
-            let AllNumber = Value.match(/\d+/g);
+            let AllNumber = Value.toString().match(/\d+/g);
             if (AllNumber == null)
                 return null;
             let FullValue = AllNumber.join('');

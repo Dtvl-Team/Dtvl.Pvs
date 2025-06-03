@@ -1,5 +1,6 @@
 import { DtvlPv, Formats } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
+Model.UpdateStore('Root.NumberInput', 123);
 Model.AddV_Tree('Root', {
     ':NumberInput': {
         'using': Paths => {
