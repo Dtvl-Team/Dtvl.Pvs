@@ -77,6 +77,7 @@ public enum DtvlPvs
 
     #region Image
     Image,
+    ImageViewer,
     #endregion
 
     #region Pop

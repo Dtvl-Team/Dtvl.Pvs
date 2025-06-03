@@ -24,5 +24,9 @@ namespace Dtvl.Pvs.Controllers
         {
             return View();
         }
+        public IActionResult Modal()
+        {
+            return View();
+        }
     }
 }
