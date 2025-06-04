@@ -1,11 +1,11 @@
 ﻿@model PvOption<DtvlPvs>
-
-
 @{
-    Model.AddParentAttr(new
-    {
-        @class = "row align-content-center align-items-center InfoLine"
-    });
+    Model
+        .FillSlotFromDefault(InfoLineSlot.Content)
+        .AddParentAttr(new
+        {
+            @class = "row align-content-center align-items-center InfoLine"
+        });
 }
 
 <div class="col-auto">

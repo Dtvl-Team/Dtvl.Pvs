@@ -9,26 +9,50 @@ let VuetifyInit = createVuetify({
 });
 Model.WithVueUse(VuetifyInit)
     .WithQueryDomName('pv-name');
-DtvlPv.UseRouter('Router', [
+DtvlPv.UseRouter('Sidebar', [
     {
-        title: 'Flex',
-        href: ['/Sample/Flex', '/'],
+        title: 'Overview',
+        icon: 'fa-solid fa-lightbulb',
+        children: [
+            {
+                title: 'Router',
+                href: ['/Overview/Router', '/']
+            },
+        ],
     },
     {
-        title: 'ImageFlex',
-        href: '/Sample/ImageFlex',
-    },
-    {
-        title: 'Input',
-        href: '/Sample/Input',
-    },
-    {
-        title: 'Select',
-        href: '/Sample/Select',
-    },
-    {
-        title: 'Image',
-        href: '/Sample/Image',
+        title: 'Component',
+        icon: 'fa-solid fa-sitemap',
+        children: [
+            {
+                title: 'Input',
+                href: '/Component/Input',
+            },
+            {
+                title: 'Select',
+                href: '/Component/Select',
+            },
+            {
+                title: 'Flex',
+                href: '/Component/Flex',
+            },
+            {
+                title: 'Image',
+                href: '/Component/Image',
+            },
+            {
+                title: 'ImageFlex',
+                href: '/Component/ImageFlex',
+            },
+            {
+                title: 'Modal',
+                href: '/Component/Modal',
+            },
+            {
+                title: 'DataTable',
+                href: '/Component/DataTable',
+            }
+        ]
     },
 ], {
     OpenMode: 'all',

@@ -1,0 +1,58 @@
+﻿
+<dtvl-pv pv-type="Card">
+    <span>Basic: Number, AdDate, TwDate</span>
+</dtvl-pv>
+<section pv-name="Root"
+         class="row mt-2">
+    <div class="col-4 px-1">
+        <dtvl-pv pv-type="Input"
+                 pv-name="NumberInput">
+            <pv-slot slot="InputSlot.Label">Number Input</pv-slot>
+        </dtvl-pv>
+    </div>
+    <div class="col-4 px-1">
+        <dtvl-pv pv-type="Input"
+                 pv-name="AdDateInput">
+            <pv-slot slot="InputSlot.Label">AdDateInput</pv-slot>
+        </dtvl-pv>
+    </div>
+    <div class="col-4 px-1">
+        <dtvl-pv pv-type="Input"
+                 pv-name="TwDateInput">
+            <pv-slot slot="InputSlot.Label">TwDateInput</pv-slot>
+        </dtvl-pv>
+    </div>
+</section>
+<dtvl-pv pv-type="InfoLine">
+</dtvl-pv>
+<dtvl-pv pv-type="Card">
+    <span>v-for="item in Rows"</span>
+    <span class="ms-2">v-model="item.value"</span>
+</dtvl-pv>
+<section pv-name="Rows"
+         class="row mt-2">
+    <div pv-name="Inputs"
+         class="col-3 px-1">
+        <dtvl-pv pv-type="Input"
+                 pv-name="ItemInput">
+        </dtvl-pv>
+    </div>
+</section>
+
+<dtvl-pv pv-type="InfoLine">
+</dtvl-pv>
+<dtvl-pv pv-type="Card">
+    <span>v-for="item in Rows2"</span>
+    <span class="ms-2">v-model="item"</span>
+</dtvl-pv>
+<section pv-name="Rows2"
+         class="row mt-2">
+    <div pv-name="Inputs"
+         class="col-3 px-1">
+        <dtvl-pv pv-type="Input"
+                 pv-name="ItemInput">
+        </dtvl-pv>
+    </div>
+</section>
+
+<script type="module" src="~/scripts/Component/Input.js"></script>

@@ -1,0 +1,39 @@
+﻿
+<section pv-name="Root">
+    <dtvl-pv pv-type="Card">
+        Use Slot [Activator]
+    </dtvl-pv>
+    <dtvl-pv pv-type="Modal"
+             pv-name="ActivatorModal">
+        <div class="text-center">
+            [Activator] Dream Traveler
+        </div>
+        <pv-slot slot="ModalSlot.Activator">
+            <dtvl-pv pv-type="Btn"
+                     pv-name="Btn"
+                     class="mt-2">
+                Open Activator
+            </dtvl-pv>
+        </pv-slot>
+    </dtvl-pv>
+
+    <dtvl-pv pv-type="Card"
+             class="mt-2">
+        Use DtvlPv store
+    </dtvl-pv>
+    <dtvl-pv pv-type="Modal"
+             pv-name="StoreModal">
+        <div class="text-center">
+            [DtvlPv Store] Dream Traveler
+        </div>
+    </dtvl-pv>
+    <dtvl-pv pv-type="Btn"
+             pv-name="StoreModalBtn"
+             class="mt-2">
+        Open Store Modal
+    </dtvl-pv>
+</section>
+
+
+
+<script type="module" src="~/scripts/Component/Modal.js"></script>

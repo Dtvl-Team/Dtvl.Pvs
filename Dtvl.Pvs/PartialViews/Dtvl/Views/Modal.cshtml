@@ -37,7 +37,7 @@
 
 @if (Model.TryGetSlotRender(ModalSlot.Activator, out var Activator))
 {
-    <template v-slot:activator="{ props: activatorProps }">
+    <template v-slot:activator="{ props = activatorProps }">
         @Activator
     </template>
 }

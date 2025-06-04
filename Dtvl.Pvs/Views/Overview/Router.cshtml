@@ -1,0 +1,19 @@
+﻿
+<dtvl-pv pv-type="Card">
+    <span>- Change router title</span>
+    <div>DtvlPv.Router.title = 'Router :)';</div>
+</dtvl-pv>
+
+<dtvl-pv pv-type="Card"
+         class="mt-2">
+    <span>- Push new router or bread</span>
+    <div>
+        DtvlPv.RouterPaths.push({
+        id: Model.GenerateId(),
+        title: 'NewRouter',
+        backToRoot: true,
+        });
+    </div>
+</dtvl-pv>
+
+<script type="module" src="~/scripts/Overview/Router.js"></script>

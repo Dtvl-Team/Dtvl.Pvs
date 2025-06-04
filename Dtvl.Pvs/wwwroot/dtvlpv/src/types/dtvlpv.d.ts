@@ -4,12 +4,32 @@ type SidebarItemSet = {
     icon?: string;
     children?: SidebarItemSet[];
     href?: string | string[];
+    backToRoot?: boolean;
     show?: () => boolean;
     clicked?: Function;
 };
 type SidebarOption = {
     OpenMode?: 'current' | 'all' | 'single';
 };
+type SidebarItemData = SidebarItemSet & {
+    id: string;
+    parent?: SidebarItemData;
+    children?: SidebarItemData[];
+    isSelect?: boolean;
+    query?: string | Record<string, any>;
+};
+type SidebarStore = {
+    IsMobileOpen: boolean;
+    IsShow: boolean;
+    Source: SidebarItemData[];
+    Current: SidebarItemData[];
+    RouterList: SidebarItemData[];
+    OpenIds: string[];
+    Click: (Item: SidebarItemData, event: MouseEvent) => void;
+    GroupClick: Function;
+    MobileOpen: () => void;
+    Show: (IsShow: boolean) => void;
+} & SidebarOption;
 type DataTableHeader = {
     title?: string;
     align?: string;
@@ -73,8 +93,9 @@ type InputOption = {
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     Secure?: SecureOption;
     BindOnly?: boolean;
-    Format?: FormateFuncType | FormateFuncType[];
     Number?: boolean | InputNumberOption;
+    Format?: FormateFuncType | FormateFuncType[];
+    OnFormat?: Function | OnFormatType;
 } | string;
 type InputStore = {
     Value?: any;
@@ -84,9 +105,14 @@ type InputStore = {
     } & SecureOption;
     Number?: InputNumberOption;
     Formats: FormateFuncType[];
+    OnFormat?: Function;
 };
 type InputNumberOption = {
     ThousandsSeparator?: boolean;
+};
+type OnFormatType = {
+    Func: Function;
+    Args?: string;
 };
 type FormateFuncType = (Value: string) => string;
 type DateFormatOption = {
@@ -149,6 +175,9 @@ declare class DtvlPvIniter {
     protected $FormatStore: string;
     constructor();
     get Formats(): FormatStore;
+    get RouterStore(): SidebarStore;
+    get RouterPaths(): SidebarItemData[];
+    get Router(): SidebarItemData;
     UseShowOnMounted(): this;
     protected $CreateDefaultFormat(): void;
     protected $CreateAdDateFormat(): void;

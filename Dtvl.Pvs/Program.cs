@@ -20,6 +20,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Sample}/{action=Flex}/{id?}");
+    pattern: "{controller=Overview}/{action=Router}/{id?}");
 
 app.Run();

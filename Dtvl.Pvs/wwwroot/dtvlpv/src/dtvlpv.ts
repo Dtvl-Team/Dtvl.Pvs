@@ -6,6 +6,7 @@ type SidebarItemSet = {
     icon?: string,
     children?: SidebarItemSet[],
     href?: string | string[],
+    backToRoot?: boolean,
     show?: () => boolean,
     clicked?: Function,
 };
@@ -130,8 +131,9 @@ type InputOption = {
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     Secure?: SecureOption,
     BindOnly?: boolean,
-    Format?: FormateFuncType | FormateFuncType[],
     Number?: boolean | InputNumberOption,
+    Format?: FormateFuncType | FormateFuncType[],
+    OnFormat?: Function | OnFormatType,
 } | string;
 type InputStore = {
     Value?: any,
@@ -141,9 +143,14 @@ type InputStore = {
     } & SecureOption,
     Number?: InputNumberOption,
     Formats: FormateFuncType[],
+    OnFormat?: Function,
 };
 type InputNumberOption = {
     ThousandsSeparator?: boolean,
+};
+type OnFormatType = {
+    Func: Function,
+    Args?: string,
 };
 //#endregion
 
@@ -260,9 +267,25 @@ class DtvlPvIniter {
         this.$CreateDefaultFormat();
     }
 
+    //#region public Property 
     public get Formats() {
         return Model.GetStore<FormatStore>(this.$FormatStore);
     }
+    public get RouterStore() {
+        return Model.GetStore<SidebarStore>([this.$AppStore, 'Router']);
+    }
+    public get RouterPaths() {
+        let Current = this.RouterStore?.Current;
+        return Current;
+    }
+    public get Router() {
+        let Paths = this.RouterPaths;
+        if (Paths == null && Paths.length == 0)
+            return null;
+
+        return Paths[Paths.length - 1];
+    }
+    //#endregion
 
     //#region App
     public UseShowOnMounted() {
@@ -346,6 +369,11 @@ class DtvlPvIniter {
                 if (Item == null)
                     return;
 
+                if (Item.backToRoot == true) {
+                    Model.NavigateToRoot();
+                    return;
+                }
+
                 let GoPath = Item.href;
                 if (GoPath == null)
                     return;
@@ -403,7 +431,7 @@ class DtvlPvIniter {
                 id: Model.GenerateId(),
                 parent: Parent,
                 children: null,
-            }
+            };
             NewRouter.show ??= () => true;
             NewRouter.children = this.$CreateSidebar(Item.children, RouterList, NewRouter);
             RouterList.push(NewRouter);
@@ -884,28 +912,24 @@ class DtvlPvIniter {
             Option = { Store: Option };
 
         Option.Store ??= Model.ToJoin(PvName);
-        let PvStorePath = this.RootPath(PvName);
         let Store: InputStore = {
             Formats: [],
+            Value: Option.Value,
         };
+
+        let PvStorePath = this.RootPath(PvName);
         Model.UpdateStore(PvStorePath, Store);
 
         if (Option.Store != null) {
-            if (Option.BindOnly == true) {
+            if (Option.BindOnly == true)
                 Model.AddV_Model(PvName, Option.Store);
-            }
             else {
                 let ValuePath = this.RootPath(PvName, 'Value');
-                Model
-                    .AddStore(ValuePath, null)
-                    .AddStore(Option.Store, null)
+                Model.AddStore(Option.Store, null)
                     .AddV_Model(PvName, ValuePath)
                     .AddV_Property(ValuePath, {
                         Target: Option.Store,
                     });
-
-                if (Option.Value != null)
-                    Model.UpdateStore(ValuePath, Option.Value);
             }
         }
         if (Option.ReadOnly != null) {
@@ -982,6 +1006,7 @@ class DtvlPvIniter {
                     Value = Number(Value).toLocaleString();
                 return Value;
             });
+            Model.AddV_Bind(PvName, 'inputmode', `'numeric'`);
         }
         if (Option.Format != null) {
             if (Array.isArray(Option.Format))
@@ -990,17 +1015,33 @@ class DtvlPvIniter {
                 Store.Formats.push(Option.Format);
         }
 
+        if (typeof (Option.OnFormat) == 'function') {
+            Option.OnFormat = {
+                Func: Option.OnFormat,
+            };
+        }
+        Store.OnFormat = Option.OnFormat?.Func;
+
         if (Store.Formats.length > 0) {
-            Model.AddV_Bind(PvName, 'rules', () => {
+            let Args = [Model.ToJoin(Option.Store)];
+            if (Option.OnFormat?.Args)
+                Args.push(Option.OnFormat.Args);
+
+            Model.AddV_Bind(PvName, 'rules', (...Args: any[]) => {
+                let Value = Args.shift();
                 let GetStore = Model.GetStore<InputStore>(PvStorePath);
                 if (GetStore.Formats != null) {
-                    let Value = GetStore.Value;
                     for (let Format of GetStore.Formats)
                         Value = Format(Value);
-                    GetStore.Value = Value;
                 }
-            });
+                if (Option.BindOnly != true)
+                    GetStore.Value = Value;
+
+                Args.unshift(Value);
+                GetStore.OnFormat?.call(this, ...Args);
+            }, Args.join(', '));
         }
+
         return this;
     }
     public AddPv_Select(PvName: PathType, Option?: SelectOption) {

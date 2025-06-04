@@ -2,7 +2,7 @@
 
 namespace Dtvl.Pvs.Controllers
 {
-    public class SampleController : Controller
+    public class ComponentController : Controller
     {
         public IActionResult Flex()
         {
@@ -25,6 +25,10 @@ namespace Dtvl.Pvs.Controllers
             return View();
         }
         public IActionResult Modal()
+        {
+            return View();
+        }
+        public IActionResult DataTable()
         {
             return View();
         }

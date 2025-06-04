@@ -15,9 +15,24 @@ class DtvlPvIniter {
         this.UseShowOnMounted();
         this.$CreateDefaultFormat();
     }
+    //#region public Property 
     get Formats() {
         return Model.GetStore(this.$FormatStore);
     }
+    get RouterStore() {
+        return Model.GetStore([this.$AppStore, 'Router']);
+    }
+    get RouterPaths() {
+        let Current = this.RouterStore?.Current;
+        return Current;
+    }
+    get Router() {
+        let Paths = this.RouterPaths;
+        if (Paths == null && Paths.length == 0)
+            return null;
+        return Paths[Paths.length - 1];
+    }
+    //#endregion
     //#region App
     UseShowOnMounted() {
         Model.WithMounted(() => {
@@ -91,6 +106,10 @@ class DtvlPvIniter {
             Click: (Item, event) => {
                 if (Item == null)
                     return;
+                if (Item.backToRoot == true) {
+                    Model.NavigateToRoot();
+                    return;
+                }
                 let GoPath = Item.href;
                 if (GoPath == null)
                     return;
@@ -565,26 +584,22 @@ class DtvlPvIniter {
         if (typeof (Option) == 'string')
             Option = { Store: Option };
         Option.Store ??= Model.ToJoin(PvName);
-        let PvStorePath = this.RootPath(PvName);
         let Store = {
             Formats: [],
+            Value: Option.Value,
         };
+        let PvStorePath = this.RootPath(PvName);
         Model.UpdateStore(PvStorePath, Store);
         if (Option.Store != null) {
-            if (Option.BindOnly == true) {
+            if (Option.BindOnly == true)
                 Model.AddV_Model(PvName, Option.Store);
-            }
             else {
                 let ValuePath = this.RootPath(PvName, 'Value');
-                Model
-                    .AddStore(ValuePath, null)
-                    .AddStore(Option.Store, null)
+                Model.AddStore(Option.Store, null)
                     .AddV_Model(PvName, ValuePath)
                     .AddV_Property(ValuePath, {
                     Target: Option.Store,
                 });
-                if (Option.Value != null)
-                    Model.UpdateStore(ValuePath, Option.Value);
             }
         }
         if (Option.ReadOnly != null) {
@@ -650,7 +665,7 @@ class DtvlPvIniter {
             Store.Formats.push(Value => {
                 if (Value == null || Value == '')
                     return Value;
-                Value = Value.replace(/[^0-9]/g, '');
+                Value = Value.toString().replace(/[^0-9]/g, '');
                 if (Value == '')
                     return Value;
                 let InputStore = Model.GetStore(PvStorePath);
@@ -658,6 +673,7 @@ class DtvlPvIniter {
                     Value = Number(Value).toLocaleString();
                 return Value;
             });
+            Model.AddV_Bind(PvName, 'inputmode', `'numeric'`);
         }
         if (Option.Format != null) {
             if (Array.isArray(Option.Format))
@@ -665,16 +681,28 @@ class DtvlPvIniter {
             else
                 Store.Formats.push(Option.Format);
         }
+        if (typeof (Option.OnFormat) == 'function') {
+            Option.OnFormat = {
+                Func: Option.OnFormat,
+            };
+        }
+        Store.OnFormat = Option.OnFormat?.Func;
         if (Store.Formats.length > 0) {
-            Model.AddV_Bind(PvName, 'rules', () => {
+            let Args = [Model.ToJoin(Option.Store)];
+            if (Option.OnFormat?.Args)
+                Args.push(Option.OnFormat.Args);
+            Model.AddV_Bind(PvName, 'rules', (...Args) => {
+                let Value = Args.shift();
                 let GetStore = Model.GetStore(PvStorePath);
                 if (GetStore.Formats != null) {
-                    let Value = GetStore.Value;
                     for (let Format of GetStore.Formats)
                         Value = Format(Value);
-                    GetStore.Value = Value;
                 }
-            });
+                if (Option.BindOnly != true)
+                    GetStore.Value = Value;
+                Args.unshift(Value);
+                GetStore.OnFormat?.call(this, ...Args);
+            }, Args.join(', '));
         }
         return this;
     }
@@ -849,7 +877,7 @@ class DtvlPvIniter {
         let DateFormat = Value => {
             if (Value == null || Value == '')
                 return Value;
-            let AllNumber = Value.match(/\d+/g);
+            let AllNumber = Value.toString().match(/\d+/g);
             if (AllNumber == null)
                 return null;
             let FullValue = AllNumber.join('');
