@@ -88,31 +88,39 @@ type SecureOption = boolean | {
     HidingIcon?: string;
 };
 type InputOption = {
-    Store?: PathType;
     Value?: any;
+    Store?: PathType | {
+        Path: PathType;
+        IsItem?: boolean;
+    };
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     Secure?: SecureOption;
-    BindOnly?: boolean;
     Number?: boolean | InputNumberOption;
-    Format?: FormateFuncType | FormateFuncType[];
-    OnFormat?: Function | OnFormatType;
+    Formats?: {
+        Value?: FormateFuncType | FormateFuncType[];
+        Display?: FormateFuncType | FormateFuncType[];
+    } | FormateFuncType | FormateFuncType[];
 } | string;
 type InputStore = {
+    Store: {
+        Path: PathType;
+        IsItem?: boolean;
+    };
     Value?: any;
     ReadOnly?: boolean | ((Store?: InputStore) => boolean);
     Secure?: {
         Securing: boolean;
     } & SecureOption;
     Number?: InputNumberOption;
-    Formats: FormateFuncType[];
-    OnFormat?: Function;
+    Formats: {
+        Value: FormateFuncType[];
+        Display: FormateFuncType[];
+    };
+    OnFormatDisplay: Function;
+    OnFormatValue: Function;
 };
 type InputNumberOption = {
     ThousandsSeparator?: boolean;
-};
-type OnFormatType = {
-    Func: Function;
-    Args?: string;
 };
 type FormateFuncType = (Value: string) => string;
 type DateFormatOption = {
@@ -124,7 +132,15 @@ type DateFormatOption = {
 type FormatStore = {
     AdDate: FormateFuncType;
     TwDate: FormateFuncType;
+    Number: FormateFuncType;
+    NumberThousands: FormateFuncType;
 } | Record<string, FormateFuncType>;
+type DefaultFormatsType = {
+    AdDate: string;
+    TwDate: string;
+    Number: string;
+    NumberThousands: string;
+};
 type SelectOption = {
     Datas?: any[];
     ApiKey?: PathType;
@@ -173,6 +189,7 @@ declare class DtvlPvIniter {
     protected $PvStore: string;
     protected $ApiStore: string;
     protected $FormatStore: string;
+    protected $FormatKeys: DefaultFormatsType;
     constructor();
     get Formats(): FormatStore;
     get RouterStore(): SidebarStore;
@@ -182,6 +199,8 @@ declare class DtvlPvIniter {
     protected $CreateDefaultFormat(): void;
     protected $CreateAdDateFormat(): void;
     protected $CreateTwDateFormat(): void;
+    protected $CreateNumberFormat(): void;
+    protected $CreateNumberThousandsFormat(): void;
     UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
     private $InitSidebar;
     private $CreateSidebar;

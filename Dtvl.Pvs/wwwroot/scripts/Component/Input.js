@@ -8,15 +8,15 @@ Model.AddV_Tree('Root', {
     },
     ':AdDateInput': Paths => {
         DtvlPv.AddPv_Input(Paths, {
-            Format: Formats.AdDate,
-            OnFormat: (value) => {
-                console.log(value);
-            }
+            Formats: {
+                Display: Formats.AdDate,
+                Value: Formats.Number,
+            },
         });
     },
     ':TwDateInput': Paths => {
         DtvlPv.AddPv_Input(Paths, {
-            Format: Formats.TwDate,
+            Formats: Formats.TwDate,
         });
     },
     'using': (Paths) => {
@@ -32,13 +32,11 @@ Model.AddV_Tree('Rows', {
         'v-for': 'Rows',
         ':ItemInput': Paths => {
             DtvlPv.AddPv_Input(Paths, {
-                BindOnly: true,
-                Store: 'item.value',
+                Store: {
+                    Path: 'item.value',
+                    IsItem: true,
+                },
                 Number: true,
-                OnFormat: {
-                    Func: (value, item) => item.value = value,
-                    Args: 'item',
-                }
             });
         },
     },
@@ -51,15 +49,14 @@ Model.AddV_Tree('Rows2', {
         'v-for': 'Rows2',
         ':ItemInput': Paths => {
             DtvlPv.AddPv_Input(Paths, {
-                BindOnly: true,
-                Store: 'Rows2[index]',
-                Format: Formats.AdDate,
-                OnFormat: {
-                    Func: (value, index) => {
-                        Model.GetStore('Rows2')[index] = value;
-                    },
-                    Args: 'index',
-                }
+                Store: {
+                    Path: 'Rows2[index]',
+                    IsItem: true,
+                },
+                Formats: {
+                    Display: Formats.AdDate,
+                    Value: Formats.Number,
+                },
             });
         },
     },

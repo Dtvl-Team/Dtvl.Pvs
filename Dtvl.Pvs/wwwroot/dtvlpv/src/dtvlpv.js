@@ -6,6 +6,7 @@ class DtvlPvIniter {
     $PvStore;
     $ApiStore;
     $FormatStore;
+    $FormatKeys;
     constructor() {
         this.$LoadingDelay = 800;
         this.$AppStore = 'app';
@@ -44,21 +45,46 @@ class DtvlPvIniter {
         return this;
     }
     $CreateDefaultFormat() {
+        this.$FormatKeys = {
+            AdDate: 'AdDate',
+            TwDate: 'TwDate',
+            Number: 'Number',
+            NumberThousands: 'NumberThousands',
+        };
         Model.AddStore(this.$FormatStore, {});
         this.$CreateAdDateFormat();
         this.$CreateTwDateFormat();
+        this.$CreateNumberFormat();
+        this.$CreateNumberThousandsFormat();
     }
     $CreateAdDateFormat() {
-        this.AddPv_Format('AdDate', this.CreateDateFormat({
+        this.AddPv_Format(this.$FormatKeys.AdDate, this.CreateDateFormat({
             Separator: '/',
             YearCount: 4,
         }));
     }
     $CreateTwDateFormat() {
-        this.AddPv_Format('TwDate', this.CreateDateFormat({
+        this.AddPv_Format(this.$FormatKeys.TwDate, this.CreateDateFormat({
             Separator: '/',
             YearCount: 3,
         }));
+    }
+    $CreateNumberFormat() {
+        this.AddPv_Format(this.$FormatKeys.Number, (Value) => {
+            if (Value == null || Value == '')
+                return Value;
+            Value = Value.toString().replace(/[^0-9]/g, '');
+            return Value;
+        });
+    }
+    $CreateNumberThousandsFormat() {
+        this.AddPv_Format(this.$FormatKeys.NumberThousands, (Value) => {
+            Value = this.Formats.Number(Value);
+            if (Value == null || Value == '')
+                return Value;
+            Value = Number(Value).toLocaleString();
+            return Value;
+        });
     }
     //#endregion
     //#region Sidebar Method
@@ -584,32 +610,56 @@ class DtvlPvIniter {
         if (typeof (Option) == 'string')
             Option = { Store: Option };
         Option.Store ??= Model.ToJoin(PvName);
-        let Store = {
-            Formats: [],
+        if (Array.isArray(Option.Store) || typeof Option.Store == 'string') {
+            Option.Store = {
+                Path: Option.Store,
+                IsItem: false,
+            };
+        }
+        Option.Store.Path = Model.ToJoin(Option.Store.Path);
+        let PvStore = {
+            Store: Option.Store,
             Value: Option.Value,
+            Formats: {
+                Value: [],
+                Display: [],
+            },
+            OnFormatDisplay: (Value) => {
+                let PvStore = Model.GetStore(PvStorePath);
+                for (let Format of PvStore.Formats.Display)
+                    Value = Format?.call(this, Value);
+                return Value;
+            },
+            OnFormatValue: (Value) => {
+                let PvStore = Model.GetStore(PvStorePath);
+                for (let Format of PvStore.Formats.Value)
+                    Value = Format?.call(this, Value);
+                return Value;
+            },
         };
-        let PvStorePath = this.RootPath(PvName);
-        Model.UpdateStore(PvStorePath, Store);
-        if (Option.Store != null) {
-            if (Option.BindOnly == true)
-                Model.AddV_Model(PvName, Option.Store);
-            else {
-                let ValuePath = this.RootPath(PvName, 'Value');
-                Model.AddStore(Option.Store, null)
-                    .AddV_Model(PvName, ValuePath)
-                    .AddV_Property(ValuePath, {
-                    Target: Option.Store,
-                });
-            }
+        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        Model.UpdateStore(PvStorePath, PvStore)
+            .AddV_Tree(PvName, {
+            'v-model': `${Option.Store.Path}`,
+            'v-bind:model-value': `${PvStorePath}.OnFormatDisplay(${Option.Store.Path} = ${PvStorePath}.OnFormatValue(${Option.Store.Path}))`,
+            //'v-on:update:model-value': `value => ${Option.Store.Path} = ${PvStorePath}.OnFormatValue(value)`,
+            //'v-on:input': `value => ${Option.Store.Path} = ${PvStorePath}.OnFormatValue(value)`,
+            //'v-bind:value': `${PvStorePath}.OnFormatDisplay(${Option.Store.Path}, ${Option.Store.Path} = ${PvStorePath}.OnFormatValue(${Option.Store.Path}))`,
+        });
+        if (Option.Store.IsItem != true) {
+            Model.AddStore(Option.Store.Path, null)
+                .AddV_Property(Model.Paths(PvStorePath, 'Value'), {
+                Target: Option.Store.Path,
+            });
         }
         if (Option.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
-                Store.ReadOnly = Option.ReadOnly;
+                PvStore.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, `ReadOnly(${Model.ToJoin(PvStorePath)})`);
             }
             else if (typeof (Option.ReadOnly) == 'boolean') {
-                Store.ReadOnly = Option.ReadOnly;
+                PvStore.ReadOnly = Option.ReadOnly;
                 ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
             }
             else if (typeof (Option.ReadOnly == 'string')) {
@@ -628,7 +678,7 @@ class DtvlPvIniter {
             }
             Option.Secure.HidingIcon ??= 'fa-solid fa-eye';
             Option.Secure.ShowingIcon ??= 'fa-solid fa-eye-slash';
-            Store.Secure = {
+            PvStore.Secure = {
                 Securing: true,
                 ...Option.Secure,
             };
@@ -661,48 +711,27 @@ class DtvlPvIniter {
         if (Option.Number != null && Option.Number != false) {
             if (Option.Number == true)
                 Option.Number = { ThousandsSeparator: true };
-            Store.Number = Option.Number;
-            Store.Formats.push(Value => {
-                if (Value == null || Value == '')
-                    return Value;
-                Value = Value.toString().replace(/[^0-9]/g, '');
-                if (Value == '')
-                    return Value;
-                let InputStore = Model.GetStore(PvStorePath);
-                if (InputStore.Number.ThousandsSeparator == true)
-                    Value = Number(Value).toLocaleString();
-                return Value;
-            });
+            PvStore.Number = Option.Number;
+            PvStore.Formats.Value.push(this.Formats.Number);
+            if (Option.Number.ThousandsSeparator == true)
+                PvStore.Formats.Display.push(this.Formats.NumberThousands);
+            else
+                PvStore.Formats.Display.push(this.Formats.Number);
             Model.AddV_Bind(PvName, 'inputmode', `'numeric'`);
         }
-        if (Option.Format != null) {
-            if (Array.isArray(Option.Format))
-                Store.Formats.push(...Option.Format);
-            else
-                Store.Formats.push(Option.Format);
-        }
-        if (typeof (Option.OnFormat) == 'function') {
-            Option.OnFormat = {
-                Func: Option.OnFormat,
-            };
-        }
-        Store.OnFormat = Option.OnFormat?.Func;
-        if (Store.Formats.length > 0) {
-            let Args = [Model.ToJoin(Option.Store)];
-            if (Option.OnFormat?.Args)
-                Args.push(Option.OnFormat.Args);
-            Model.AddV_Bind(PvName, 'rules', (...Args) => {
-                let Value = Args.shift();
-                let GetStore = Model.GetStore(PvStorePath);
-                if (GetStore.Formats != null) {
-                    for (let Format of GetStore.Formats)
-                        Value = Format(Value);
-                }
-                if (Option.BindOnly != true)
-                    GetStore.Value = Value;
-                Args.unshift(Value);
-                GetStore.OnFormat?.call(this, ...Args);
-            }, Args.join(', '));
+        if (Option.Formats != null) {
+            if (Array.isArray(Option.Formats) || typeof (Option.Formats) == 'function') {
+                Option.Formats = {
+                    Value: Option.Formats,
+                    Display: Option.Formats,
+                };
+            }
+            if (!Array.isArray(Option.Formats.Display))
+                Option.Formats.Display = [Option.Formats.Display];
+            if (!Array.isArray(Option.Formats.Value))
+                Option.Formats.Value = [Option.Formats.Value];
+            PvStore.Formats.Display.push(...Option.Formats.Display);
+            PvStore.Formats.Value.push(...Option.Formats.Value);
         }
         return this;
     }

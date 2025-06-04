@@ -1146,6 +1146,7 @@ body {
 
 .v-data-table {
   white-space: pre-line;
+  overflow-x: auto !important;
 }
 
 .DataTable-Stripe {

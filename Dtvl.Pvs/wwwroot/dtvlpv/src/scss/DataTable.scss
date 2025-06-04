@@ -19,7 +19,6 @@
     width: auto !important;
 }
 
-
 .DataTable thead {
     background: var(--DataTable-Head-bg);
     color: var(--DataTable-Head-text-color);
@@ -47,6 +46,7 @@
 
 .v-data-table {
     white-space: pre-line;
+    overflow-x: auto !important
 }
 
 .DataTable-Stripe {

@@ -1052,7 +1052,7 @@
         Refs(RefName) {
             if (!this.$VueProxy)
                 return null;
-            return this.$VueProxy[RefName];
+            return this.$VueProxy.$refs[RefName];
         }
     }
     exports.VueStore = VueStore;
