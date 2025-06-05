@@ -1,0 +1,56 @@
+﻿
+<dtvl-pv pv-type="Tabbed"
+         pv-name="TabbedOuter">
+    <pv-slot slot="TabbedSlot.Tabs">
+        <dtvl-pv pv-type="Tab">A</dtvl-pv>
+        <dtvl-pv pv-type="Tab">B</dtvl-pv>
+        <dtvl-pv pv-type="Tab">C</dtvl-pv>
+    </pv-slot>
+
+    <pv-slot slot="TabbedSlot.Contents">
+
+        <dtvl-pv pv-type="TabContent">
+            A Content
+            <div>
+                A Tabbed
+            </div>
+
+            <dtvl-pv pv-type="Tabbed"
+                     pv-name="ATabbed">
+                <pv-slot slot="TabbedSlot.Tabs">
+                    <dtvl-pv pv-type="Tab">
+                        A-1
+                    </dtvl-pv>
+                    <dtvl-pv pv-type="Tab">
+                        A-2
+                    </dtvl-pv>
+                    <dtvl-pv pv-type="Tab">
+                        A-3
+                    </dtvl-pv>
+                </pv-slot>
+                <pv-slot slot="TabbedSlot.Contents">
+                    <dtvl-pv pv-type="TabContent">
+                        A-1 Content
+                    </dtvl-pv>
+                    <dtvl-pv pv-type="TabContent">
+                        A-2 Content
+                    </dtvl-pv>
+                    <dtvl-pv pv-type="TabContent">
+                        A-3 Content
+                    </dtvl-pv>
+                </pv-slot>
+            </dtvl-pv>
+        </dtvl-pv>
+
+        <dtvl-pv pv-type="TabContent">
+            B Content
+        </dtvl-pv>
+
+        <dtvl-pv pv-type="TabContent">
+            C Content
+        </dtvl-pv>
+
+    </pv-slot>
+</dtvl-pv>
+
+<script type="module" src="~/scripts/Component/Tabbed.js"></script>

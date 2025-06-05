@@ -32,5 +32,9 @@ namespace Dtvl.Pvs.Controllers
         {
             return View();
         }
+        public IActionResult Tabbed()
+        {
+            return View();
+        }
     }
 }

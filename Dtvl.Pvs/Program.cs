@@ -1,4 +1,5 @@
 using Dtvl.Pvs;
+using Rugal.ImportMapper.Extensions;
 using Rugal.PartialViewRender.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 
-builder.Services.AddPartialViews<DtvlPvs>(builder.Configuration);
+builder.Services.AddPartialViews<DtvlPvs>(builder.Configuration)
+    .AddImportMapper(builder.Configuration.GetSection("ImportMap"));
 
 builder.Services.AddCors(options =>
 {

@@ -18,12 +18,9 @@
     <script src="~/npm/@@fortawesome/fontawesome-free/js/all.min.js" asp-append-version="true"></script>
     <script src="~/npm/bootstrap/dist/js/bootstrap.min.js" asp-append-version="true"></script>
 
-    <script type="importmap">
-        @Html.Raw(System.IO.File.ReadAllText("wwwroot/importmap.json"))
-    </script>
+    @ImportMapper.RenderMapJson()
 
     <script type="module" src="~/app/setup.js"></script>
-
     <dtvl-pv pv-type="App" app id="app">
         @{
             var ListDatas = new List<PvListItem>() { new PvListItem("UserLogout", "登出") };
@@ -73,6 +70,5 @@
         </pv-slot>
     </dtvl-pv>
     <script type="module" src="~/app/init.js"></script>
-
 </body>
 </html>

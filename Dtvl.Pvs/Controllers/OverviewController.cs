@@ -8,5 +8,9 @@ namespace Dtvl.Pvs.Controllers
         {
             return View();
         }
+        public IActionResult Pv()
+        {
+            return View();
+        }
     }
 }

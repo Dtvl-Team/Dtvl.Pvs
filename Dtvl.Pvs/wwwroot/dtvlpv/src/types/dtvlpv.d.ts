@@ -55,11 +55,14 @@ type DataTableOption = {
 type DataTableIndexOption = DataTableHeader & {
     type?: 'Page' | 'Total';
 };
+type DataTableStore = DataTableOption & {
+    Selected: any[];
+    Selectable?: boolean;
+    Loading?: boolean;
+    LoadingTime?: Date;
+};
 type ModalOption = {
     IsShow?: boolean;
-};
-type CallingLockType = {
-    IsCalling?: boolean;
 };
 type SendModalOption = ModalOption & {
     ApiKey?: string;
@@ -69,6 +72,9 @@ type SendModalOption = ModalOption & {
     Arg?: any;
 } & ApiCallback;
 type SendModalStore = SendModalOption & CallingLockType;
+type CallingLockType = {
+    IsCalling?: boolean;
+};
 type AlertOption = {
     IsShow?: boolean;
     Message?: string;
@@ -146,12 +152,33 @@ type SelectOption = {
     ApiKey?: PathType;
     ItemName?: string | Function;
     ItemValue?: string;
-    Store?: PathType;
-    ReturnObject?: boolean;
+    Store?: PathType | {
+        Path: PathType;
+        IsItem?: boolean;
+    };
     SelectedValue?: any;
+    ReturnObject?: boolean;
     Multiple?: boolean;
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
-    BindOnly?: boolean;
+    OnChange?: Function | string;
+};
+type SelectStore = {
+    Store: {
+        Path: PathType;
+        IsItem?: boolean;
+    };
+    IsInited: boolean;
+    Loading?: boolean;
+    LoadingTime?: Date;
+    SelectedValue?: any;
+    SelectedItem?: any;
+    Datas?: any[];
+    ApiKey?: PathType;
+    ItemName?: string | Function;
+    ItemValue?: string;
+    ReturnObject?: boolean;
+    Multiple?: boolean;
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     OnChange?: Function | string;
 };
 type DatePickerOption = {
@@ -196,6 +223,7 @@ declare class DtvlPvIniter {
     get RouterPaths(): SidebarItemData[];
     get Router(): SidebarItemData;
     UseShowOnMounted(): this;
+    Pv<TStore = any>(PvName: PathType): TStore;
     protected $CreateDefaultFormat(): void;
     protected $CreateAdDateFormat(): void;
     protected $CreateTwDateFormat(): void;
@@ -204,16 +232,23 @@ declare class DtvlPvIniter {
     UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
     private $InitSidebar;
     private $CreateSidebar;
+    GetSidebar(PvName: PathType): SidebarStore;
     AddPv_Sidebar(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
     private $SetSidebarTreeCommand;
+    GetDataTable(PvName: PathType): DataTableStore;
     AddPv_DataTable(PvName: PathType, Option: DataTableOption): this;
     private $FillDataTableHeaders;
     AddPv_Modal(PvName: PathType, Option?: ModalOption): this;
     AddPv_SendModal(PvName: PathType, Option?: SendModalOption): this;
     Modal(PvName: PathType, Option: boolean | SendModalStore): this;
+    GetModal(PvName: PathType): ModalOption;
+    GetSendModal(PvName: PathType): SendModalStore;
     AddPv_Alert(PvName: PathType, Option?: AlertOption): this;
     Alert(PvName: PathType, Option: boolean | AlertStore): this;
+    GetAlert(PvName: PathType): AlertStore;
     AddPv_FilterCard(PvName: PathType, Option?: FilterCardOption): this;
+    GetInput(PvName: PathType): InputStore;
+    GetSelect(PvName: PathType): SelectStore;
     AddPv_Input(PvName: PathType, Option?: InputOption): this;
     AddPv_Select(PvName: PathType, Option?: SelectOption): this;
     AddPv_Format(FormatKey: string, FormatFunc: FormateFuncType): this;

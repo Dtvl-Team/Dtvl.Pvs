@@ -14,20 +14,19 @@ let SelectDatas = [
         name: 'C'
     },
 ];
-let Datas = [{ SelectId: 1 }, { SelectId: 3 }];
-Model.UpdateStore('SomeApi', Datas)
-    .UpdateStore('SelectDatas', SelectDatas);
-Model.AddV_Tree('Datas', {
-    ':Rows': {
-        'v-for': 'SomeApi',
+Model.UpdateStore('SomeApi', [1]);
+Model.AddV_Tree('Rows', {
+    ':Items': {
+        //'v-for': 'SomeApi',
+        ':Select': Paths => {
+            DtvlPv.AddPv_Select(Paths, {
+                Store: 'SelectResult',
+                Datas: SelectDatas,
+                ItemName: 'name',
+                ItemValue: 'id',
+                Multiple: true,
+            });
+        }
     }
-});
-DtvlPv.AddPv_Select(['Datas', 'Rows', 'Sel'], {
-    Datas: SelectDatas,
-    ItemName: (Item) => {
-    },
-    ItemValue: 'id',
-    //Store: 'item.SelectId',
-    BindOnly: true,
 });
 //# sourceMappingURL=Select.js.map

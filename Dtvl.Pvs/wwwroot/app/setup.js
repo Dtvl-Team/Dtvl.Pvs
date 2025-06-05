@@ -51,6 +51,10 @@ DtvlPv.UseRouter('Sidebar', [
             {
                 title: 'DataTable',
                 href: '/Component/DataTable',
+            },
+            {
+                title: 'Tabbed',
+                href: '/Component/Tabbed',
             }
         ]
     },
