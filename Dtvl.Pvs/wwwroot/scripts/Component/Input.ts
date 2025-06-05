@@ -1,6 +1,7 @@
 import { DtvlPv, Formats } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
 
+let TwDateInput;
 Model.AddV_Tree('Root', {
     ':NumberInput': Paths => {
         DtvlPv.AddPv_Input(Paths, {
@@ -16,6 +17,7 @@ Model.AddV_Tree('Root', {
         });
     },
     ':TwDateInput': Paths => {
+        TwDateInput = Paths;
         DtvlPv.AddPv_Input(Paths, {
             Formats: Formats.TwDate,
         });
@@ -46,7 +48,6 @@ Model.AddV_Tree('Rows', {
         Model.UpdateStore('Rows', [{ value: 12345 }, { value: '19981014' }, { value: '0871014' }]);
     }
 });
-
 Model.AddV_Tree('Rows2', {
     ':Inputs': {
         'v-for': 'Rows2',
@@ -67,4 +68,3 @@ Model.AddV_Tree('Rows2', {
         Model.UpdateStore('Rows2', [20250110, '19981014', '2025-06-04']);
     },
 });
-

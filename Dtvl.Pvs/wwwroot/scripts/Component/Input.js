@@ -1,5 +1,6 @@
 import { DtvlPv, Formats } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
+let TwDateInput;
 Model.AddV_Tree('Root', {
     ':NumberInput': Paths => {
         DtvlPv.AddPv_Input(Paths, {
@@ -15,6 +16,7 @@ Model.AddV_Tree('Root', {
         });
     },
     ':TwDateInput': Paths => {
+        TwDateInput = Paths;
         DtvlPv.AddPv_Input(Paths, {
             Formats: Formats.TwDate,
         });

@@ -15,13 +15,17 @@ let SelectDatas = [
         name: 'C'
     },
 ];
-Model.UpdateStore('SomeApi', [1]);
+Model.UpdateStore('SomeApi', [{}, {}]);
 Model.AddV_Tree('Rows', {
     ':Items': {
-        //'v-for': 'SomeApi',
+        'v-for': 'SomeApi',
         ':Select': Paths => {
             DtvlPv.AddPv_Select(Paths, {
-                Store: 'SelectResult',
+                Store: {
+                    Path: 'item.value',
+                    IsItem: true,
+                },
+                ReturnObject: true,
                 Datas: SelectDatas,
                 ItemName: 'name',
                 ItemValue: 'id',
