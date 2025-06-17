@@ -1,4 +1,35 @@
-﻿.NotSelect {
+﻿--DefaultThemeVar, :root {
+  --DefaultTheme-bg: #121212;
+  --DefaultTheme-bg2: #212121;
+  --DefaultTheme-bg2-2: #212121;
+  --DefaultTheme-bg3: #424242;
+  --DefaultTheme-text-color: #FFFFFF;
+  --DefaultTheme-text-color2: #FFFFFF;
+  --DefaultTheme-text-color3: #FFFFFF;
+  --DefaultTheme-border-color: #5C5C5C;
+  --DefaultTheme-color-success: #81C784;
+  --DefaultTheme-color-warning: #FFD54F;
+  --DefaultTheme-color-error: #E57373;
+  --DefaultTheme-color-confirm: #CFD8DC;
+}
+
+--DefaultFontVar, :root {
+  /* -----------------------------------------------------font-size */
+  --DefaultTheme-font-size: 1rem;
+  --DefaultTheme-font-size2: 1.2rem;
+  --DefaultTheme-font-size3: 1.3rem;
+  /* -----------------------------------------------------font-weight */
+  --DefaultTheme-font-weight: bold;
+  --DefaultTheme-font-weight2: bolder;
+}
+
+--DefaultRadiusVar, :root {
+  --DefaultTheme-radius: 0.6rem;
+  --DefaultTheme-radius2: 1.2rem;
+  --DefaultTheme-radius3: 1.8rem;
+}
+
+.NotSelect {
   user-select: none;
 }
 
@@ -83,12 +114,34 @@
   aspect-ratio: 1/1;
 }
 
+--StaticVar, :root {
+  --Scrollbar-height: 0.7rem;
+  --Scrollbar-track-color: #1e1e1e;
+  --Scrollbar-thumb-color: #555;
+  --Scrollbar-thumb-border-radius: 8px;
+  --Scrollbar-thumb-border: 0.1rem solid var(--Scrollbar-track-color);
+}
+
 .HideScrollbar::-webkit-scrollbar {
   display: none;
 }
 
 .HideScrollbar .v-list::-webkit-scrollbar {
   display: none;
+}
+
+::-webkit-scrollbar {
+  height: var(--Scrollbar-height);
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--Scrollbar-track-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--Scrollbar-thumb-color);
+  border-radius: var(--Scrollbar-thumb-border-radius);
+  border: var(--Scrollbar-thumb-border);
 }
 
 body::-webkit-scrollbar {
@@ -448,37 +501,6 @@ body {
 
 .col-xxl-12 {
   padding: 0;
-}
-
---DefaultThemeVar, :root {
-  --DefaultTheme-bg: #121212;
-  --DefaultTheme-bg2: #212121;
-  --DefaultTheme-bg2-2: #212121;
-  --DefaultTheme-bg3: #424242;
-  --DefaultTheme-text-color: #FFFFFF;
-  --DefaultTheme-text-color2: #FFFFFF;
-  --DefaultTheme-text-color3: #FFFFFF;
-  --DefaultTheme-border-color: #5C5C5C;
-  --DefaultTheme-color-success: #81C784;
-  --DefaultTheme-color-warning: #FFD54F;
-  --DefaultTheme-color-error: #E57373;
-  --DefaultTheme-color-confirm: #CFD8DC;
-}
-
---DefaultFontVar, :root {
-  /* -----------------------------------------------------font-size */
-  --DefaultTheme-font-size: 1rem;
-  --DefaultTheme-font-size2: 1.2rem;
-  --DefaultTheme-font-size3: 1.3rem;
-  /* -----------------------------------------------------font-weight */
-  --DefaultTheme-font-weight: bold;
-  --DefaultTheme-font-weight2: bolder;
-}
-
---DefaultRadiusVar, :root {
-  --DefaultTheme-radius: 0.6rem;
-  --DefaultTheme-radius2: 1.2rem;
-  --DefaultTheme-radius3: 1.8rem;
 }
 
 --HeaderVar, :root {
@@ -1105,7 +1127,9 @@ body {
   --DataTable-Head-text-color: var(--DefaultTheme-text-color3);
   --DataTable-Head-font-size: var(--DefaultTheme-font-size2);
   --DataTable-Body-font-size: var(--DefaultTheme-font-size);
-  --DataTable-Stripe-bg: #edeff7;
+  --DataTable-Stripe-bg: #252525;
+  --DataTable-Select-bg: #2A3550;
+  --DataTable-hover-bg: #3A3A3A;
   --DataTable-Column-NumberInput-text-align: end;
 }
 
@@ -1144,13 +1168,28 @@ body {
   margin-right: 2.5rem;
 }
 
-.v-data-table {
-  white-space: pre-line;
-  overflow-x: auto !important;
+/*.DataTable.v-table {
+    max-width: 5000px;
+}*/
+.DataTable tbody {
+  height: 100%;
+}
+
+.DataTable table {
+  /*background-color: red;*/
+  /*white-space: pre-line;*/
 }
 
 .DataTable-Stripe {
   background: var(--DataTable-Stripe-bg);
+}
+
+.DataTable-Select {
+  background: var(--DataTable-Select-bg);
+}
+
+.v-data-table tbody tr:hover:not(.v-data-table__selected):not(.DataTable-Select) {
+  background: var(--DataTable-hover-bg);
 }
 
 .TableColumnNumberInput input {
@@ -1297,7 +1336,10 @@ body {
 --InputVar, :root {
   --Input-bg: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
+  --Input-focus-bg: var(--Input-bg);
+  --Input-focus-text-color: var(--Input-text-color);
   --Input-label-font-weight: var(--DefaultTheme-font-weight);
+  --Input-label-font-size: var(--DefaultTheme-font-size);
   --Input-Icon-color: var(--Input-text-color);
   --Input-Icon-font-size: 1.5rem;
   --Input-Icon-opacity: 0.6;
@@ -1312,8 +1354,13 @@ body {
     text-align: start;
 }*/
 .Input .v-field {
-  background-color: var(--Input-bg);
+  background: var(--Input-bg);
   color: var(--Input-text-color);
+}
+
+.Input .v-field:has(input:focus) {
+  background: var(--Input-focus-bg);
+  color: var(--Input-focus-text-color);
 }
 
 .Input .v-label {

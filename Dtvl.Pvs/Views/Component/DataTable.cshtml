@@ -1,6 +1,22 @@
 ﻿
 <dtvl-pv pv-type="DataTable">
+    
+    <pv-slot slot="DataTableSlot.SearchLabel">
+        123
+    </pv-slot>
 
+    <pv-slot slot="DataTableSlot.Columns">
+        <dtvl-pv pv-type="TableColumn">
+            <pv-slot slot="TableColumnSlot.ItemKey">testcus</pv-slot>
+            <span>aaa</span>
+        </dtvl-pv>
+    </pv-slot>
+
+    <pv-slot slot="DataTableSlot.Buttons">
+        <v-btn class="col-auto ms-1">A</v-btn>
+        <v-btn class="col-auto ms-1">B</v-btn>
+        <v-btn class="col-auto ms-1">C</v-btn>
+    </pv-slot>
 </dtvl-pv>
 
 <script type="module" src="~/scripts/Component/DataTable.js"></script>

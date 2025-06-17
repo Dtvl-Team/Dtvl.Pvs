@@ -1,29 +1,59 @@
 import { DtvlPv } from 'dtvlpv';
 
+let Datas = [
+    {
+        test: 'Aaaaaaaaaaaaaaaaa',
+        test2: 'Bbbbbbbbbbbbbbbb',
+        test3: 'Cccccccccccccccc',
+        test4: 'Dddddddddddddddd',
+        test5: 'Eeeeeeeeeeeeeeee',
+    },
+]
+
+for (let i = 0; i < 100; i++) {
+    Datas.push({
+        test: `A${i}`,
+        test2: `B${i}`,
+        test3: `C${i}`,
+        test4: `D${i}`,
+        test5: `E${i}`,
+    })
+}
+
+
 DtvlPv.AddPv_DataTable('DataTable', {
-    Index: {
-        width: '30px',
+    Select: {
+        ItemValue: 'test',
+        ReturnObject: false,
     },
     Headers: [
         {
             title: 'test',
-            width: '500px',
+            key: 'test',
+            align: {
+                content: 'center'
+            },
+        },
+        {
+            title: 'sss',
+            key: 'testcus',
         },
         {
             title: 'test2',
-            width: '500px',
+            key: 'test2',
         },
         {
             title: 'test3',
-            width: '500px',
+            key: 'test3',
         },
         {
             title: 'test4',
-            width: '500px',
+            key: 'test4',
         },
         {
             title: 'test5',
-            width: '500px',
+            key: 'test5',
         },
-    ]
+    ],
+    Datas,
 })

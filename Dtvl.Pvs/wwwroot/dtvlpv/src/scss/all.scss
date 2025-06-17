@@ -1,7 +1,7 @@
+@import 'Default.scss';
+
 @import '_Class.scss';
 @import '_Static.scss';
-
-@import 'Default.scss';
 
 @import 'Header.scss';
 @import 'Sidebar.scss';
@@ -35,6 +35,8 @@
     @extend --DefaultThemeVar;
     @extend --DefaultFontVar;
     @extend --DefaultRadiusVar;
+
+    @extend --StaticVar;
 
     @extend --HeaderVar;
     @extend --SidebarVar;

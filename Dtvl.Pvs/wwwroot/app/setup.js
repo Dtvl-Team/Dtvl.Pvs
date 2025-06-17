@@ -5,7 +5,10 @@ let VuetifyInit = createVuetify({
     directives,
     locale: {
         locale: 'zhHant'
-    }
+    },
+    //theme: {
+    //    defaultTheme: 'dark',
+    //}
 });
 Model.WithVueUse(VuetifyInit)
     .WithQueryDomName('pv-name');

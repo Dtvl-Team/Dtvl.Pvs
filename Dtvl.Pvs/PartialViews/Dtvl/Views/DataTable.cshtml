@@ -14,38 +14,110 @@
 
     if (Model.HasSlot(DataTableSlot.HideHeader))
         Model.AddParentAttr("v-bind:hide-default-header", "true");
+
+    var IsSearchEnd = true;
+    if (Model.HasSlot(DataTableSlot.SearchAlignStart))
+        IsSearchEnd = false;
 }
 
-@* <template v-slot:item="props, item = props.item">
-    <tr v-if="mobile">
+<template v-slot:top="props">
+    @if (!Model.HasSlot(DataTableSlot.HideTop))
+    {
+        <section class="p-2"
+                 pv-name="TopArea">
+            @if (Model.TryGetSlotRender(DataTableSlot.SearchView, out var SearchViewRender))
+                @SearchViewRender
+            else
+            {
+                <div pv-name="SearchArea"
+                     class="row">
+                    @if (Model.TryGetSlotRender(DataTableSlot.SearchStartView, out var SearchStartViewRender))
+                    {
+                        @SearchStartViewRender
+                    }
 
-    </tr>
-    <tr v-if="!mobile">
+                    <div class="col-xl-3 col-lg-4 col-md-6 col @(IsSearchEnd ? "ms-auto" : "")">
+                        <dtvl-pv pv-type="Input"
+                                 pv-name="Search">
+                            @if (Model.TryGetSlotRender(DataTableSlot.SearchLabel, out var SearchLabelContent))
+                            {
+                                <pv-slot slot="InputSlot.Label">@SearchLabelContent</pv-slot>
+                            }
+                        </dtvl-pv>
+                    </div>
 
+                    @if (Model.TryGetSlotRender(DataTableSlot.SearchEndView, out var SearchEndViewRender))
+                    {
+                        @SearchEndViewRender
+                    }
+                </div>
+            }
+        </section>
+    }
+</template>
+
+<template pv-name="Headers"
+          v-slot:headers="props, item = props.item">
+    <tr class="text-no-wrap">
+        <td pv-name="Cell">
+            <div pv-name="SelectColumn">
+                <dtvl-pv pv-type="Checkbox"
+                         pv-name="Checkbox">
+                </dtvl-pv>
+            </div>
+            <div pv-name="TitleColumn"
+                 class="NotSelect">
+                <span pv-name="Title"></span>
+                <span pv-name="AscIcon"
+                      class="ms-1">
+                    <i class="fa-solid fa-angle-up"></i>
+                </span>
+                <span pv-name="DescIcon"
+                      class="ms-1">
+                    <i class="fa-solid fa-angle-down"></i>
+                </span>
+            </div>
+        </td>
     </tr>
-</template> *@
+</template>
+
+<template pv-name="Items"
+          v-slot:item="props, item = props.item">
+    <tr pv-name="Row">
+        <td pv-name="Cell">
+            <div pv-name="SelectColumn">
+                <dtvl-pv pv-type="Checkbox"
+                         pv-name="Checkbox">
+                </dtvl-pv>
+            </div>
+
+            <div pv-name="IndexColumn"
+                 class="text-no-wrap">
+            </div>
+
+            @if (Model.TryGetSlotRenderMulti(DataTableSlot.Columns, out var ColumnRenders))
+            {
+                foreach (var ColumnRender in ColumnRenders)
+                {
+                    @ColumnRender
+                }
+            }
+
+            @if (Model.TryGetSlotRender(DataTableSlot.Buttons, out var ButtonsRender))
+            {
+                <div pv-name="ButtonsColumn"
+                     class="row col-auto justify-content-sm-center justify-content-evenly">
+                    @ButtonsRender
+                </div>
+            }
+
+            <div pv-name="TextColumn">
+            </div>
+        </td>
+    </tr>
+</template>
 
 <template v-slot:loading>
     <v-skeleton-loader class="SkeletonLoader"
                        type="table-row@@10"></v-skeleton-loader>
 </template>
-
-<dtvl-pv pv-type="TableColumn">
-    <pv-slot slot="TableColumnSlot.ItemKey">index</pv-slot>
-    <span pv-name="IndexColumn"></span>
-</dtvl-pv>
-
-@if (Model.TryGetSlotRender(DataTableSlot.Buttons, out var ButtonsRender))
-{
-    <dtvl-pv pv-type="TableColumn">
-        <pv-slot slot="TableColumnSlot.ItemKey">buttons</pv-slot>
-        <div class="row w-100 justify-content-sm-center justify-content-evenly">
-            @ButtonsRender
-        </div>
-    </dtvl-pv>
-}
-
-@if (Model.TryGetSlotRender(DataTableSlot.Columns, out var ColumnsRender))
-{
-    @ColumnsRender
-}

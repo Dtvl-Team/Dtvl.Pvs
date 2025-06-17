@@ -5,7 +5,9 @@
     --DataTable-Head-text-color: var(--DefaultTheme-text-color3);
     --DataTable-Head-font-size: var(--DefaultTheme-font-size2);
     --DataTable-Body-font-size: var(--DefaultTheme-font-size);
-    --DataTable-Stripe-bg: #edeff7;
+    --DataTable-Stripe-bg: #252525;
+    --DataTable-Select-bg: #2A3550;
+    --DataTable-hover-bg: #3A3A3A;
     --DataTable-Column-NumberInput-text-align: end;
 }
 
@@ -44,13 +46,29 @@
     margin-right: 2.5rem;
 }
 
-.v-data-table {
-    white-space: pre-line;
-    overflow-x: auto !important
+/*.DataTable.v-table {
+    max-width: 5000px;
+}*/
+
+.DataTable tbody {
+    height: 100%;
+}
+
+.DataTable table {
+    /*background-color: red;*/
+    /*white-space: pre-line;*/
 }
 
 .DataTable-Stripe {
     background: var(--DataTable-Stripe-bg);
+}
+
+.DataTable-Select {
+    background: var(--DataTable-Select-bg);
+}
+
+.v-data-table tbody tr:hover:not(.v-data-table__selected):not(.DataTable-Select) {
+    background: var(--DataTable-hover-bg);
 }
 
 .TableColumnNumberInput {
