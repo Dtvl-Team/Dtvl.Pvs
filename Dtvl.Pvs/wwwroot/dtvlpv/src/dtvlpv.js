@@ -933,10 +933,15 @@ class DtvlPvIniter {
                         this.SelectedValue = null;
                         return;
                     }
-                    if (Array.isArray(Value))
-                        this.SelectedValue = Value.map(Item => Item[this.ItemValue]);
-                    else
-                        this.SelectedValue = Value[this.ItemValue];
+                    let TargetField = this.ItemValue ?? this.ItemName;
+                    if (TargetField == null)
+                        this.SelectedValue = Value;
+                    else {
+                        if (Array.isArray(Value))
+                            this.SelectedValue = Value.map(Item => Item[TargetField]);
+                        else
+                            this.SelectedValue = Value[this.ItemValue];
+                    }
                 }
             });
             if (PvStore.ReturnObject != true) {
