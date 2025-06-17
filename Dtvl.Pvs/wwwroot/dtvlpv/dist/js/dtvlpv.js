@@ -444,13 +444,15 @@ class DtvlPvIniter {
             return false;
         };
         let ItemRowClass = [
-            `Pointer: ${PvStore.Select.RowClicked}`,
-            `'DataTable-Select': ${PvStorePath}.IsItemSelected(props.item) == true`,
             `'DataTable-Stripe': ${PvStorePath}.Stripe == true && props.index % 2 == 1`,
         ];
-        if (PvStore.Select.RowClass != null) {
-            for (let Item of PvStore.Select.RowClass.split(' '))
-                ItemRowClass.push(`'${Item}': ${PvStorePath}.IsItemSelected(props.item) == true`);
+        if (PvStore.Select != null) {
+            ItemRowClass.push(`Pointer: ${PvStore.Select.RowClicked ?? false}`);
+            ItemRowClass.push(`'DataTable-Select': ${PvStorePath}.IsItemSelected(props.item) == true`);
+            if (PvStore.Select.RowClass != null) {
+                for (let Item of PvStore.Select.RowClass.split(' '))
+                    ItemRowClass.push(`'${Item}': ${PvStorePath}.IsItemSelected(props.item) == true`);
+            }
         }
         Model.AddV_Tree(PvName, {
             ':Headers': {
@@ -490,9 +492,6 @@ class DtvlPvIniter {
             ':Items': {
                 ':Row': {
                     'v-bind:class': `{ ${ItemRowClass.join(',')} }`,
-                    'v-on:click': `${PvStorePath}.RowSelectClicked($event, props.toggleSelect, {
-                        value: ${PvStore.Select.ReturnObject} ? props.item : props.item['${PvStore.Select.ItemValue}'],
-                    })`,
                     ':Cell': {
                         'v-for': '(col, index) in props.columns.filter(item => item.show)',
                         'v-bind:style': `{ 
@@ -503,10 +502,16 @@ class DtvlPvIniter {
                             'text-align': col.align.content,
                         }`,
                         ':SelectColumn': {
-                            'v-if': `col.value == 'data-table-select' && ${PvStorePath}.Select.ShowCheckbox == true`,
+                            'v-if': `col.value == 'data-table-select' && ${PvStorePath}.Select?.ShowCheckbox == true`,
                             ':Checkbox': {
                                 'v-model': `${PvStorePath}.Selected`,
-                                'v-bind:value': `${PvStore.Select.ReturnObject} ? props.item : props.item['${PvStore.Select.ItemValue}']`,
+                                using: Paths => {
+                                    if (PvStore.Select) {
+                                        Model.AddV_Tree(Paths, {
+                                            'v-bind:value': `${PvStore.Select.ReturnObject} ? props.item : props.item['${PvStore.Select.ItemValue}']`,
+                                        });
+                                    }
+                                },
                             },
                         },
                         ':IndexColumn': {
@@ -524,6 +529,15 @@ class DtvlPvIniter {
                             'v-text': 'item[col.value]',
                         },
                     },
+                    using: Paths => {
+                        if (PvStore.Select) {
+                            Model.AddV_Tree(Paths, {
+                                'v-on:click': `${PvStorePath}.RowSelectClicked($event, props.toggleSelect, {
+                                    value: ${PvStore.Select.ReturnObject} ? props.item : props.item['${PvStore.Select.ItemValue}'],
+                                })`,
+                            });
+                        }
+                    }
                 }
             },
         });
