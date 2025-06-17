@@ -18,14 +18,11 @@ for (let i = 0; i < 100; i++) {
     });
 }
 DtvlPv.AddPv_DataTable('DataTable', {
-    Select: {
-        ItemValue: 'test',
-        ReturnObject: false,
-    },
     Headers: [
         {
             title: 'test',
             key: 'test',
+            width: '200px',
             align: {
                 content: 'center'
             },
