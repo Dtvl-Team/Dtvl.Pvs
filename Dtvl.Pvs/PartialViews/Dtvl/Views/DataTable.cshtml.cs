@@ -15,4 +15,5 @@ public enum DataTableSlot
     SearchStartView,
     SearchEndView,
     SearchLabel,
+    SearchIcon,
 }

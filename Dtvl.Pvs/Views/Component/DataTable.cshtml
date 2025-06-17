@@ -2,10 +2,16 @@
 <dtvl-pv pv-type="DataTable"
          height="300">
     <pv-slot slot="DataTableSlot.FixedHeader"></pv-slot>
+    <pv-slot slot="DataTableSlot.SearchStartView">
+        <div class="col">
+            <dtvl-pv pv-type="InfoLine">
+                聯絡人
+            </dtvl-pv>
+        </div>
+    </pv-slot>
     <pv-slot slot="DataTableSlot.SearchLabel">
         123
     </pv-slot>
-
     <pv-slot slot="DataTableSlot.Columns">
         <dtvl-pv pv-type="TableColumn">
             <pv-slot slot="TableColumnSlot.ItemKey">testinput</pv-slot>

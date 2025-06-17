@@ -41,12 +41,24 @@
 
                     @if (!Model.HasSlot(DataTableSlot.HideSearch))
                     {
-                        <div class="col-xl-3 col-lg-4 col-md-6 col @(IsSearchEnd ? "ms-auto" : "")">
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12 @(IsSearchEnd ? "ms-auto" : "")">
                             <dtvl-pv pv-type="Input"
                                      pv-name="Search">
                                 @if (Model.TryGetSlotRender(DataTableSlot.SearchLabel, out var SearchLabelContent))
                                 {
                                     <pv-slot slot="InputSlot.Label">@SearchLabelContent</pv-slot>
+                                }
+
+                                @if (Model.TryGetSlotContent(DataTableSlot.SearchIcon, out var SearchIconContent))
+                                {
+                                    if (!string.IsNullOrEmpty(SearchIconContent) && SearchIconContent != "null")
+                                    {
+                                        <pv-slot slot="InputSlot.InnerIcon">@SearchIconContent</pv-slot>
+                                    }
+                                }
+                                else
+                                {
+                                    <pv-slot slot="InputSlot.InnerIcon">fa-solid fa-magnifying-glass</pv-slot>
                                 }
                             </dtvl-pv>
                         </div>
