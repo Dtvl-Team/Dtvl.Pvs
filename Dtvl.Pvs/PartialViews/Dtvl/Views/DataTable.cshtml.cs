@@ -5,6 +5,8 @@ public enum DataTableSlot
     Buttons,
     Columns,
     HideHeader,
+    FixedHeader,
+
     HideTop,
     HideSearch,
     SearchView,
