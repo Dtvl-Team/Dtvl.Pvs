@@ -32,11 +32,18 @@ type SidebarStore = {
 } & SidebarOption;
 type DataTableHeader = {
     title?: string;
-    align?: string;
+    align?: string | {
+        header?: string;
+        content?: string;
+    };
     sortable?: boolean;
     key?: string;
     value?: string;
     width?: string;
+    minWidth?: string;
+    maxWidth?: string;
+    show?: boolean;
+    nowrap?: boolean;
 };
 type DataTableOption = {
     Index?: boolean | DataTableIndexOption;
@@ -44,22 +51,36 @@ type DataTableOption = {
     Headers: DataTableHeader[];
     Datas?: any[];
     ApiKey?: string;
+    Stripe?: boolean;
     Select?: {
         ItemValue: string;
         Store?: string;
-        ReturnObject?: boolean;
         Mode?: 'single' | 'page' | 'all';
+        ReturnObject?: boolean;
         RowClicked?: boolean;
+        ShowCheckbox?: boolean;
+        RowClass?: string;
+    };
+    Search?: boolean | string | {
+        Store?: string;
+        Query?: string;
     };
 };
 type DataTableIndexOption = DataTableHeader & {
     type?: 'Page' | 'Total';
+    path?: string;
 };
 type DataTableStore = DataTableOption & {
+    Index?: DataTableIndexOption;
+    Buttons?: DataTableHeader;
     Selected: any[];
     Selectable?: boolean;
     Loading?: boolean;
     LoadingTime?: Date;
+    IsSort?: Function;
+    IsItemSelected?: Function;
+    SelectItem?: Function;
+    RowSelectClicked?: Function;
 };
 type ModalOption = {
     IsShow?: boolean;
@@ -238,6 +259,7 @@ declare class DtvlPvIniter {
     GetDataTable(PvName: PathType): DataTableStore;
     AddPv_DataTable(PvName: PathType, Option: DataTableOption): this;
     private $FillDataTableHeaders;
+    private $BuildDefaultDataTable;
     AddPv_Modal(PvName: PathType, Option?: ModalOption): this;
     AddPv_SendModal(PvName: PathType, Option?: SendModalOption): this;
     Modal(PvName: PathType, Option: boolean | SendModalStore): this;

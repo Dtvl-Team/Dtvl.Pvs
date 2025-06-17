@@ -1,3 +1,10 @@
+--StaticVar {
+    --Scrollbar-height: 0.7rem;
+    --Scrollbar-track-color: #1e1e1e;
+    --Scrollbar-thumb-color: #555;
+    --Scrollbar-thumb-border-radius: 8px;
+    --Scrollbar-thumb-border: 0.1rem solid var(--Scrollbar-track-color);
+}
 
 .HideScrollbar::-webkit-scrollbar {
     display: none;
@@ -5,6 +12,20 @@
 
 .HideScrollbar .v-list::-webkit-scrollbar {
     display: none;
+}
+
+::-webkit-scrollbar {
+    height: var(--Scrollbar-height);
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--Scrollbar-track-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--Scrollbar-thumb-color);
+    border-radius: var(--Scrollbar-thumb-border-radius);
+    border: var(--Scrollbar-thumb-border);
 }
 
 body::-webkit-scrollbar {
@@ -37,6 +58,7 @@ body {
 }
 
 $breakpoints: xs, sm, md, lg, xl, xxl;
+
 @each $bp in $breakpoints {
     @for $i from 1 through 12 {
         .col-#{$bp}-#{$i} {

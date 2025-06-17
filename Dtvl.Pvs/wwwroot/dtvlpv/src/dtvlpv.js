@@ -251,29 +251,32 @@ class DtvlPvIniter {
         return this.Pv(PvName);
     }
     AddPv_DataTable(PvName, Option) {
-        Option.Datas ??= [];
-        let TableStore = {
+        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStore = {
             ...Option,
             Selected: [],
         };
-        let StorePath = Model.ToJoin(this.RootPath(PvName));
-        Model.UpdateStore(StorePath, TableStore);
-        TableStore.Buttons ??= {};
-        if (TableStore.Buttons != null && TableStore.Buttons != false) {
-            if (TableStore.Buttons == true) {
-                TableStore.Buttons = {};
+        Model.UpdateStore(PvStorePath, PvStore);
+        PvStore.Buttons ??= {};
+        PvStore.Datas ??= [];
+        PvStore.Stripe ??= true;
+        PvStore.Loading ??= false;
+        PvStore.Index ??= true;
+        if (PvStore.Buttons != null && PvStore.Buttons != false) {
+            if (PvStore.Buttons == true) {
+                PvStore.Buttons = {};
             }
-            TableStore.Buttons.title ??= '';
-            TableStore.Buttons.value ??= 'buttons';
-            TableStore.Buttons.sortable ??= false;
-            TableStore.Headers.push(TableStore.Buttons);
+            PvStore.Buttons.title ??= '';
+            PvStore.Buttons.value ??= 'buttons';
+            PvStore.Buttons.sortable ??= false;
+            PvStore.Headers.push(PvStore.Buttons);
         }
-        if (TableStore.ApiKey) {
-            Model.AddV_Property(TableStore.ApiKey, {
-                Target: `${StorePath}.Datas`,
+        if (PvStore.ApiKey) {
+            Model.AddV_Property(PvStore.ApiKey, {
+                Target: [PvStorePath, 'Datas'],
             });
-            this.WatchApi(TableStore.ApiKey, 'IsCalling', (Value) => {
-                let Store = Model.GetStore(StorePath);
+            this.WatchApi(PvStore.ApiKey, 'IsCalling', (Value) => {
+                let Store = Model.GetStore(PvStorePath);
                 if (Value == true) {
                     Store.Loading = Value;
                     Store.LoadingTime = new Date();
@@ -291,90 +294,123 @@ class DtvlPvIniter {
                     }
                 }
             });
-            Model.AddV_Tree(PvName, {
-                'v-bind:loading': `${StorePath}.Loading`,
-            });
         }
-        if (TableStore.Select != null) {
-            TableStore.Selectable = true;
-            TableStore.Select.ReturnObject ??= false;
-            TableStore.Select.Mode ??= 'all';
-            TableStore.Select.RowClicked ??= true;
-            if (TableStore.Select.RowClicked == true) {
-                Model.AddV_On(PvName, 'click:row', (Event, Row) => {
-                    let RowItem = Row.item;
-                    let ValueItem = RowItem;
-                    let Store = Model.GetStore(StorePath);
-                    if (!Store.Select.ReturnObject)
-                        ValueItem = ValueItem[Store.Select.ItemValue];
-                    let IsSelected = Store.Selected.includes(ValueItem);
-                    if (IsSelected) {
-                        let SelectedIndex = Store.Selected.indexOf(ValueItem);
-                        Store.Selected.splice(SelectedIndex, 1);
-                    }
-                    else
-                        Store.Selected.push(ValueItem);
-                });
+        if (PvStore.Index != null && PvStore.Index != false) {
+            if (PvStore.Index == true) {
+                PvStore.Index = {
+                    type: 'Total',
+                };
             }
-            Model.AddV_Tree(PvName, {
-                'v-model': `${StorePath}.Selected`,
-                'v-bind:show-select': `${StorePath}.Selectable`,
-                'v-bind:item-value': `${StorePath}.Select.ItemValue`,
-                'v-bind:return-object': `${StorePath}.Select.ReturnObject`,
-                'v-bind:select-strategy': `${StorePath}.Select.Mode`,
+            PvStore.Index.type ??= 'Total';
+            PvStore.Index.title ??= '#';
+            PvStore.Index.value ??= 'index';
+            PvStore.Index.key ??= 'index';
+            PvStore.Index.align ??= 'center';
+            PvStore.Index.sortable = false;
+            PvStore.Index.nowrap = true;
+            switch (PvStore.Index.type) {
+                case 'Page':
+                    PvStore.Index.path = 'props.index + 1';
+                    break;
+                case 'Total':
+                    PvStore.Index.path = 'props.internalItem.index + 1';
+                    break;
+            }
+            PvStore.Headers.unshift(PvStore.Index);
+        }
+        if (PvStore.Select) {
+            PvStore.Selectable = true;
+            PvStore.Select.ReturnObject ??= true;
+            PvStore.Select.Mode ??= 'all';
+            PvStore.Select.RowClicked ??= true;
+            PvStore.Select.ShowCheckbox ??= true;
+            PvStore.IsItemSelected = (item) => {
+                if (!PvStore.Select.ReturnObject)
+                    item = item[PvStore.Select.ItemValue];
+                let IsSelected = PvStore.Selected.includes(item);
+                return IsSelected;
+            };
+            PvStore.SelectItem = (item) => {
+                if (!PvStore.Select.ReturnObject)
+                    item = item[PvStore.Select.ItemValue];
+                let IsSelected = PvStore.Selected.includes(item);
+                if (IsSelected) {
+                    let SelectedIndex = PvStore.Selected.indexOf(item);
+                    PvStore.Selected.splice(SelectedIndex, 1);
+                }
+                else
+                    PvStore.Selected.push(item);
+            };
+            PvStore.RowSelectClicked = (event, toggle, item) => {
+                let Target = event.target;
+                let TargetTag = Target.tagName.toLowerCase();
+                if (TargetTag != 'button') {
+                    toggle(item);
+                }
+            };
+            PvStore.Headers.unshift({
+                value: 'data-table-select',
+                key: 'data-table-select',
+                maxWidth: '60px',
+                width: '60px',
+                show: PvStore.Select.ShowCheckbox,
             });
-            if (TableStore.Select.Store != null) {
-                Model.AddV_Property(`${StorePath}.Selected`, {
-                    Target: TableStore.Select.Store,
+            Model.AddV_Tree(PvName, {
+                'v-model': [PvStorePath, 'Selected'],
+                'v-bind:show-select': [PvStorePath, 'Selectable'],
+                'v-bind:item-value': [PvStorePath, 'Select', 'ItemValue'],
+                'v-bind:return-object': [PvStorePath, 'Select', 'ReturnObject'],
+                'v-bind:select-strategy': [PvStorePath, 'Select', 'Mode'],
+                'v-bind:row-props': [PvStorePath, 'RowProps'],
+            });
+            if (PvStore.Select.Store != null) {
+                Model.AddV_Property([PvStorePath, 'Selected'], {
+                    Target: PvStore.Select.Store,
                     Value: [],
                 });
             }
         }
-        this.$FillDataTableHeaders(TableStore.Headers);
-        TableStore.Index ??= true;
-        if (TableStore.Index != null && TableStore.Index != false) {
-            if (TableStore.Index == true) {
-                TableStore.Index = {
-                    type: 'Total',
-                };
-            }
-            TableStore.Index.type ??= 'Total';
-            let IndexPath = null;
-            switch (TableStore.Index.type) {
-                case 'Page':
-                    IndexPath = 'props.index + 1';
-                    break;
-                case 'Total':
-                    IndexPath = 'props.internalItem.index + 1';
-                    break;
-                default:
-                    break;
-            }
-            Model.AddV_Text([PvName, 'IndexColumn'], IndexPath);
-            TableStore.Index.title ??= '#';
-            TableStore.Index.value ??= 'index';
-            TableStore.Index.key ??= 'index';
-            TableStore.Headers.unshift(TableStore.Index);
+        if (PvStore.Search != false) {
+            if (typeof PvStore.Search == 'string')
+                PvStore.Search = { Store: PvStore.Search, };
+            else if (typeof PvStore.Search == 'boolean')
+                PvStore.Search = {};
         }
+        this.$FillDataTableHeaders(PvStore.Headers);
         Model.AddV_Tree(PvName, {
-            'v-bind:items': this.RootPath(PvName, 'Datas'),
-            'v-bind:headers': this.RootPath(PvName, 'Headers'),
+            'v-bind:items': [PvStorePath, 'Datas'],
+            'v-bind:headers': [PvStorePath, 'Headers'],
+            'v-bind:loading': [PvStorePath, 'Loading'],
+            'v-bind:search': [PvStorePath, 'Search', 'Query'],
+            ':SearchArea': {
+                'v-if': (PvStore.Search != false).toString(),
+                ':Search': Paths => {
+                    DtvlPv.AddPv_Input(Paths, {
+                        Store: [PvStorePath, 'Search', 'Query'],
+                    });
+                }
+            },
         });
+        this.$BuildDefaultDataTable(PvName, PvStore);
         return this;
     }
     $FillDataTableHeaders(Headers) {
-        let HasAnyPx = false;
         for (let Item of Headers) {
             Item.align ??= 'start';
             Item.key ??= Item.value;
             Item.value ??= Item.key;
-            let GetWidth = Item.width;
-            if (GetWidth == null)
-                continue;
-            if (GetWidth.includes('px'))
-                HasAnyPx = true;
+            Item.width ??= Item.minWidth;
+            Item.minWidth ??= Item.width;
+            Item.show ??= true;
+            if (typeof Item.align == 'string') {
+                Item.align = {
+                    header: Item.align,
+                    content: Item.align,
+                };
+            }
+            Item.align.header ??= 'start';
+            Item.align.content ??= 'start';
         }
-        return;
         //if (HasAnyPx)
         //    Headers.forEach(Item => Item.width ??= 'auto');
         //else {
@@ -394,6 +430,103 @@ class DtvlPvIniter {
         //            .forEach(Item => Item['width'] = `${AvgColumnWidth}%`);
         //    }
         //}
+    }
+    $BuildDefaultDataTable(PvName, PvStore) {
+        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        PvStore.IsSort = (Props, Column, Order) => {
+            if (Column.sortable == false)
+                return false;
+            if (Props.sortBy.length == 0)
+                return false;
+            let Sort = Props.sortBy[0];
+            if (Sort.key == Column.key && Sort.order == Order)
+                return true;
+            return false;
+        };
+        let ItemRowClass = [
+            `Pointer: ${PvStore.Select.RowClicked}`,
+            `'DataTable-Select': ${PvStorePath}.IsItemSelected(props.item) == true`,
+            `'DataTable-Stripe': ${PvStorePath}.Stripe == true && props.index % 2 == 1`,
+        ];
+        if (PvStore.Select.RowClass != null) {
+            for (let Item of PvStore.Select.RowClass.split(' '))
+                ItemRowClass.push(`'${Item}': ${PvStorePath}.IsItemSelected(props.item) == true`);
+        }
+        Model.AddV_Tree(PvName, {
+            ':Headers': {
+                ':Cell': {
+                    'v-for': 'col in props.columns.filter(item => item.show)',
+                    'v-bind:style': `{
+                         width: col.width,
+                         'min-width': col.minWidth,
+                         'max-width': col.maxWidth,
+                         'text-wrap': col.nowrap,
+                         'text-align': col.align.header,
+                    }`,
+                    'v-bind:class': '{ Pointer: col.sortable }',
+                    ':SelectColumn': {
+                        'v-if': `col.value == 'data-table-select' && ${PvStorePath}.Select.Mode != 'single'`,
+                        ':Checkbox': {
+                            'v-on:click': 'props.selectAll(!props.allSelected)',
+                            'v-bind:indeterminate': 'props.someSelected && props.allSelected == false',
+                            'v-model': 'props.allSelected',
+                        },
+                    },
+                    ':TitleColumn': {
+                        'v-else': null,
+                        'v-on:click': '() => col.sortable ? props.toggleSort(col) : null',
+                        ':Title': {
+                            'v-text': 'col.title',
+                        },
+                        ':AscIcon': {
+                            'v-if': `${PvStorePath}.IsSort(props, col, 'asc')`,
+                        },
+                        ':DescIcon': {
+                            'v-if': `${PvStorePath}.IsSort(props, col, 'desc')`,
+                        },
+                    },
+                },
+            },
+            ':Items': {
+                ':Row': {
+                    'v-bind:class': `{ ${ItemRowClass.join(',')} }`,
+                    'v-on:click': `${PvStorePath}.RowSelectClicked($event, props.toggleSelect, {
+                        value: ${PvStore.Select.ReturnObject} ? props.item : props.item['${PvStore.Select.ItemValue}'],
+                    })`,
+                    ':Cell': {
+                        'v-for': '(col, index) in props.columns.filter(item => item.show)',
+                        'v-bind:style': `{ 
+                            width: col.width,
+                            'min-width': col.minWidth,
+                            'max-width': col.maxWidth,
+                            'text-wrap': col.nowrap ? 'nowrap' : 'wrap',
+                            'text-align': col.align.content,
+                        }`,
+                        ':SelectColumn': {
+                            'v-if': `col.value == 'data-table-select' && ${PvStorePath}.Select.ShowCheckbox == true`,
+                            ':Checkbox': {
+                                'v-model': `${PvStorePath}.Selected`,
+                                'v-bind:value': `${PvStore.Select.ReturnObject} ? props.item : props.item['${PvStore.Select.ItemValue}']`,
+                            },
+                        },
+                        ':IndexColumn': {
+                            'v-else-if': `col.value == 'index'`,
+                            'v-text': PvStore.Index.path,
+                        },
+                        ':ButtonsColumn': {
+                            'v-else-if': `col.value == 'buttons'`,
+                            'v-bind:class': `{
+                                'flex-nowrap': ${PvStore.Buttons.nowrap} ? 'flex-nowrap' : '',
+                            }`
+                        },
+                        ':TextColumn': {
+                            'v-else': null,
+                            'v-text': 'item[col.value]',
+                        },
+                    },
+                }
+            },
+        });
     }
     //#endregion
     //#region Modal

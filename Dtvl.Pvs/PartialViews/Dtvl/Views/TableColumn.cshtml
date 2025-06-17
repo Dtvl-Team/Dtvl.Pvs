@@ -1,10 +1,11 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-    Model.WithParentTag("template")
+    Model.WithParentTag("section")
         .FillSlotFromDefault(TableColumnSlot.Content);
 
     var ItemKey = (Model.GetSlotContent(TableColumnSlot.ItemKey) ?? Model.PvName)?.ToLower();
-    Model.AddParentAttr($"v-slot:item.{ItemKey}", "props, item = props.item, Item = props.item");
+    Model.AddParentAttr("v-else-if", $"col.value == '{ItemKey}'");
+    Model.WithPvName(ItemKey);
 }
 
 @if (Model.TryGetSlotRender(TableColumnSlot.Content, out var ContentRender))
