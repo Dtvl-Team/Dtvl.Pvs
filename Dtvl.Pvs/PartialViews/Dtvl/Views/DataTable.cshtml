@@ -12,6 +12,9 @@
             @class = "DataTable text-break",
         });
 
+    if (Model.HasSlot(DataTableSlot.FixedHeader))
+        Model.AddParentAttr("v-bind:fixed-header", "true");
+
     if (Model.HasSlot(DataTableSlot.HideHeader))
         Model.AddParentAttr("v-bind:hide-default-header", "true");
 

@@ -1,5 +1,6 @@
 --StaticVar {
     --Scrollbar-height: 0.7rem;
+    --Scrollbar-width: 0.7rem;
     --Scrollbar-track-color: #1e1e1e;
     --Scrollbar-thumb-color: #555;
     --Scrollbar-thumb-border-radius: 8px;
@@ -16,6 +17,7 @@
 
 ::-webkit-scrollbar {
     height: var(--Scrollbar-height);
+    width: var(--Scrollbar-width);
 }
 
 ::-webkit-scrollbar-track {
