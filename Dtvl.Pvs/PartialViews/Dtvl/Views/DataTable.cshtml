@@ -39,15 +39,18 @@
                         @SearchStartViewRender
                     }
 
-                    <div class="col-xl-3 col-lg-4 col-md-6 col @(IsSearchEnd ? "ms-auto" : "")">
-                        <dtvl-pv pv-type="Input"
-                                 pv-name="Search">
-                            @if (Model.TryGetSlotRender(DataTableSlot.SearchLabel, out var SearchLabelContent))
-                            {
-                                <pv-slot slot="InputSlot.Label">@SearchLabelContent</pv-slot>
-                            }
-                        </dtvl-pv>
-                    </div>
+                    @if (!Model.HasSlot(DataTableSlot.HideSearch))
+                    {
+                        <div class="col-xl-3 col-lg-4 col-md-6 col @(IsSearchEnd ? "ms-auto" : "")">
+                            <dtvl-pv pv-type="Input"
+                                     pv-name="Search">
+                                @if (Model.TryGetSlotRender(DataTableSlot.SearchLabel, out var SearchLabelContent))
+                                {
+                                    <pv-slot slot="InputSlot.Label">@SearchLabelContent</pv-slot>
+                                }
+                            </dtvl-pv>
+                        </div>
+                    }
 
                     @if (Model.TryGetSlotRender(DataTableSlot.SearchEndView, out var SearchEndViewRender))
                     {
