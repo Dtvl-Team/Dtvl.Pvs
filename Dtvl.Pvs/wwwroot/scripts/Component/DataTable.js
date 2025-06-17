@@ -28,8 +28,8 @@ DtvlPv.AddPv_DataTable('DataTable', {
             },
         },
         {
-            title: 'sss',
-            key: 'testcus',
+            title: 'input',
+            key: 'testinput',
         },
         {
             title: 'test2',
@@ -49,5 +49,11 @@ DtvlPv.AddPv_DataTable('DataTable', {
         },
     ],
     Datas,
+});
+DtvlPv.AddPv_Input('TestInput', {
+    Store: {
+        Path: 'item.test',
+        IsItem: true,
+    },
 });
 //# sourceMappingURL=DataTable.js.map

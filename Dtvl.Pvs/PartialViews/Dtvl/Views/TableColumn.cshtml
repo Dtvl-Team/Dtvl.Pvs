@@ -5,7 +5,8 @@
 
     var ItemKey = (Model.GetSlotContent(TableColumnSlot.ItemKey) ?? Model.PvName)?.ToLower();
     Model.AddParentAttr("v-else-if", $"col.value == '{ItemKey}'");
-    Model.WithPvName(ItemKey);
+    if (ItemKey is not null && Model.PvName is null)
+        Model.WithPvName($"Column_{ItemKey}");
 }
 
 @if (Model.TryGetSlotRender(TableColumnSlot.Content, out var ContentRender))
