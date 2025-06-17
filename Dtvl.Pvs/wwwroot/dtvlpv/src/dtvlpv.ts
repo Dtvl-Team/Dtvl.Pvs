@@ -904,6 +904,8 @@ class DtvlPvIniter {
         Option ??= {};
         Option.IsShow ??= false;
 
+        Model.AddStore(PvName, {});
+
         let PvStorePath = this.RootPath(PvName);
         let PvStore: ModalStore = {
             ...Option,
