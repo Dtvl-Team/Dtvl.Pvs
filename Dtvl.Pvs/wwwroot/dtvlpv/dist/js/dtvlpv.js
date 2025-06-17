@@ -547,6 +547,7 @@ class DtvlPvIniter {
     AddPv_Modal(PvName, Option) {
         Option ??= {};
         Option.IsShow ??= false;
+        Model.AddStore(PvName, {});
         let PvStorePath = this.RootPath(PvName);
         let PvStore = {
             ...Option,
