@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-textarea")
+        .FillSlotFromDefault(TextAreaSlot.Label)
         .UsingInputBase()
         .AddParentAttr(new
         {
@@ -15,13 +16,13 @@
 }
 
 <template v-slot:prepend-inner="props">
-    <section class="InputPrependInner">
+    <section class="TextareaPrependInner">
         @if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
         {
             <dtvl-pv pv-type="Icon"
                      pv-name="Icon"
                      pass-slot="Model.PassSlot_InputToIcon()"
-                     class="InputIcon">
+                     class="TextareaIcon">
             </dtvl-pv>
         }
     </section>

@@ -1,13 +1,23 @@
 --SelectVar {
-    --Select-bg: var(--DefaultTheme-bg3);
-    --Select-text-color: var(--DefaultTheme-text-color3);
-    --Select-label-font-weight: var(--DefaultTheme-font-weight);
+    --Select-bg: var(--Input-bg);
+    --Select-text-color: var(--Input-text-color);
+    //label
+    --Select-label-font-weight: var(--Input-label-font-weight);
+    --Select-label-color: var(--Select-text-color);
+    //focus
+    --Select-focus-bg: var(--Select-bg);
+    --Select-focus-text-color: var(--Select-text-color);
+    //icon
     --Select-Icon-color: var(--Select-text-color);
     --Select-Icon-font-size: var(--Input-Icon-font-size);
     --Select-Icon-opacity: var(--Input-Icon-opacity);
-}
-
-.Select {
+    //size
+    --Select-SizeCompact-label-floating-font-size: var(--Input-SizeCompact-label-floating-font-size);
+    --Select-SizeCompact-label-floating-top: var(--Input-SizeCompact-label-floating-top);
+    --Select-SizeComfortable-label-floating-font-size: var(--Input-SizeComfortable-label-floating-font-size);
+    --Select-SizeComfortable-label-floating-top: var(--Input-SizeComfortable-label-floating-top);
+    --Select-SizeDefault-label-floating-font-size: var(--Input-SizeDefault-label-floating-font-size);
+    --Select-SizeDefault-label-floating-top: var(--Input-SizeDefault-label-floating-top);
 }
 
 .v-menu > .v-autocomplete__content > .v-list {
@@ -15,16 +25,53 @@
     color: var(--Select-text-color);
 }
 
+.Select {
+}
+
 .Select .v-field {
     background-color: var(--Select-bg);
     color: var(--Select-text-color);
 }
 
+.Select.v-text-field input {
+    color: var(--Select-text-color);
+}
+
 .Select .v-label {
     font-weight: var(--Select-label-font-weight);
+    color: var(--Select-label-color);
+}
+
+.Select.v-input--density-compact .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Select-SizeCompact-label-floating-font-size);
+    top: var(--Select-SizeCompact-label-floating-top) !important;
+}
+
+.Select.v-input--density-comfortable .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Select-SizeComfortable-label-floating-font-size);
+    top: var(--Select-SizeComfortable-label-floating-top) !important;
+}
+
+.Select.v-input--density-default .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Select-SizeDefault-label-floating-font-size);
+    top: var(--Select-SizeDefault-label-floating-top) !important;
+}
+
+.Select .v-field:has(input:focus) {
+    background: var(--Select-focus-bg);
+    color: var(--Select-focus-text-color);
+}
+
+.Select input:focus {
+    color: var(--Select-focus-text-color);
+}
+
+.Select .v-label.v-field-label--floating {
+    color: inherit;
 }
 
 .SelectIcon {
+    color: var(--Select-Icon-color);
     font-size: var(--Select-Icon-font-size);
     opacity: var(--Select-Icon-opacity);
 }

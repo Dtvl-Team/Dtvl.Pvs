@@ -1338,26 +1338,56 @@ body {
 --InputVar, :root {
   --Input-bg: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
+  --Input-label-font-weight: var(--DefaultTheme-font-weight);
+  --Input-label-color: var(--Input-text-color);
   --Input-focus-bg: var(--Input-bg);
   --Input-focus-text-color: var(--Input-text-color);
-  --Input-label-font-weight: var(--DefaultTheme-font-weight);
-  --Input-label-font-size: var(--DefaultTheme-font-size);
   --Input-Icon-color: var(--Input-text-color);
   --Input-Icon-font-size: 1.5rem;
   --Input-Icon-opacity: 0.6;
+  --Input-SizeCompact-label-floating-font-size: 0.75rem;
+  --Input-SizeCompact-label-floating-top: 3px;
+  --Input-SizeComfortable-label-floating-font-size: 0.75rem;
+  --Input-SizeComfortable-label-floating-top: 5px;
+  --Input-SizeDefault-label-floating-font-size: 0.75rem;
+  --Input-SizeDefault-label-floating-top: 7px;
 }
 
-/*.NumberInput {
+.v-field--prepended {
+  padding-inline-start: 0;
 }
-.Input.NumberInput button {
-    color: var(--Input-Icon-color);
+
+.v-input__append {
+  margin-inline-start: 0px !important;
 }
-.v-number-input--split .v-field__input {
-    text-align: start;
-}*/
+
 .Input .v-field {
   background: var(--Input-bg);
   color: var(--Input-text-color);
+}
+
+.Input.v-text-field input {
+  color: var(--Input-text-color);
+}
+
+.Input .v-label {
+  font-weight: var(--Input-label-font-weight);
+  color: var(--Input-label-color);
+}
+
+.Input.v-input--density-compact .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Input-SizeCompact-label-floating-font-size);
+  top: var(--Input-SizeCompact-label-floating-top) !important;
+}
+
+.Input.v-input--density-comfortable .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Input-SizeComfortable-label-floating-font-size);
+  top: var(--Input-SizeComfortable-label-floating-top) !important;
+}
+
+.Input.v-input--density-default .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Input-SizeDefault-label-floating-font-size);
+  top: var(--Input-SizeDefault-label-floating-top) !important;
 }
 
 .Input .v-field:has(input:focus) {
@@ -1365,21 +1395,18 @@ body {
   color: var(--Input-focus-text-color);
 }
 
-.Input .v-label {
-  font-weight: var(--Input-label-font-weight);
+.Input input:focus {
+  color: var(--Input-focus-text-color);
 }
 
-.v-input__append {
-  margin-inline-start: 0px !important;
+.Input .v-label.v-field-label--floating {
+  color: inherit;
 }
 
 .InputIcon {
+  color: var(--Input-Icon-color);
   font-size: var(--Input-Icon-font-size);
   opacity: var(--Input-Icon-opacity);
-}
-
-.v-field--prepended {
-  padding-inline-start: 0;
 }
 
 .InputPrependInner {
@@ -1387,9 +1414,21 @@ body {
 }
 
 --TextareaVar, :root {
-  --Textarea-bg: var(--DefaultTheme-bg3);
-  --Textarea-text-color: var(--DefaultTheme-text-color3);
-  --Textarea-label-font-weight: var(--DefaultTheme-font-weight);
+  --Textarea-bg: var(--Input-bg);
+  --Textarea-text-color: var(--Input-text-color);
+  --Textarea-label-font-weight: var(--Input-label-font-weight);
+  --Textarea-label-color: var(--Textarea-text-color);
+  --Textarea-focus-bg: var(--Textarea-bg);
+  --Textarea-focus-text-color: var(--Textarea-text-color);
+  --Textarea-Icon-color: var(--Textarea-text-color);
+  --Textarea-Icon-font-size: var(--Input-Icon-font-size);
+  --Textarea-Icon-opacity: var(--Input-Icon-opacity);
+  --Textarea-SizeCompact-label-floating-font-size: var(--Input-SizeCompact-label-floating-font-size);
+  --Textarea-SizeCompact-label-floating-top: var(--Input-SizeCompact-label-floating-top);
+  --Textarea-SizeComfortable-label-floating-font-size: var(--Input-SizeComfortable-label-floating-font-size);
+  --Textarea-SizeComfortable-label-floating-top: var(--Input-SizeComfortable-label-floating-top);
+  --Textarea-SizeDefault-label-floating-font-size: var(--Input-SizeDefault-label-floating-font-size);
+  --Textarea-SizeDefault-label-floating-top: var(--Input-SizeDefault-label-floating-top);
 }
 
 .Textarea .v-field {
@@ -1397,8 +1436,51 @@ body {
   color: var(--Textarea-text-color);
 }
 
+.Textarea.v-text-field input {
+  color: var(--Select-text-color);
+}
+
 .Textarea .v-label {
   font-weight: var(--Textarea-label-font-weight);
+  color: var(--Textarea-label-color);
+}
+
+.Textarea.v-input--density-compact .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Textarea-SizeCompact-label-floating-font-size);
+  top: var(--Textarea-SizeCompact-label-floating-top) !important;
+}
+
+.Textarea.v-input--density-comfortable .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Textarea-SizeComfortable-label-floating-font-size);
+  top: var(--Textarea-SizeComfortable-label-floating-top) !important;
+}
+
+.Textarea.v-input--density-default .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Textarea-SizeDefault-label-floating-font-size);
+  top: var(--Textarea-SizeDefault-label-floating-top) !important;
+}
+
+.Textarea .v-field:has(textarea:focus) {
+  background: var(--Textarea-focus-bg);
+  color: var(--Textarea-focus-text-color);
+}
+
+.Textarea textarea:focus {
+  color: var(--Textarea-focus-text-color);
+}
+
+.Textarea .v-label.v-field-label--floating {
+  color: inherit;
+}
+
+.TextareaIcon {
+  color: var(--Textarea-Icon-color);
+  font-size: var(--Textarea-Icon-font-size);
+  opacity: var(--Textarea-Icon-opacity);
+}
+
+.TextareaPrependInner {
+  padding-inline-start: 12px;
 }
 
 --InfoCardVar, :root {
@@ -1420,12 +1502,21 @@ body {
 }
 
 --SelectVar, :root {
-  --Select-bg: var(--DefaultTheme-bg3);
-  --Select-text-color: var(--DefaultTheme-text-color3);
-  --Select-label-font-weight: var(--DefaultTheme-font-weight);
+  --Select-bg: var(--Input-bg);
+  --Select-text-color: var(--Input-text-color);
+  --Select-label-font-weight: var(--Input-label-font-weight);
+  --Select-label-color: var(--Select-text-color);
+  --Select-focus-bg: var(--Select-bg);
+  --Select-focus-text-color: var(--Select-text-color);
   --Select-Icon-color: var(--Select-text-color);
   --Select-Icon-font-size: var(--Input-Icon-font-size);
   --Select-Icon-opacity: var(--Input-Icon-opacity);
+  --Select-SizeCompact-label-floating-font-size: var(--Input-SizeCompact-label-floating-font-size);
+  --Select-SizeCompact-label-floating-top: var(--Input-SizeCompact-label-floating-top);
+  --Select-SizeComfortable-label-floating-font-size: var(--Input-SizeComfortable-label-floating-font-size);
+  --Select-SizeComfortable-label-floating-top: var(--Input-SizeComfortable-label-floating-top);
+  --Select-SizeDefault-label-floating-font-size: var(--Input-SizeDefault-label-floating-font-size);
+  --Select-SizeDefault-label-floating-top: var(--Input-SizeDefault-label-floating-top);
 }
 
 .v-menu > .v-autocomplete__content > .v-list {
@@ -1438,11 +1529,45 @@ body {
   color: var(--Select-text-color);
 }
 
+.Select.v-text-field input {
+  color: var(--Select-text-color);
+}
+
 .Select .v-label {
   font-weight: var(--Select-label-font-weight);
+  color: var(--Select-label-color);
+}
+
+.Select.v-input--density-compact .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Select-SizeCompact-label-floating-font-size);
+  top: var(--Select-SizeCompact-label-floating-top) !important;
+}
+
+.Select.v-input--density-comfortable .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Select-SizeComfortable-label-floating-font-size);
+  top: var(--Select-SizeComfortable-label-floating-top) !important;
+}
+
+.Select.v-input--density-default .v-label.v-field-label--floating {
+  --v-field-label-scale: var(--Select-SizeDefault-label-floating-font-size);
+  top: var(--Select-SizeDefault-label-floating-top) !important;
+}
+
+.Select .v-field:has(input:focus) {
+  background: var(--Select-focus-bg);
+  color: var(--Select-focus-text-color);
+}
+
+.Select input:focus {
+  color: var(--Select-focus-text-color);
+}
+
+.Select .v-label.v-field-label--floating {
+  color: inherit;
 }
 
 .SelectIcon {
+  color: var(--Select-Icon-color);
   font-size: var(--Select-Icon-font-size);
   opacity: var(--Select-Icon-opacity);
 }

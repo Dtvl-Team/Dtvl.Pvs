@@ -14,6 +14,10 @@ let SelectDatas = [
         id: 3,
         name: 'C'
     },
+    {
+        id: 4,
+        name: 'D'
+    },
 ];
 let StringDatas = ['a', 'b', 'c'];
 
@@ -23,7 +27,7 @@ DtvlPv.AddPv_Select('StoreSelect', {
 })
 
 
-Model.UpdateStore('SomeApi', [{}, {}]);
+Model.UpdateStore('SomeApi', [{}, {}, {}]);
 Model.AddV_Tree('Rows', {
     ':Items': {
         'v-for': 'SomeApi',

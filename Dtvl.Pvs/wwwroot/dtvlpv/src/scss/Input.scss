@@ -1,30 +1,63 @@
 --InputVar {
     --Input-bg: var(--DefaultTheme-bg3);
     --Input-text-color: var(--DefaultTheme-text-color3);
+    //label
+    --Input-label-font-weight: var(--DefaultTheme-font-weight);
+    --Input-label-color: var(--Input-text-color);
+    //focus
     --Input-focus-bg: var(--Input-bg);
     --Input-focus-text-color: var(--Input-text-color);
-    --Input-label-font-weight: var(--DefaultTheme-font-weight);
-    --Input-label-font-size: var(--DefaultTheme-font-size);
+    //icon
     --Input-Icon-color: var(--Input-text-color);
     --Input-Icon-font-size: 1.5rem;
     --Input-Icon-opacity: 0.6;
+    //size
+    --Input-SizeCompact-label-floating-font-size: 0.75rem;
+    --Input-SizeCompact-label-floating-top: 3px;
+    --Input-SizeComfortable-label-floating-font-size: 0.75rem;
+    --Input-SizeComfortable-label-floating-top: 5px;
+    --Input-SizeDefault-label-floating-font-size: 0.75rem;
+    --Input-SizeDefault-label-floating-top: 7px;
+}
+
+.v-field--prepended {
+    padding-inline-start: 0;
+}
+
+.v-input__append {
+    margin-inline-start: 0px !important;
 }
 
 .Input {
 }
 
-/*.NumberInput {
-}
-.Input.NumberInput button {
-    color: var(--Input-Icon-color);
-}
-.v-number-input--split .v-field__input {
-    text-align: start;
-}*/
-
 .Input .v-field {
     background: var(--Input-bg);
     color: var(--Input-text-color);
+}
+
+.Input.v-text-field input {
+    color: var(--Input-text-color);
+}
+
+.Input .v-label {
+    font-weight: var(--Input-label-font-weight);
+    color: var(--Input-label-color);
+}
+
+.Input.v-input--density-compact .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Input-SizeCompact-label-floating-font-size);
+    top: var(--Input-SizeCompact-label-floating-top) !important;
+}
+
+.Input.v-input--density-comfortable .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Input-SizeComfortable-label-floating-font-size);
+    top: var(--Input-SizeComfortable-label-floating-top) !important;
+}
+
+.Input.v-input--density-default .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Input-SizeDefault-label-floating-font-size);
+    top: var(--Input-SizeDefault-label-floating-top) !important;
 }
 
 .Input .v-field:has(input:focus) {
@@ -32,21 +65,18 @@
     color: var(--Input-focus-text-color);
 }
 
-.Input .v-label {
-    font-weight: var(--Input-label-font-weight);
+.Input input:focus {
+    color: var(--Input-focus-text-color);
 }
 
-.v-input__append {
-    margin-inline-start: 0px !important;
+.Input .v-label.v-field-label--floating {
+    color: inherit;
 }
 
 .InputIcon {
+    color: var(--Input-Icon-color);
     font-size: var(--Input-Icon-font-size);
     opacity: var(--Input-Icon-opacity);
-}
-
-.v-field--prepended {
-    padding-inline-start: 0;
 }
 
 .InputPrependInner {

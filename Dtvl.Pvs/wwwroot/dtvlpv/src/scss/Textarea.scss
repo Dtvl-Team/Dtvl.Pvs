@@ -1,7 +1,23 @@
 --TextareaVar {
-    --Textarea-bg: var(--DefaultTheme-bg3);
-    --Textarea-text-color: var(--DefaultTheme-text-color3);
-    --Textarea-label-font-weight: var(--DefaultTheme-font-weight);
+    --Textarea-bg: var(--Input-bg);
+    --Textarea-text-color: var(--Input-text-color);
+    //label
+    --Textarea-label-font-weight: var(--Input-label-font-weight);
+    --Textarea-label-color: var(--Textarea-text-color);
+    //focus
+    --Textarea-focus-bg: var(--Textarea-bg);
+    --Textarea-focus-text-color: var(--Textarea-text-color);
+    //icon
+    --Textarea-Icon-color: var(--Textarea-text-color);
+    --Textarea-Icon-font-size: var(--Input-Icon-font-size);
+    --Textarea-Icon-opacity: var(--Input-Icon-opacity);
+    //size
+    --Textarea-SizeCompact-label-floating-font-size: var(--Input-SizeCompact-label-floating-font-size);
+    --Textarea-SizeCompact-label-floating-top: var(--Input-SizeCompact-label-floating-top);
+    --Textarea-SizeComfortable-label-floating-font-size: var(--Input-SizeComfortable-label-floating-font-size);
+    --Textarea-SizeComfortable-label-floating-top: var(--Input-SizeComfortable-label-floating-top);
+    --Textarea-SizeDefault-label-floating-font-size: var(--Input-SizeDefault-label-floating-font-size);
+    --Textarea-SizeDefault-label-floating-top: var(--Input-SizeDefault-label-floating-top);
 }
 
 .Textarea {
@@ -12,6 +28,49 @@
     color: var(--Textarea-text-color);
 }
 
+.Textarea.v-text-field input {
+    color: var(--Select-text-color);
+}
+
 .Textarea .v-label {
     font-weight: var(--Textarea-label-font-weight);
+    color: var(--Textarea-label-color);
+}
+
+.Textarea.v-input--density-compact .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Textarea-SizeCompact-label-floating-font-size);
+    top: var(--Textarea-SizeCompact-label-floating-top) !important;
+}
+
+.Textarea.v-input--density-comfortable .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Textarea-SizeComfortable-label-floating-font-size);
+    top: var(--Textarea-SizeComfortable-label-floating-top) !important;
+}
+
+.Textarea.v-input--density-default .v-label.v-field-label--floating {
+    --v-field-label-scale: var(--Textarea-SizeDefault-label-floating-font-size);
+    top: var(--Textarea-SizeDefault-label-floating-top) !important;
+}
+
+.Textarea .v-field:has(textarea:focus) {
+    background: var(--Textarea-focus-bg);
+    color: var(--Textarea-focus-text-color);
+}
+
+.Textarea textarea:focus {
+    color: var(--Textarea-focus-text-color);
+}
+
+.Textarea .v-label.v-field-label--floating {
+    color: inherit;
+}
+
+.TextareaIcon {
+    color: var(--Textarea-Icon-color);
+    font-size: var(--Textarea-Icon-font-size);
+    opacity: var(--Textarea-Icon-opacity);
+}
+
+.TextareaPrependInner {
+    padding-inline-start: 12px;
 }
