@@ -1,5 +1,5 @@
 /*!
-* Vuetify v3.8.8
+* Vuetify v3.8.9
 * Forged by John Leider
 * Released under the MIT License.
 */
@@ -530,7 +530,6 @@
     return cleanText;
   }
   function camelizeProps(props) {
-    if (!props) return;
     const out = {};
     for (const prop in props) {
       out[vue.camelize(prop)] = props[prop];
@@ -9868,7 +9867,7 @@
     const _props = {
       title,
       value,
-      ...camelizeProps(itemProps)
+      ...itemProps
     };
     return {
       title: String(_props.title ?? ''),
@@ -12396,10 +12395,12 @@
       const inputRef = vue.ref();
       const isActive = vue.computed(() => activeTypes.includes(props.type) || props.persistentPlaceholder || isFocused.value || props.active);
       function onFocus() {
-        if (inputRef.value !== document.activeElement) {
-          inputRef.value?.focus();
-        }
         if (!isFocused.value) focus();
+        vue.nextTick(() => {
+          if (inputRef.value !== document.activeElement) {
+            inputRef.value?.focus();
+          }
+        });
       }
       function onControlMousedown(e) {
         emit('mousedown:control', e);
@@ -12408,7 +12409,6 @@
         e.preventDefault();
       }
       function onControlClick(e) {
-        onFocus();
         emit('click:control', e);
       }
       function onClear(e, reset) {
@@ -13334,6 +13334,7 @@
                     index,
                     itemRef
                   } = _ref2;
+                  const camelizedProps = camelizeProps(item.props);
                   const itemProps = vue.mergeProps(item.props, {
                     ref: itemRef,
                     key: item.value,
@@ -13355,10 +13356,10 @@
                         "modelValue": isSelected,
                         "ripple": false,
                         "tabindex": "-1"
-                      }, null) : undefined, item.props.prependAvatar && vue.createVNode(VAvatar, {
-                        "image": item.props.prependAvatar
-                      }, null), item.props.prependIcon && vue.createVNode(VIcon, {
-                        "icon": item.props.prependIcon
+                      }, null) : undefined, camelizedProps.prependAvatar && vue.createVNode(VAvatar, {
+                        "image": camelizedProps.prependAvatar
+                      }, null), camelizedProps.prependIcon && vue.createVNode(VIcon, {
+                        "icon": camelizedProps.prependIcon
                       }, null)]);
                     }
                   });
@@ -16537,7 +16538,7 @@
           default: () => [vue.withDirectives(vue.createElementVNode("div", {
             "class": "v-slider-thumb__label-container"
           }, [vue.createElementVNode("div", {
-            "class": vue.normalizeClass(['v-slider-thumb__label'])
+            "class": vue.normalizeClass(['v-slider-thumb__label', textColorClasses.value])
           }, [vue.createElementVNode("div", null, [slots['thumb-label']?.({
             modelValue: props.modelValue
           }) ?? props.modelValue.toFixed(step.value ? decimals.value : 1)])])]), [[vue.vShow, thumbLabel.value && props.focused || thumbLabel.value === 'always']])]
@@ -17806,7 +17807,7 @@
     const yearStart = new Date(year, 0, 1);
     const size = firstWeekSize(year);
     const d1w1 = size >= minWeekSize ? addDays(yearStart, size - 7) : addDays(yearStart, size);
-    return 1 + getDiff(date, d1w1, 'weeks');
+    return 1 + getDiff(endOfDay(date), startOfDay(d1w1), 'weeks');
   }
   function getDate(date) {
     return date.getDate();
@@ -18109,6 +18110,18 @@
       instance: createInstance(_options, locale)
     };
   }
+  function createDateRange(adapter, start, stop) {
+    const diff = adapter.getDiff(adapter.endOfDay(stop ?? start), adapter.startOfDay(start), 'days');
+    const datesInRange = [start];
+    for (let i = 1; i < diff; i++) {
+      const nextDate = adapter.addDays(start, i);
+      datesInRange.push(nextDate);
+    }
+    if (stop) {
+      datesInRange.push(adapter.endOfDay(stop));
+    }
+    return datesInRange;
+  }
   function createInstance(options, locale) {
     const instance = vue.reactive(typeof options.adapter === 'function'
     // eslint-disable-next-line new-cap
@@ -18119,20 +18132,7 @@
     vue.watch(locale.current, value => {
       instance.locale = options.locale[value] ?? value ?? instance.locale;
     });
-    return Object.assign(instance, {
-      createDateRange(start, stop) {
-        const diff = instance.getDiff(stop ?? start, start, 'days');
-        const datesInRange = [start];
-        for (let i = 1; i < diff; i++) {
-          const nextDate = instance.addDays(start, i);
-          datesInRange.push(nextDate);
-        }
-        if (stop) {
-          datesInRange.push(instance.endOfDay(stop));
-        }
-        return datesInRange;
-      }
-    });
+    return instance;
   }
   function useDate() {
     const options = vue.inject(DateOptionsSymbol);
@@ -20221,7 +20221,9 @@
           "class": "v-data-table-footer"
         }, [slots.prepend?.(), vue.createElementVNode("div", {
           "class": "v-data-table-footer__items-per-page"
-        }, [vue.createElementVNode("span", null, [t(props.itemsPerPageText)]), vue.createVNode(VSelect, {
+        }, [vue.createElementVNode("span", {
+          "aria-label": t(props.itemsPerPageText)
+        }, [t(props.itemsPerPageText)]), vue.createVNode(VSelect, {
           "items": itemsPerPageOptions.value,
           "modelValue": itemsPerPage.value,
           "onUpdate:modelValue": v => setItemsPerPage(Number(v)),
@@ -20273,6 +20275,7 @@
     } = _ref;
     const Tag = props.tag ?? 'td';
     return vue.createVNode(Tag, {
+      "tabindex": "0",
       "class": vue.normalizeClass(['v-data-table__td', {
         'v-data-table-column--fixed': props.fixed,
         'v-data-table-column--last-fixed': props.lastFixed,
@@ -20617,6 +20620,11 @@
           top: props.sticky || props.fixedHeader ? `calc(var(--v-table-header-height) * ${y})` : undefined
         };
       }
+      function handleEnterKeyPress(event, column) {
+        if (event.key === 'Enter' && !props.disableSort) {
+          toggleSort(column);
+        }
+      }
       function getSortIcon(column) {
         const item = sortBy.value.find(item => item.key === column.key);
         if (!item) return props.sortAscIcon;
@@ -20673,7 +20681,9 @@
           "nowrap": column.nowrap,
           "lastFixed": column.lastFixed,
           "noPadding": noPadding
-        }, headerProps), {
+        }, headerProps, {
+          "onKeydown": event => column.sortable && handleEnterKeyPress(event, column)
+        }), {
           default: () => {
             const columnSlotName = `header.${column.key}`;
             const columnSlotProps = {
@@ -22526,7 +22536,7 @@
           } else {
             rangeStop.value = adapter.endOfDay(_value);
           }
-          model.value = adapter.createDateRange(rangeStart.value, rangeStop.value);
+          model.value = createDateRange(adapter, rangeStart.value, rangeStop.value);
         } else {
           rangeStart.value = value;
           rangeStop.value = undefined;
@@ -23613,6 +23623,56 @@
 
   // Types
 
+  function useFileDrop() {
+    function hasFilesOrFolders(e) {
+      const entries = [...(e.dataTransfer?.items ?? [])].filter(x => x.kind === 'file').map(x => x.webkitGetAsEntry()).filter(Boolean);
+      return entries.length > 0 || [...(e.dataTransfer?.files ?? [])].length > 0;
+    }
+    async function handleDrop(e) {
+      const result = [];
+      const entries = [...(e.dataTransfer?.items ?? [])].filter(x => x.kind === 'file').map(x => x.webkitGetAsEntry()).filter(Boolean);
+      if (entries.length) {
+        for (const entry of entries) {
+          const files = await traverseFileTree(entry, appendIfDirectory('.', entry));
+          result.push(...files.map(x => x.file));
+        }
+      } else {
+        result.push(...[...(e.dataTransfer?.files ?? [])]);
+      }
+      return result;
+    }
+    return {
+      handleDrop,
+      hasFilesOrFolders
+    };
+  }
+  function traverseFileTree(item) {
+    let path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    return new Promise((resolve, reject) => {
+      if (item.isFile) {
+        const fileEntry = item;
+        fileEntry.file(file => resolve([{
+          file,
+          path
+        }]), reject);
+      } else if (item.isDirectory) {
+        const directoryReader = item.createReader();
+        directoryReader.readEntries(async entries => {
+          const files = [];
+          for (const entry of entries) {
+            files.push(...(await traverseFileTree(entry, appendIfDirectory(path, entry))));
+          }
+          resolve(files);
+        });
+      }
+    });
+  }
+  function appendIfDirectory(path, item) {
+    return item.isDirectory ? `${path}/${item.name}` : path;
+  }
+
+  // Types
+
   const makeVFileInputProps = propsFactory({
     chips: Boolean,
     counter: Boolean,
@@ -23697,6 +23757,10 @@
       const isActive = vue.toRef(() => isFocused.value || props.active);
       const isPlainOrUnderlined = vue.computed(() => ['plain', 'underlined'].includes(props.variant));
       const isDragging = vue.shallowRef(false);
+      const {
+        handleDrop,
+        hasFilesOrFolders
+      } = useFileDrop();
       function onFocus() {
         if (inputRef.value !== document.activeElement) {
           inputRef.value?.focus();
@@ -23730,13 +23794,13 @@
         e.preventDefault();
         isDragging.value = false;
       }
-      function onDrop(e) {
+      async function onDrop(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
         isDragging.value = false;
-        if (!e.dataTransfer?.files?.length || !inputRef.value) return;
+        if (!inputRef.value || !hasFilesOrFolders(e)) return;
         const dataTransfer = new DataTransfer();
-        for (const file of e.dataTransfer.files) {
+        for (const file of await handleDrop(e)) {
           dataTransfer.items.add(file);
         }
         inputRef.value.files = dataTransfer.files;
@@ -25167,6 +25231,7 @@
       ...makeVNumberInputProps()
     },
     emits: {
+      'update:focused': val => true,
       'update:modelValue': val => true
     },
     setup(props, _ref) {
@@ -25182,11 +25247,7 @@
       });
       const form = useForm(props);
       const controlsDisabled = vue.computed(() => form.isDisabled.value || form.isReadonly.value);
-      const {
-        isFocused,
-        focus,
-        blur
-      } = useFocus(props);
+      const isFocused = vue.shallowRef(props.focused);
       function correctPrecision(val) {
         let precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : props.precision;
         const fixed = precision == null ? String(val) : val.toFixed(precision);
@@ -25371,11 +25432,9 @@
         inputText.value = model.value.toString();
       }
       function onFocus() {
-        focus();
         trimDecimalZeros();
       }
       function onBlur() {
-        blur();
         clampModel();
       }
       useRender(() => {
@@ -25468,9 +25527,12 @@
         }, null)]) : props.reverse && controlVariant.value !== 'hidden' ? vue.createElementVNode(vue.Fragment, null, [controlNode(), dividerNode()]) : undefined;
         const hasPrependInner = slots['prepend-inner'] || prependInnerControl;
         return vue.createVNode(VTextField, vue.mergeProps({
-          "ref": vTextFieldRef,
+          "ref": vTextFieldRef
+        }, textFieldProps, {
           "modelValue": inputText.value,
           "onUpdate:modelValue": $event => inputText.value = $event,
+          "focused": isFocused.value,
+          "onUpdate:focused": $event => isFocused.value = $event,
           "validationValue": model.value,
           "onBeforeinput": onBeforeinput,
           "onFocus": onFocus,
@@ -25483,8 +25545,7 @@
             'v-number-input--reverse': props.reverse,
             'v-number-input--split': controlVariant.value === 'split',
             'v-number-input--stacked': controlVariant.value === 'stacked'
-          }, props.class]
-        }, textFieldProps, {
+          }, props.class],
           "style": props.style,
           "inputmode": "decimal"
         }), {
@@ -25619,7 +25680,7 @@
       function onPaste(index, e) {
         e.preventDefault();
         e.stopPropagation();
-        const clipboardText = e?.clipboardData?.getData('Text').slice(0, length.value) ?? '';
+        const clipboardText = e?.clipboardData?.getData('Text').trim().slice(0, length.value) ?? '';
         if (isValidNumber(clipboardText)) return;
         model.value = clipboardText.split('');
         inputRef.value?.[index].blur();
@@ -25651,7 +25712,10 @@
         scoped: true
       });
       vue.watch(model, val => {
-        if (val.length === length.value) emit('finish', val.join(''));
+        if (val.length === length.value) {
+          focusIndex.value = length.value - 1;
+          emit('finish', val.join(''));
+        }
       }, {
         deep: true
       });
@@ -29404,7 +29468,7 @@
       };
     });
   }
-  const version$1 = "3.8.8";
+  const version$1 = "3.8.9";
   createVuetify$1.version = version$1;
 
   // Vue's inject() can only be used in setup
@@ -29429,7 +29493,7 @@
       ...options
     });
   };
-  const version = "3.8.8";
+  const version = "3.8.9";
   createVuetify.version = version;
 
   exports.blueprints = index;

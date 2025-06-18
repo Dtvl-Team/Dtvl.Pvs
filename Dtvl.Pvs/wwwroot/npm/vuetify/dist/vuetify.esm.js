@@ -1,10 +1,10 @@
 /*!
-* Vuetify v3.8.8
+* Vuetify v3.8.9
 * Forged by John Leider
 * Released under the MIT License.
 */
 
-import { shallowRef, reactive, watchEffect, toRef, capitalize, camelize, unref, Fragment, isVNode, Comment, warn, getCurrentInstance as getCurrentInstance$1, ref, computed, provide, inject as inject$1, defineComponent as defineComponent$1, h, createVNode, mergeProps, createElementVNode, normalizeClass, toValue, onBeforeUnmount, watch, readonly, onMounted, useId, onDeactivated, onActivated, onScopeDispose, effectScope, toRaw, normalizeStyle, TransitionGroup, Transition, toRefs, isRef, onBeforeMount, nextTick, withDirectives, vShow, onUpdated, Text, resolveDynamicComponent, toDisplayString, markRaw, Teleport, cloneVNode, createTextVNode, normalizeProps, guardReactiveProps, onUnmounted, onBeforeUpdate, withModifiers, vModelText, resolveComponent, render } from 'vue';
+import { shallowRef, reactive, watchEffect, toRef, capitalize, unref, Fragment, camelize, isVNode, Comment, warn, getCurrentInstance as getCurrentInstance$1, ref, computed, provide, inject as inject$1, defineComponent as defineComponent$1, h, createVNode, mergeProps, createElementVNode, normalizeClass, toValue, onBeforeUnmount, watch, readonly, onMounted, useId, onDeactivated, onActivated, onScopeDispose, effectScope, toRaw, normalizeStyle, TransitionGroup, Transition, toRefs, isRef, onBeforeMount, nextTick, withDirectives, vShow, onUpdated, Text, resolveDynamicComponent, toDisplayString, markRaw, Teleport, cloneVNode, createTextVNode, normalizeProps, guardReactiveProps, onUnmounted, onBeforeUpdate, withModifiers, vModelText, resolveComponent, render } from 'vue';
 
 const IN_BROWSER = typeof window !== 'undefined';
 const SUPPORTS_INTERSECTION = IN_BROWSER && 'IntersectionObserver' in window;
@@ -526,7 +526,6 @@ function extractNumber(text, decimalDigitsLimit) {
   return cleanText;
 }
 function camelizeProps(props) {
-  if (!props) return;
   const out = {};
   for (const prop in props) {
     out[camelize(prop)] = props[prop];
@@ -9864,7 +9863,7 @@ function transformItem$3(props, item) {
   const _props = {
     title,
     value,
-    ...camelizeProps(itemProps)
+    ...itemProps
   };
   return {
     title: String(_props.title ?? ''),
@@ -12392,10 +12391,12 @@ const VTextField = genericComponent()({
     const inputRef = ref();
     const isActive = computed(() => activeTypes.includes(props.type) || props.persistentPlaceholder || isFocused.value || props.active);
     function onFocus() {
-      if (inputRef.value !== document.activeElement) {
-        inputRef.value?.focus();
-      }
       if (!isFocused.value) focus();
+      nextTick(() => {
+        if (inputRef.value !== document.activeElement) {
+          inputRef.value?.focus();
+        }
+      });
     }
     function onControlMousedown(e) {
       emit('mousedown:control', e);
@@ -12404,7 +12405,6 @@ const VTextField = genericComponent()({
       e.preventDefault();
     }
     function onControlClick(e) {
-      onFocus();
       emit('click:control', e);
     }
     function onClear(e, reset) {
@@ -13330,6 +13330,7 @@ const VSelect = genericComponent()({
                   index,
                   itemRef
                 } = _ref2;
+                const camelizedProps = camelizeProps(item.props);
                 const itemProps = mergeProps(item.props, {
                   ref: itemRef,
                   key: item.value,
@@ -13351,10 +13352,10 @@ const VSelect = genericComponent()({
                       "modelValue": isSelected,
                       "ripple": false,
                       "tabindex": "-1"
-                    }, null) : undefined, item.props.prependAvatar && createVNode(VAvatar, {
-                      "image": item.props.prependAvatar
-                    }, null), item.props.prependIcon && createVNode(VIcon, {
-                      "icon": item.props.prependIcon
+                    }, null) : undefined, camelizedProps.prependAvatar && createVNode(VAvatar, {
+                      "image": camelizedProps.prependAvatar
+                    }, null), camelizedProps.prependIcon && createVNode(VIcon, {
+                      "icon": camelizedProps.prependIcon
                     }, null)]);
                   }
                 });
@@ -16533,7 +16534,7 @@ const VSliderThumb = genericComponent()({
         default: () => [withDirectives(createElementVNode("div", {
           "class": "v-slider-thumb__label-container"
         }, [createElementVNode("div", {
-          "class": normalizeClass(['v-slider-thumb__label'])
+          "class": normalizeClass(['v-slider-thumb__label', textColorClasses.value])
         }, [createElementVNode("div", null, [slots['thumb-label']?.({
           modelValue: props.modelValue
         }) ?? props.modelValue.toFixed(step.value ? decimals.value : 1)])])]), [[vShow, thumbLabel.value && props.focused || thumbLabel.value === 'always']])]
@@ -17802,7 +17803,7 @@ function getWeek(date, locale, firstDayOfWeek, firstWeekMinSize) {
   const yearStart = new Date(year, 0, 1);
   const size = firstWeekSize(year);
   const d1w1 = size >= minWeekSize ? addDays(yearStart, size - 7) : addDays(yearStart, size);
-  return 1 + getDiff(date, d1w1, 'weeks');
+  return 1 + getDiff(endOfDay(date), startOfDay(d1w1), 'weeks');
 }
 function getDate(date) {
   return date.getDate();
@@ -18105,6 +18106,18 @@ function createDate(options, locale) {
     instance: createInstance(_options, locale)
   };
 }
+function createDateRange(adapter, start, stop) {
+  const diff = adapter.getDiff(adapter.endOfDay(stop ?? start), adapter.startOfDay(start), 'days');
+  const datesInRange = [start];
+  for (let i = 1; i < diff; i++) {
+    const nextDate = adapter.addDays(start, i);
+    datesInRange.push(nextDate);
+  }
+  if (stop) {
+    datesInRange.push(adapter.endOfDay(stop));
+  }
+  return datesInRange;
+}
 function createInstance(options, locale) {
   const instance = reactive(typeof options.adapter === 'function'
   // eslint-disable-next-line new-cap
@@ -18115,20 +18128,7 @@ function createInstance(options, locale) {
   watch(locale.current, value => {
     instance.locale = options.locale[value] ?? value ?? instance.locale;
   });
-  return Object.assign(instance, {
-    createDateRange(start, stop) {
-      const diff = instance.getDiff(stop ?? start, start, 'days');
-      const datesInRange = [start];
-      for (let i = 1; i < diff; i++) {
-        const nextDate = instance.addDays(start, i);
-        datesInRange.push(nextDate);
-      }
-      if (stop) {
-        datesInRange.push(instance.endOfDay(stop));
-      }
-      return datesInRange;
-    }
-  });
+  return instance;
 }
 function useDate() {
   const options = inject$1(DateOptionsSymbol);
@@ -20217,7 +20217,9 @@ const VDataTableFooter = genericComponent()({
         "class": "v-data-table-footer"
       }, [slots.prepend?.(), createElementVNode("div", {
         "class": "v-data-table-footer__items-per-page"
-      }, [createElementVNode("span", null, [t(props.itemsPerPageText)]), createVNode(VSelect, {
+      }, [createElementVNode("span", {
+        "aria-label": t(props.itemsPerPageText)
+      }, [t(props.itemsPerPageText)]), createVNode(VSelect, {
         "items": itemsPerPageOptions.value,
         "modelValue": itemsPerPage.value,
         "onUpdate:modelValue": v => setItemsPerPage(Number(v)),
@@ -20269,6 +20271,7 @@ const VDataTableColumn = defineFunctionalComponent({
   } = _ref;
   const Tag = props.tag ?? 'td';
   return createVNode(Tag, {
+    "tabindex": "0",
     "class": normalizeClass(['v-data-table__td', {
       'v-data-table-column--fixed': props.fixed,
       'v-data-table-column--last-fixed': props.lastFixed,
@@ -20613,6 +20616,11 @@ const VDataTableHeaders = genericComponent()({
         top: props.sticky || props.fixedHeader ? `calc(var(--v-table-header-height) * ${y})` : undefined
       };
     }
+    function handleEnterKeyPress(event, column) {
+      if (event.key === 'Enter' && !props.disableSort) {
+        toggleSort(column);
+      }
+    }
     function getSortIcon(column) {
       const item = sortBy.value.find(item => item.key === column.key);
       if (!item) return props.sortAscIcon;
@@ -20669,7 +20677,9 @@ const VDataTableHeaders = genericComponent()({
         "nowrap": column.nowrap,
         "lastFixed": column.lastFixed,
         "noPadding": noPadding
-      }, headerProps), {
+      }, headerProps, {
+        "onKeydown": event => column.sortable && handleEnterKeyPress(event, column)
+      }), {
         default: () => {
           const columnSlotName = `header.${column.key}`;
           const columnSlotProps = {
@@ -22522,7 +22532,7 @@ const VDatePickerMonth = genericComponent()({
         } else {
           rangeStop.value = adapter.endOfDay(_value);
         }
-        model.value = adapter.createDateRange(rangeStart.value, rangeStop.value);
+        model.value = createDateRange(adapter, rangeStart.value, rangeStop.value);
       } else {
         rangeStart.value = value;
         rangeStop.value = undefined;
@@ -23609,6 +23619,56 @@ const VFab = genericComponent()({
 
 // Types
 
+function useFileDrop() {
+  function hasFilesOrFolders(e) {
+    const entries = [...(e.dataTransfer?.items ?? [])].filter(x => x.kind === 'file').map(x => x.webkitGetAsEntry()).filter(Boolean);
+    return entries.length > 0 || [...(e.dataTransfer?.files ?? [])].length > 0;
+  }
+  async function handleDrop(e) {
+    const result = [];
+    const entries = [...(e.dataTransfer?.items ?? [])].filter(x => x.kind === 'file').map(x => x.webkitGetAsEntry()).filter(Boolean);
+    if (entries.length) {
+      for (const entry of entries) {
+        const files = await traverseFileTree(entry, appendIfDirectory('.', entry));
+        result.push(...files.map(x => x.file));
+      }
+    } else {
+      result.push(...[...(e.dataTransfer?.files ?? [])]);
+    }
+    return result;
+  }
+  return {
+    handleDrop,
+    hasFilesOrFolders
+  };
+}
+function traverseFileTree(item) {
+  let path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  return new Promise((resolve, reject) => {
+    if (item.isFile) {
+      const fileEntry = item;
+      fileEntry.file(file => resolve([{
+        file,
+        path
+      }]), reject);
+    } else if (item.isDirectory) {
+      const directoryReader = item.createReader();
+      directoryReader.readEntries(async entries => {
+        const files = [];
+        for (const entry of entries) {
+          files.push(...(await traverseFileTree(entry, appendIfDirectory(path, entry))));
+        }
+        resolve(files);
+      });
+    }
+  });
+}
+function appendIfDirectory(path, item) {
+  return item.isDirectory ? `${path}/${item.name}` : path;
+}
+
+// Types
+
 const makeVFileInputProps = propsFactory({
   chips: Boolean,
   counter: Boolean,
@@ -23693,6 +23753,10 @@ const VFileInput = genericComponent()({
     const isActive = toRef(() => isFocused.value || props.active);
     const isPlainOrUnderlined = computed(() => ['plain', 'underlined'].includes(props.variant));
     const isDragging = shallowRef(false);
+    const {
+      handleDrop,
+      hasFilesOrFolders
+    } = useFileDrop();
     function onFocus() {
       if (inputRef.value !== document.activeElement) {
         inputRef.value?.focus();
@@ -23726,13 +23790,13 @@ const VFileInput = genericComponent()({
       e.preventDefault();
       isDragging.value = false;
     }
-    function onDrop(e) {
+    async function onDrop(e) {
       e.preventDefault();
       e.stopImmediatePropagation();
       isDragging.value = false;
-      if (!e.dataTransfer?.files?.length || !inputRef.value) return;
+      if (!inputRef.value || !hasFilesOrFolders(e)) return;
       const dataTransfer = new DataTransfer();
-      for (const file of e.dataTransfer.files) {
+      for (const file of await handleDrop(e)) {
         dataTransfer.items.add(file);
       }
       inputRef.value.files = dataTransfer.files;
@@ -25163,6 +25227,7 @@ const VNumberInput = genericComponent()({
     ...makeVNumberInputProps()
   },
   emits: {
+    'update:focused': val => true,
     'update:modelValue': val => true
   },
   setup(props, _ref) {
@@ -25178,11 +25243,7 @@ const VNumberInput = genericComponent()({
     });
     const form = useForm(props);
     const controlsDisabled = computed(() => form.isDisabled.value || form.isReadonly.value);
-    const {
-      isFocused,
-      focus,
-      blur
-    } = useFocus(props);
+    const isFocused = shallowRef(props.focused);
     function correctPrecision(val) {
       let precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : props.precision;
       const fixed = precision == null ? String(val) : val.toFixed(precision);
@@ -25367,11 +25428,9 @@ const VNumberInput = genericComponent()({
       inputText.value = model.value.toString();
     }
     function onFocus() {
-      focus();
       trimDecimalZeros();
     }
     function onBlur() {
-      blur();
       clampModel();
     }
     useRender(() => {
@@ -25464,9 +25523,12 @@ const VNumberInput = genericComponent()({
       }, null)]) : props.reverse && controlVariant.value !== 'hidden' ? createElementVNode(Fragment, null, [controlNode(), dividerNode()]) : undefined;
       const hasPrependInner = slots['prepend-inner'] || prependInnerControl;
       return createVNode(VTextField, mergeProps({
-        "ref": vTextFieldRef,
+        "ref": vTextFieldRef
+      }, textFieldProps, {
         "modelValue": inputText.value,
         "onUpdate:modelValue": $event => inputText.value = $event,
+        "focused": isFocused.value,
+        "onUpdate:focused": $event => isFocused.value = $event,
         "validationValue": model.value,
         "onBeforeinput": onBeforeinput,
         "onFocus": onFocus,
@@ -25479,8 +25541,7 @@ const VNumberInput = genericComponent()({
           'v-number-input--reverse': props.reverse,
           'v-number-input--split': controlVariant.value === 'split',
           'v-number-input--stacked': controlVariant.value === 'stacked'
-        }, props.class]
-      }, textFieldProps, {
+        }, props.class],
         "style": props.style,
         "inputmode": "decimal"
       }), {
@@ -25615,7 +25676,7 @@ const VOtpInput = genericComponent()({
     function onPaste(index, e) {
       e.preventDefault();
       e.stopPropagation();
-      const clipboardText = e?.clipboardData?.getData('Text').slice(0, length.value) ?? '';
+      const clipboardText = e?.clipboardData?.getData('Text').trim().slice(0, length.value) ?? '';
       if (isValidNumber(clipboardText)) return;
       model.value = clipboardText.split('');
       inputRef.value?.[index].blur();
@@ -25647,7 +25708,10 @@ const VOtpInput = genericComponent()({
       scoped: true
     });
     watch(model, val => {
-      if (val.length === length.value) emit('finish', val.join(''));
+      if (val.length === length.value) {
+        focusIndex.value = length.value - 1;
+        emit('finish', val.join(''));
+      }
     }, {
       deep: true
     });
@@ -29400,7 +29464,7 @@ function createVuetify$1() {
     };
   });
 }
-const version$1 = "3.8.8";
+const version$1 = "3.8.9";
 createVuetify$1.version = version$1;
 
 // Vue's inject() can only be used in setup
@@ -29425,7 +29489,7 @@ const createVuetify = function () {
     ...options
   });
 };
-const version = "3.8.8";
+const version = "3.8.9";
 createVuetify.version = version;
 
 export { index as blueprints, components, createVuetify, directives, useDate, useDefaults, useDisplay, useGoTo, useLayout, useLocale, useRtl, useTheme, version };

@@ -1338,6 +1338,7 @@ body {
 --InputVar, :root {
   --Input-bg: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
+  --Input-font-size: 1rem;
   --Input-label-font-weight: var(--DefaultTheme-font-weight);
   --Input-label-color: var(--Input-text-color);
   --Input-label-opacity: 0.6;
@@ -1369,6 +1370,7 @@ body {
 
 .Input.v-text-field input {
   color: var(--Input-text-color);
+  font-size: var(--Input-font-size);
 }
 
 .Input .v-label {
@@ -1418,6 +1420,7 @@ body {
 --TextareaVar, :root {
   --Textarea-bg: var(--Input-bg);
   --Textarea-text-color: var(--Input-text-color);
+  --Textarea-font-size: var(--Input-font-size);
   --Textarea-label-font-weight: var(--Input-label-font-weight);
   --Textarea-label-color: var(--Textarea-text-color);
   --Textarea-label-opacity: var(--Input-label-opacity);
@@ -1439,8 +1442,9 @@ body {
   color: var(--Textarea-text-color);
 }
 
-.Textarea.v-text-field input {
+.Textarea.v-text-field textarea {
   color: var(--Select-text-color);
+  font-size: var(--Textarea-font-size);
 }
 
 .Textarea .v-label {
@@ -1508,6 +1512,7 @@ body {
 --SelectVar, :root {
   --Select-bg: var(--Input-bg);
   --Select-text-color: var(--Input-text-color);
+  --Select-font-size: var(--Input-font-size);
   --Select-label-font-weight: var(--Input-label-font-weight);
   --Select-label-color: var(--Select-text-color);
   --Select-label-opacity: var(--Input-label-opacity);
@@ -1536,6 +1541,7 @@ body {
 
 .Select.v-text-field input {
   color: var(--Select-text-color);
+  font-size: var(--Select-font-size);
 }
 
 .Select .v-label {

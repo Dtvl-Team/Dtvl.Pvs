@@ -1,6 +1,7 @@
 --SelectVar {
     --Select-bg: var(--Input-bg);
     --Select-text-color: var(--Input-text-color);
+    --Select-font-size: var(--Input-font-size);
     //label
     --Select-label-font-weight: var(--Input-label-font-weight);
     --Select-label-color: var(--Select-text-color);
@@ -36,6 +37,7 @@
 
 .Select.v-text-field input {
     color: var(--Select-text-color);
+    font-size: var(--Select-font-size);
 }
 
 .Select .v-label {

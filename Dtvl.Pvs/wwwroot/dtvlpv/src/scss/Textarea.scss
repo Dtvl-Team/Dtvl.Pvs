@@ -1,6 +1,7 @@
 --TextareaVar {
     --Textarea-bg: var(--Input-bg);
     --Textarea-text-color: var(--Input-text-color);
+    --Textarea-font-size: var(--Input-font-size);
     //label
     --Textarea-label-font-weight: var(--Input-label-font-weight);
     --Textarea-label-color: var(--Textarea-text-color);
@@ -29,8 +30,9 @@
     color: var(--Textarea-text-color);
 }
 
-.Textarea.v-text-field input {
+.Textarea.v-text-field textarea {
     color: var(--Select-text-color);
+    font-size: var(--Textarea-font-size);
 }
 
 .Textarea .v-label {
