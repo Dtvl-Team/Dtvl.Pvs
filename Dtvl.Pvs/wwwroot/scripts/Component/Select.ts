@@ -23,8 +23,11 @@ let StringDatas = ['a', 'b', 'c'];
 
 DtvlPv.AddPv_Select('StoreSelect', {
     Datas: SelectDatas,
+    ReturnObject: true,
     ItemValue: 'id',
-    ItemName: 'name',
+    ItemName: (Item: any) => {
+        return 'aaa' + Item.id;
+    },
     Store: 'Filter.result',
 })
 

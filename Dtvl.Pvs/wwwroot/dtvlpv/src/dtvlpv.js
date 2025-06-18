@@ -926,30 +926,37 @@ class DtvlPvIniter {
             Model.AddStore(PvStore.Store.Path, null)
                 .AddV_Model(PvName, [PvStorePath, 'SelectedItem'])
                 .AddV_Property([PvStorePath, 'SelectedItem'], {
-                //Target: PvStore.ReturnObject ? PvStore.Store.Path : null,
-                Target: PvStore.Store.Path,
+                Bind: [PvStore.ReturnObject == true ? PvStore.Store.Path : null],
                 set(Value) {
                     this.$set('SelectedItem', Value);
                     if (!Value) {
                         this.SelectedValue = null;
                         return;
                     }
+                    let SetSelectedValue = null;
                     let TargetField = this.ItemValue ?? this.ItemName;
                     if (TargetField == null)
-                        this.SelectedValue = Value;
+                        SetSelectedValue = Value;
                     else {
                         if (Array.isArray(Value))
-                            this.SelectedValue = Value.map(Item => Item[TargetField]);
+                            SetSelectedValue = Value.map(Item => Item[TargetField]);
                         else
-                            this.SelectedValue = Value[this.ItemValue];
+                            SetSelectedValue = Value[this.ItemValue];
+                    }
+                    if (SetSelectedValue != null && SetSelectedValue != this.$get('SelectedValue')) {
+                        this.SelectedValue = SetSelectedValue;
                     }
                 }
+            })
+                .AddV_Property([PvStorePath, 'SelectedValue'], {
+                Bind: [PvStore.ReturnObject == false ? PvStore.Store.Path : null],
+                set(Value) {
+                    this.$set('SelectedValue', Value);
+                    let SetSelectedItem = this.Datas.find((Item) => Item[this.ItemValue] == Value);
+                    if (this.SelectedItem != SetSelectedItem)
+                        this.SelectedItem = SetSelectedItem;
+                },
             });
-            if (PvStore.ReturnObject != true) {
-                Model.AddV_Property([PvStorePath, 'SelectedValue'], {
-                    Target: PvStore.Store.Path,
-                });
-            }
             PvStore.ReturnObject = true;
         }
         if (PvStore.ApiKey) {
