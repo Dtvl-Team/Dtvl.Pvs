@@ -53,6 +53,11 @@ DtvlPv.AddPv_DataTable('DataTable', {
         },
     ],
     Datas,
+    Select: {
+        ItemValue: 'test',
+        Store: 'Result',
+        Mode: 'single',
+    }
 });
 
 DtvlPv.AddPv_Input('TestInput', {
@@ -60,4 +65,4 @@ DtvlPv.AddPv_Input('TestInput', {
         Path: 'item.test',
         IsItem: true,
     },
-})
+});

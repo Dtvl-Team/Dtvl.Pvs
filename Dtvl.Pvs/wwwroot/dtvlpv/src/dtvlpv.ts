@@ -1312,7 +1312,8 @@ class DtvlPvIniter {
             Model.AddStore(PvStore.Store.Path, null)
                 .AddV_Model(PvName, [PvStorePath, 'SelectedItem'])
                 .AddV_Property([PvStorePath, 'SelectedItem'], {
-                    Target: PvStore.ReturnObject ? PvStore.Store.Path : null,
+                    //Target: PvStore.ReturnObject ? PvStore.Store.Path : null,
+                    Target: PvStore.Store.Path,
                     set(Value) {
                         this.$set('SelectedItem', Value);
                         if (!Value) {

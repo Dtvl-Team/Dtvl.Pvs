@@ -20,7 +20,9 @@ let SelectDatas = [
 ];
 let StringDatas = ['a', 'b', 'c'];
 DtvlPv.AddPv_Select('StoreSelect', {
-    Datas: StringDatas,
+    Datas: SelectDatas,
+    ItemValue: 'id',
+    ItemName: 'name',
     Store: 'Filter.result',
 });
 Model.UpdateStore('SomeApi', [{}, {}, {}]);
