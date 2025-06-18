@@ -4,6 +4,7 @@
     //label
     --Input-label-font-weight: var(--DefaultTheme-font-weight);
     --Input-label-color: var(--Input-text-color);
+    --Input-label-opacity: 0.6;
     //focus
     --Input-focus-bg: var(--Input-bg);
     --Input-focus-text-color: var(--Input-text-color);
@@ -43,6 +44,7 @@
 .Input .v-label {
     font-weight: var(--Input-label-font-weight);
     color: var(--Input-label-color);
+    opacity: var(--Input-label-opacity);
 }
 
 .Input.v-input--density-compact .v-label.v-field-label--floating {

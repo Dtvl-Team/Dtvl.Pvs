@@ -4,6 +4,7 @@
     //label
     --Select-label-font-weight: var(--Input-label-font-weight);
     --Select-label-color: var(--Select-text-color);
+    --Select-label-opacity: var(--Input-label-opacity);
     //focus
     --Select-focus-bg: var(--Select-bg);
     --Select-focus-text-color: var(--Select-text-color);
@@ -40,6 +41,7 @@
 .Select .v-label {
     font-weight: var(--Select-label-font-weight);
     color: var(--Select-label-color);
+    opacity: var(--Select-label-opacity);
 }
 
 .Select.v-input--density-compact .v-label.v-field-label--floating {

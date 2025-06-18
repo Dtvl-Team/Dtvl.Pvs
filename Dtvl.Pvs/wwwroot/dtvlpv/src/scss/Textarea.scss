@@ -4,6 +4,7 @@
     //label
     --Textarea-label-font-weight: var(--Input-label-font-weight);
     --Textarea-label-color: var(--Textarea-text-color);
+    --Textarea-label-opacity: var(--Input-label-opacity);
     //focus
     --Textarea-focus-bg: var(--Textarea-bg);
     --Textarea-focus-text-color: var(--Textarea-text-color);
@@ -35,6 +36,7 @@
 .Textarea .v-label {
     font-weight: var(--Textarea-label-font-weight);
     color: var(--Textarea-label-color);
+    opacity: var(--Textarea-label-opacity);
 }
 
 .Textarea.v-input--density-compact .v-label.v-field-label--floating {
