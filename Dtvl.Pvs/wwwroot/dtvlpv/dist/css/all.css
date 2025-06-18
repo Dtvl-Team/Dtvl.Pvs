@@ -1338,7 +1338,7 @@ body {
 --InputVar, :root {
   --Input-bg: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
-  --Input-font-size: 1rem;
+  --Input-font-size: 1.5rem;
   --Input-label-font-weight: var(--DefaultTheme-font-weight);
   --Input-label-color: var(--Input-text-color);
   --Input-label-opacity: 0.6;
@@ -1541,6 +1541,10 @@ body {
 
 .Select.v-text-field input {
   color: var(--Select-text-color);
+  font-size: var(--Select-font-size);
+}
+
+.Select.v-text-field .v-autocomplete__selection-text {
   font-size: var(--Select-font-size);
 }
 
