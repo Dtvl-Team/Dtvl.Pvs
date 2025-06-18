@@ -740,8 +740,7 @@ class DtvlPvIniter {
         let PvStore = {
             ...Option
         };
-        Model.AddStore(PvName, {})
-            .UpdateStore(PvStorePath, PvStore);
+        Model.AddStore(PvName, {});
         PvStore.BtnClear ??= () => {
             Model.ClearStore(PvName);
         };
@@ -753,6 +752,7 @@ class DtvlPvIniter {
         }
         if (PvStore.BtnSearch != null)
             Model.AddV_Click([PvName, 'BtnSearch'], [PvStorePath, 'BtnSearch']);
+        Model.UpdateStore(PvStorePath, PvStore);
         return this;
     }
     //#endregion
