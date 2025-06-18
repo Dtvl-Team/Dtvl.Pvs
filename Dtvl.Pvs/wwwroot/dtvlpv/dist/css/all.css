@@ -1338,7 +1338,7 @@ body {
 --InputVar, :root {
   --Input-bg: var(--DefaultTheme-bg3);
   --Input-text-color: var(--DefaultTheme-text-color3);
-  --Input-font-size: 1.5rem;
+  --Input-font-size: 1rem;
   --Input-label-font-weight: var(--DefaultTheme-font-weight);
   --Input-label-color: var(--Input-text-color);
   --Input-label-opacity: 0.6;
