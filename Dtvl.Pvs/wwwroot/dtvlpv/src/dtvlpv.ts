@@ -686,9 +686,10 @@ class DtvlPvIniter {
             PvStore.RowSelectClicked = (event: Event, toggle: Function, item: any) => {
                 let Target = event.target as HTMLElement;
                 let TargetTag = Target.tagName.toLowerCase();
-                if (TargetTag != 'button') {
-                    toggle(item);
-                }
+                if (TargetTag == 'button')
+                    return;
+
+                toggle(item);
             };
             PvStore.Headers.unshift({
                 value: 'data-table-select',
@@ -859,7 +860,7 @@ class DtvlPvIniter {
                         ':SelectColumn': {
                             'v-if': `col.value == 'data-table-select' && ${PvStorePath}.Select?.ShowCheckbox == true`,
                             ':Checkbox': {
-                                'v-model': `${PvStorePath}.Selected`,
+                                'v-bind:model-value': `${PvStorePath}.Selected`,
                                 using: Paths => {
                                     if (PvStore.Select) {
                                         Model.AddV_Tree(Paths, {
