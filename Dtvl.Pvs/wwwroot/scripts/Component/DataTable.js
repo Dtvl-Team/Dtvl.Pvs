@@ -1,4 +1,5 @@
 import { DtvlPv } from 'dtvlpv';
+import { Model } from '@rugal.tu/vuemodel3';
 let Datas = [
     {
         test: 'Aaaaaaaaaaaaaaaaa',
@@ -61,4 +62,7 @@ DtvlPv.AddPv_Input('TestInput', {
         IsItem: true,
     },
 });
+Model.AddV_Click('BtnA', (item) => {
+    console.log(item);
+}, 'Item');
 //# sourceMappingURL=DataTable.js.map

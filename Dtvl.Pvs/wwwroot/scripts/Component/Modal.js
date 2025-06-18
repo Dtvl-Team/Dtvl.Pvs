@@ -1,5 +1,6 @@
 import { DtvlPv } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
+let StoreModal;
 Model.AddV_Tree('Root', {
     ':ActivatorModal': {
         'using': Paths => {
@@ -9,10 +10,18 @@ Model.AddV_Tree('Root', {
             'v-bind': 'props',
         }
     },
-    ':StoreModal': Paths => DtvlPv.AddPv_Modal('StoreModal'),
+    ':StoreModal': {
+        using: Paths => {
+            StoreModal = Paths;
+            DtvlPv.AddPv_Modal(Paths);
+        },
+        ':Input': Paths => {
+            DtvlPv.AddPv_Input(Paths, 'filter.result');
+        },
+    },
     ':StoreModalBtn': Paths => {
         Model.AddV_Click(Paths, () => {
-            DtvlPv.Modal('StoreModal', true);
+            DtvlPv.Modal(StoreModal, true);
         });
     },
 });

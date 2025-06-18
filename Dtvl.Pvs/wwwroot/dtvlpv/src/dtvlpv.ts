@@ -906,26 +906,25 @@ class DtvlPvIniter {
         Option.IsShow ??= false;
 
         Model.AddStore(PvName, {});
-
         let PvStorePath = this.RootPath(PvName);
         let PvStore: ModalStore = {
             ...Option,
         };
-        Model.UpdateStore(PvStorePath, PvStore)
-            .AddV_Tree(PvName, {
-                'v-model': [PvStorePath, 'IsShow'],
-                ':Overlayer': {
-                    'v-on:click': (event: any) => {
-                        let GetStore = Model.GetStore<AlertStore>(PvStorePath);
-                        if (GetStore.BtnCancel != null) {
-                            GetStore.BtnCancel(GetStore, event);
-                            return;
-                        }
-                        this.Modal(PvName, false);
-                    }
-                }
-            });
 
+        Model.AddV_Tree(PvName, {
+            'v-model': [PvStorePath, 'IsShow'],
+            ':Overlayer': {
+                'v-on:click': (event: any) => {
+                    let GetStore = Model.GetStore<AlertStore>(PvStorePath);
+                    if (GetStore.BtnCancel != null) {
+                        GetStore.BtnCancel(GetStore, event);
+                        return;
+                    }
+                    this.Modal(PvName, false);
+                }
+            }
+        });
+        Model.UpdateStore(PvStorePath, PvStore);
         return this;
     }
     public AddPv_SendModal(PvName: PathType, Option?: SendModalOption) {

@@ -552,8 +552,7 @@ class DtvlPvIniter {
         let PvStore = {
             ...Option,
         };
-        Model.UpdateStore(PvStorePath, PvStore)
-            .AddV_Tree(PvName, {
+        Model.AddV_Tree(PvName, {
             'v-model': [PvStorePath, 'IsShow'],
             ':Overlayer': {
                 'v-on:click': (event) => {
@@ -566,6 +565,7 @@ class DtvlPvIniter {
                 }
             }
         });
+        Model.UpdateStore(PvStorePath, PvStore);
         return this;
     }
     AddPv_SendModal(PvName, Option) {

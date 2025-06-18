@@ -1,4 +1,5 @@
 import { DtvlPv } from 'dtvlpv';
+import { Model } from '@rugal.tu/vuemodel3';
 
 let Datas = [
     {
@@ -66,3 +67,7 @@ DtvlPv.AddPv_Input('TestInput', {
         IsItem: true,
     },
 });
+
+Model.AddV_Click('BtnA', (item: any) => {
+    console.log(item);
+}, 'Item');

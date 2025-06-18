@@ -75,7 +75,7 @@
 </template>
 
 <template pv-name="Headers"
-          v-slot:headers="props, item = props.item">
+          v-slot:headers="props, item = props.item, Item = props.item">
     <tr class="text-no-wrap">
         <td pv-name="Cell">
             <div pv-name="SelectColumn">
@@ -100,7 +100,7 @@
 </template>
 
 <template pv-name="Items"
-          v-slot:item="props, item = props.item">
+          v-slot:item="props, item = props.item, Item = props.item">
     <tr pv-name="Row">
         <td pv-name="Cell">
             <div pv-name="SelectColumn">

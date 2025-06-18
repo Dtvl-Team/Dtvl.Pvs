@@ -1341,7 +1341,7 @@ body {
   --Input-font-size: 1rem;
   --Input-label-font-weight: var(--DefaultTheme-font-weight);
   --Input-label-color: var(--Input-text-color);
-  --Input-label-opacity: 0.6;
+  --Input-label-opacity: 0\.6;
   --Input-focus-bg: var(--Input-bg);
   --Input-focus-text-color: var(--Input-text-color);
   --Input-Icon-color: var(--Input-text-color);
