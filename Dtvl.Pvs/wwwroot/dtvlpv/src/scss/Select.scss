@@ -69,7 +69,7 @@
 }
 
 .Select .v-label.v-field-label--floating {
-    color: inherit;
+    color: var(--Select-label-color);
 }
 
 .SelectIcon {

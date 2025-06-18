@@ -21,6 +21,7 @@
     --Input-SizeDefault-label-floating-top: 7px;
 }
 
+
 .v-field--prepended {
     padding-inline-start: 0;
 }
@@ -72,7 +73,7 @@
 }
 
 .Input .v-label.v-field-label--floating {
-    color: inherit;
+    color: var(--Input-label-color);
 }
 
 .InputIcon {

@@ -64,7 +64,7 @@
 }
 
 .Textarea .v-label.v-field-label--floating {
-    color: inherit;
+    color: var(--Textarea-label-color);
 }
 
 .TextareaIcon {
