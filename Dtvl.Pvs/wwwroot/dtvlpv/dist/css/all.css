@@ -1592,6 +1592,10 @@ body {
   padding-inline-start: 12px;
 }
 
+.v-autocomplete__mask {
+  background: #000;
+}
+
 --RequiredTipVar, :root {
   --RequiredTip-Icon-height: 20px;
   --RequiredTip-Icon-width: 20px;

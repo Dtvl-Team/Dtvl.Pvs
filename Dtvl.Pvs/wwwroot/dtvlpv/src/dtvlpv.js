@@ -917,6 +917,35 @@ class DtvlPvIniter {
             Multiple: Option.Multiple,
             ReadOnly: Option.ReadOnly,
             OnChange: Option.OnChange,
+            QueryItem: (Item, Option) => {
+                let PvStore = DtvlPv.GetSelect(PvName);
+                let TargetField = PvStore.ItemValue;
+                let Result = null;
+                if (Array.isArray(Item)) {
+                    if (TargetField == null) {
+                        Result = PvStore.Datas.filter((data) => Item.includes(data));
+                    }
+                    else {
+                        let SoruceValues = Option.Source == 'value' ? Item :
+                            Item.map((data) => data[TargetField]);
+                        Result = PvStore.Datas.filter((data) => SoruceValues.includes(data[TargetField]));
+                    }
+                    if (Option.Target == 'value' && TargetField != null)
+                        Result = Result.map((data) => data[TargetField]);
+                }
+                else {
+                    if (TargetField == null) {
+                        Result = PvStore.Datas.find((data) => data == Item);
+                    }
+                    else {
+                        let SoruceValue = Option.Source == 'value' ? Item : Item[TargetField];
+                        Result = PvStore.Datas.find((data) => data[TargetField] == SoruceValue);
+                    }
+                    if (Option.Target == 'value' && TargetField != null)
+                        Result = Result[TargetField];
+                }
+                return Result;
+            },
         };
         Model.UpdateStore(PvStorePath, PvStore);
         if (PvStore.Store.IsItem == true) {
@@ -928,33 +957,58 @@ class DtvlPvIniter {
                 .AddV_Property([PvStorePath, 'SelectedItem'], {
                 Bind: [PvStore.ReturnObject == true ? PvStore.Store.Path : null],
                 set(Value) {
-                    this.$set('SelectedItem', Value);
-                    if (!Value) {
-                        this.SelectedValue = null;
+                    let PvStore = DtvlPv.GetSelect(PvName);
+                    if (Value == null) {
+                        this.$set('SelectedItem', null);
+                        this.$set('SelectedValue', null);
                         return;
                     }
-                    let SetSelectedValue = null;
-                    let TargetField = this.ItemValue ?? this.ItemName;
-                    if (TargetField == null)
-                        SetSelectedValue = Value;
-                    else {
-                        if (Array.isArray(Value))
-                            SetSelectedValue = Value.map(Item => Item[TargetField]);
-                        else
-                            SetSelectedValue = Value[this.ItemValue];
+                    let ClearValue = PvStore.QueryItem(Value, {
+                        Source: 'item',
+                        Target: 'item'
+                    });
+                    let SetSelectedValue = PvStore.QueryItem(ClearValue, {
+                        Source: 'item',
+                        Target: 'value',
+                    });
+                    if (SetSelectedValue == null) {
+                        this.$set('SelectedItem', null);
+                        this.$set('SelectedValue', null);
+                        return;
                     }
-                    if (SetSelectedValue != null && SetSelectedValue != this.$get('SelectedValue')) {
-                        this.SelectedValue = SetSelectedValue;
+                    let CurrentValue = this.SelectedValue;
+                    if (SetSelectedValue != CurrentValue) {
+                        this.$set('SelectedItem', ClearValue);
+                        this.$set('SelectedValue', SetSelectedValue);
                     }
                 }
             })
                 .AddV_Property([PvStorePath, 'SelectedValue'], {
                 Bind: [PvStore.ReturnObject == false ? PvStore.Store.Path : null],
                 set(Value) {
-                    this.$set('SelectedValue', Value);
-                    let SetSelectedItem = this.Datas.find((Item) => Item[this.ItemValue] == Value);
-                    if (this.SelectedItem != SetSelectedItem)
-                        this.SelectedItem = SetSelectedItem;
+                    let PvStore = DtvlPv.GetSelect(PvName);
+                    if (Value == null) {
+                        this.$set('SelectedValue', null);
+                        this.$set('SelectedItem', null);
+                        return;
+                    }
+                    let ClearValue = PvStore.QueryItem(Value, {
+                        Source: 'value',
+                        Target: 'value'
+                    });
+                    let SetSelectedItem = PvStore.QueryItem(ClearValue, {
+                        Source: 'value',
+                        Target: 'item',
+                    });
+                    if (SetSelectedItem == null) {
+                        this.$set('SelectedValue', null);
+                        this.$set('SelectedItem', null);
+                        return;
+                    }
+                    if (SetSelectedItem != this.SelectedItem) {
+                        this.$set('SelectedValue', ClearValue);
+                        this.$set('SelectedItem', SetSelectedItem);
+                    }
                 },
             });
             PvStore.ReturnObject = true;

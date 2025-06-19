@@ -1,32 +1,24 @@
 import { DtvlPv } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
-let SelectDatas = [
-    {
-        id: 1,
-        name: 'A'
-    },
-    {
-        id: 2,
-        name: 'B'
-    },
-    {
-        id: 3,
-        name: 'C'
-    },
-    {
-        id: 4,
-        name: 'D'
-    },
-];
+let SelectDatas = [];
 let StringDatas = ['a', 'b', 'c'];
-DtvlPv.AddPv_Select('StoreSelect', {
-    Datas: SelectDatas,
-    ReturnObject: true,
-    ItemValue: 'id',
-    ItemName: (Item) => {
-        return 'aaa' + Item.id;
-    },
-    Store: 'Filter.result',
+for (let i = 0; i < 1000; i++) {
+    SelectDatas.push(`${i}aaaa`);
+}
+Model.UpdateStore('Datas.test', SelectDatas);
+Model.AddV_Tree('Root', {
+    ':StoreSelect': Paths => {
+        DtvlPv.AddPv_Select(Paths, {
+            ApiKey: 'Datas.test',
+            ReturnObject: true,
+            //ItemValue: 'id',
+            //ItemName: 'name',
+            ItemName: (Item) => {
+                return Item.replaceAll('a', '');
+            },
+            Store: 'Filter.result',
+        });
+    }
 });
 Model.UpdateStore('SomeApi', [{}, {}, {}]);
 Model.AddV_Tree('Rows', {
