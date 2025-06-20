@@ -941,7 +941,7 @@ class DtvlPvIniter {
                         let SoruceValue = Option.Source == 'value' ? Item : Item[TargetField];
                         Result = PvStore.Datas.find((data) => data[TargetField] == SoruceValue);
                     }
-                    if (Option.Target == 'value' && TargetField != null)
+                    if (Result != null && Option.Target == 'value' && TargetField != null)
                         Result = Result[TargetField];
                 }
                 return Result;
