@@ -30,7 +30,7 @@
         ModalSlot.FooterEnd,
     };
 
-    var PassSlots = Model.QuerySlot(PassHeader.Concat(PassFooter));
+    var PassSlots = Model.QuerySlotStore(PassHeader.Concat(PassFooter));
     var HasAnyHeader = Model.HasSlotAny(PassHeader);
     var HasAnyFooter = Model.HasSlotAny(PassFooter);
 }

@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-autocomplete")
+        .UseGlobalSlots()
         .FillSlotFromDefault(InputSlot.Label)
         .UsingInputBase()
         .AddParentAttr("no-data-text", "查無資料")

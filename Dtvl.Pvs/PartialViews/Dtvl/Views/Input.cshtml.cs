@@ -32,8 +32,8 @@ public static class InputExtention
             .AddParentAttr(new
             {
                 variant = "solo-filled",
-                density = "compact",
             });
+
         Option.AddParentAttr("tabindex", "1", PropPassType.Fill);
 
         if (Option.TryGetSlotContent(InputSlot.Label, out var LabelContent))
@@ -55,13 +55,16 @@ public static class InputExtention
         //if (Option.TryGetSlotContent(InputSlot.OuterEndIcon, out var OuterEndIcon))
         //    Option.AddParentAttr("append-icon", OuterEndIcon);
 
-        if (Option.HasSlot(InputSlot.SizeDefault))
-            Option.AddParentAttr("density", "default", PropPassType.Cover);
-        else if (Option.HasSlot(InputSlot.SizeCompact))
-            Option.AddParentAttr("density", "compact", PropPassType.Cover);
-        else if (Option.HasSlot(InputSlot.SizeComfortable))
-            Option.AddParentAttr("density", "comfortable", PropPassType.Cover);
-
+        var SizeSlots = new[] { InputSlot.SizeDefault, InputSlot.SizeCompact, InputSlot.SizeComfortable };
+        Option.FillSlotAny(InputSlot.SizeCompact, SizeSlots);
+        var Density = Option.OrderFirstSlot(SizeSlots).ToSlotType<InputSlot>() switch
+        {
+            InputSlot.SizeDefault => "default",
+            InputSlot.SizeComfortable => "comfortable",
+            InputSlot.SizeCompact => "compact",
+            _ => "compact"
+        };
+        Option.AddParentAttr("density", Density, PropPassType.Fill);
         return Option;
     }
     public static PvSlotsStore PassSlot_InputToIcon(this PvOption<DtvlPvs> Option)

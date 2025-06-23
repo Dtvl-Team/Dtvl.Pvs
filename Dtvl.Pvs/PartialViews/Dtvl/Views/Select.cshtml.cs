@@ -14,4 +14,8 @@ public enum SelectSlot
     Label,
     Clearable,
     Multiple,
+
+    SizeDefault,
+    SizeComfortable,
+    SizeCompact,
 }

@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-text-field")
+        .UseGlobalSlots()
         .FillSlotFromDefault(InputSlot.Label)
         .UsingInputBase()
         .AddParentAttr(new

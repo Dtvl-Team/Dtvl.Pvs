@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-textarea")
+        .UseGlobalSlots()
         .FillSlotFromDefault(TextAreaSlot.Label)
         .UsingInputBase()
         .AddParentAttr(new
