@@ -56,8 +56,7 @@ public static class InputExtention
         //    Option.AddParentAttr("append-icon", OuterEndIcon);
 
         var SizeSlots = new[] { InputSlot.SizeDefault, InputSlot.SizeCompact, InputSlot.SizeComfortable };
-        Option.FillSlotAny(InputSlot.SizeCompact, SizeSlots);
-        var Density = Option.OrderFirstSlot(SizeSlots).ToSlotType<InputSlot>() switch
+        var Density = Option.OrderFirstSlot(SizeSlots)?.ToSlotType<InputSlot>() switch
         {
             InputSlot.SizeDefault => "default",
             InputSlot.SizeComfortable => "comfortable",
