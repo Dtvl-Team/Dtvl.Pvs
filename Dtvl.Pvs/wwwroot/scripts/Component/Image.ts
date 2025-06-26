@@ -5,6 +5,7 @@ const ImageUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0gcUu-D
 const ImageUrl2 = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9ZNb901lAobAaHG-xp4bKBX5Rhre_-a59xA&s';
 
 Model.AddV_Tree('Root', {
+    ':ImageViewer': Paths => DtvlPv.AddPv_ImageViewer(Paths),
     ':Btn': {
         'using': (Paths) => {
             Model.AddV_FilePicker(Paths, {
@@ -17,6 +18,7 @@ Model.AddV_Tree('Root', {
         'using': (Paths) => {
             DtvlPv.AddPv_Image(Paths, {
                 Src: 'FileStore.image.Base64',
+                Viewer: 'Root.ImageViewer',
             });
         }
     }

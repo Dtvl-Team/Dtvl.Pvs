@@ -1,6 +1,94 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-
+    // Model.WithParentTag("v-dialog")
+    //     .AddParentAttr("scroll-strategy", "block")
+    //     .AddParentAttr("fullscreen")
+    //     .AddParentAttr(new
+    //     {
+    //         @class = "Modal",
+    //         width = "auto",
+    //     });
 }
 
-@DtvlPvRender.Create(DtvlPvs.Modal)
+@* <div class="row w-100 h-100 align-content-center bg-success">
+    <div class="col bg-danger" style="height:50px;">
+        123
+    </div>
+    <div class="col-12 h-auto">
+        <img style="max-height:100vh; height: 95vh; width:100%; aspect-ratio:1; object-fit:contain;"
+             src="https://dogtime.com/wp-/uploads/sites/12/2024/03/GettyImages-1285465107-e1710251441662.jpg?w=1024" />
+    </div>
+    <div class="col-12 h-auto">
+        123content
+    </div>
+</div> *@
+
+<pv-slot slot="ModalSlot.FullScreen" export-option="Model"></pv-slot>
+<pv-slot slot="ModalSlot.ScrollBlock" export-option="Model"></pv-slot>
+<pv-slot slot="ModalSlot.ContentView" export-option="Model">
+    <div class="row align-content-center">
+        <dtvl-pv pv-type="Image"
+                 pv-name="ImageViewerContent"
+                 class="ImageViewer-Content row align-items-center justify-content-center">
+            <pv-slot slot="ImageSlot.Cover">false</pv-slot>
+        </dtvl-pv>
+
+        <div pv-name="Toolbar"
+             class="ImageViewer-Toolbar row justify-content-between align-content-center px-3 py-1">
+            <div class="col-4 row">
+                <div pv-name="BtnClose"
+                     class="col-auto">
+                    <dtvl-pv pv-type="Icon"
+                             class="ImageViewer-Toolbar-Item ">
+                        fa-solid fa-circle-xmark
+                    </dtvl-pv>
+                </div>
+            </div>
+            <div class="col-4 row justify-content-center">
+                <div pv-name="Counter"
+                     class="col-auto NotSelect">
+                    <span pv-name="CurrentCount">1</span>
+                    <span>/</span>
+                    <span pv-name="TotalCount">1</span>
+                </div>
+            </div>
+            <div class="col-4 row justify-content-end">
+                <div pv-name="BtnRotateLeft"
+                     class="col-auto ms-2">
+                    <dtvl-pv pv-type="Icon"
+                             class="ImageViewer-Toolbar-Item">
+                        fa-solid fa-arrow-rotate-left
+                    </dtvl-pv>
+                </div>
+                <div pv-name="BtnRotateRight"
+                     class="col-auto ms-2">
+                    <dtvl-pv pv-type="Icon"
+                             class="ImageViewer-Toolbar-Item">
+                        fa-solid fa-arrow-rotate-right
+                    </dtvl-pv>
+                </div>
+            </div>
+        </div>
+
+        <div pv-name="SideToolBefore"
+             class="ImageViewer-SideTool-Before row align-content-center justify-content-center">
+            <dtvl-pv pv-type="Icon">
+                fa-solid fa-chevron-left
+            </dtvl-pv>
+        </div>
+        <div pv-name="SideToolNext"
+             class="ImageViewer-SideTool-Next row align-content-center justify-content-center">
+            <dtvl-pv pv-type="Icon">
+                fa-solid fa-chevron-right
+            </dtvl-pv>
+        </div>
+
+    </div>
+</pv-slot>
+
+<pv-slot slot="ModalSlot.OverlayAttr"
+         export-option="Model"
+         pass-type="Append"
+         class="ImageViewer-Overlay w-100 h-100"></pv-slot>
+
+@DtvlPvRender.Create(DtvlPvs.Modal, Model).Content

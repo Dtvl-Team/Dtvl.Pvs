@@ -87,3 +87,15 @@
 .InputPrependInner {
     padding-inline-start: 12px;
 }
+
+.InputTextStart input {
+    text-align: start;
+}
+
+.InputTextCenter input {
+    text-align: center;
+}
+
+.InputTextEnd input {
+    text-align: end;
+}

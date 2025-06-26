@@ -1,5 +1,5 @@
 import { Model, Queryer, PathType, ApiCallback } from '@rugal.tu/vuemodel3';
-
+import { computed, reactive } from 'vue';
 //#region Router Type
 type SidebarItemSet = {
     title: string,
@@ -107,6 +107,10 @@ type TreeStore = {
 //#region Modal Type
 type ModalOption = {
     IsShow?: boolean,
+    Overlay?: {
+        Clicked?: Function,
+        IsClickedClose?: boolean,
+    },
 };
 type ModalStore = ModalOption;
 type SendModalOption = ModalOption & {
@@ -148,65 +152,80 @@ type SecureOption = boolean | {
     ShowingIcon?: string,
     HidingIcon?: string,
 };
+type InputModeType = 'text' | 'numeric';
 type InputOption = {
     Value?: any,
     Store?: PathType | {
         Path: PathType,
         IsItem?: boolean,
+        //ItemsPath?: PathType,
     },
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     Secure?: SecureOption,
-    Number?: boolean | InputNumberOption,
+    InputMode?: InputModeType,
     Formats?: {
-        Value?: FormateFuncType | FormateFuncType[],
-        Display?: FormateFuncType | FormateFuncType[],
-    } | FormateFuncType | FormateFuncType[],
+        Value?: FormatFuncType | FormatFuncType[],
+        Display?: FormatFuncType | FormatFuncType[],
+    } | FormatFuncType | FormatFuncType[],
 } | string;
 type InputStore = {
     Store: {
         Path: PathType,
         IsItem?: boolean,
+        ItemsPath?: PathType,
     },
     Value?: any,
-    ReadOnly?: boolean | ((Store?: InputStore) => boolean),
+    DisplayValue?: any,
+    ModelValue?: any,
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     Secure?: {
         Securing: boolean,
     } & SecureOption,
-    Number?: InputNumberOption,
+    InputMode?: InputModeType,
     Formats: {
-        Value: FormateFuncType[],
-        Display: FormateFuncType[],
+        Value: FormatFuncType[],
+        Display: FormatFuncType[],
     },
-    OnFormatDisplay: Function,
-    OnFormatValue: Function,
-};
-type InputNumberOption = {
-    ThousandsSeparator?: boolean,
+    ItemValues?: any[],
+    GetItemValue?: Function,
+    SetItemValue?: Function,
+    OnItemsMounted?: Function,
+    OnItemsUnMounted?: Function,
+
+    OnFormatDisplayValue: Function,
+    OnFormatModelValue: Function,
 };
 //#endregion
 
 //#region Format Type
-type FormateFuncType = (Value: string) => string;
+type FormatConvertType<TOption = any> = (Value: string, Option: TOption) => string;
+type FormatFuncType<TOption = any> = {
+    Option?: TOption;
+    Convert: FormatConvertType;
+};
+type FormatBuilderType<TOption = any> = (Option?: TOption) => FormatFuncType<TOption>;
+
 type DateFormatOption = {
-    Separator: string,
+    Separator?: string,
     YearCount?: number,
     MonthCount?: number,
     DayCount?: number,
 };
 type NumberFormatOption = {
     ThousandsSeparator?: boolean,
+    Negative?: boolean,
+    DecimalPoint?: number,
+    MaxLength?: number,
 };
-type FormatStore = {
-    AdDate: FormateFuncType,
-    TwDate: FormateFuncType,
-    Number: FormateFuncType,
-    NumberThousands: FormateFuncType,
-} | Record<string, FormateFuncType>;
+type FormatStore = Record<string, FormatBuilderType> & {
+    AdDate?: FormatBuilderType<DateFormatOption>;
+    TwDate?: FormatBuilderType<DateFormatOption>;
+    Number?: FormatBuilderType<NumberFormatOption>;
+};
 type DefaultFormatsType = {
     AdDate: string,
     TwDate: string,
     Number: string,
-    NumberThousands: string,
 };
 //#endregion
 
@@ -297,11 +316,51 @@ type ImageOption = {
     LazySrcUrl?: string,
     Src?: string,
     LazySrc?: string,
+    Viewer?: PathType | {
+        Path: PathType,
+        Mode?: ImageViewerMode,
+    },
 };
 type ImageStore = {
     Src?: string,
     LazySrc?: string,
+    Clicked?: Function,
+    Viewer?: {
+        Path: PathType,
+        Mode?: ImageViewerMode,
+    },
 }
+type ImageViewerMode = 'single' | 'album';
+type ImageViewerValue = {
+    Src?: string,
+    LazySrc?: string,
+};
+type ImageViewerOption = {
+    Store?: PathType,
+    IsShow?: boolean,
+    Mode?: ImageViewerMode,
+    HasCounter?: boolean,
+    HasSideTool?: boolean,
+    HasRotator?: boolean,
+    BtnCloseClicked?: Function,
+    Overlay?: {
+        Clicked?: Function,
+        IsClickedClose?: boolean,
+    },
+    Datas?: string | string[] | ImageViewerValue | ImageViewerValue[],
+    Index?: number,
+};
+type ImageViewerStore = ImageViewerOption & ImageViewerValue & {
+    Datas?: ImageViewerValue[],
+    CurrentCount?: number,
+    TotalCount?: number,
+};
+type ImageViewerSet = {
+    IsShow?: boolean,
+    Datas?: string | string[] | ImageViewerValue | ImageViewerValue[],
+    Index?: number,
+    Mode?: ImageViewerMode,
+};
 //#endregion
 
 //#region Animation
@@ -370,13 +429,12 @@ class DtvlPvIniter {
             AdDate: 'AdDate',
             TwDate: 'TwDate',
             Number: 'Number',
-            NumberThousands: 'NumberThousands',
         };
+
         Model.AddStore(this.$FormatStore, {});
         this.$CreateAdDateFormat();
         this.$CreateTwDateFormat();
         this.$CreateNumberFormat();
-        this.$CreateNumberThousandsFormat();
     }
     protected $CreateAdDateFormat() {
         this.AddPv_Format(this.$FormatKeys.AdDate, this.CreateDateFormat({
@@ -391,21 +449,40 @@ class DtvlPvIniter {
         }));
     }
     protected $CreateNumberFormat() {
-        this.AddPv_Format(this.$FormatKeys.Number, (Value) => {
+        this.AddPv_Format<NumberFormatOption>(this.$FormatKeys.Number, this.CreateFormat<NumberFormatOption>((Value, Option) => {
             if (Value == null || Value == '')
                 return Value;
-            Value = Value.toString().replace(/[^0-9]/g, '');
+
+            Option.DecimalPoint ??= 0;
+
+            let ReplaceExps = ['\\d'];
+            if (Option.Negative == true)
+                ReplaceExps.push('\\-');
+            if (Option.DecimalPoint > 0)
+                ReplaceExps.push('\\.');
+
+            let ReplaceExp = ReplaceExps.join('');
+            Value = Value.toString().replace(new RegExp(`[^${ReplaceExp}]`, 'g'), '');
+            Value = Value.replace(/(?!^)-/g, '');
+            if (Value != null && Value != '') {
+                if (Option?.ThousandsSeparator == true) {
+                    if (Option.DecimalPoint > 0 && Value.includes('.')) {
+                        let Values = Value.split('.');
+                        let HeadValue = Values[0];
+                        let TailValue = Values[1].slice(0, Option.DecimalPoint);
+                        Value = Number(HeadValue).toLocaleString() + `.${TailValue}`;
+                    }
+                    else
+                        Value = Number(Value).toLocaleString();
+                }
+            }
+
+            if (Option.MaxLength != null) {
+                if (typeof Option.MaxLength === 'number')
+                    Value = Value.slice(0, Option.MaxLength);
+            }
             return Value;
-        });
-    }
-    protected $CreateNumberThousandsFormat() {
-        this.AddPv_Format(this.$FormatKeys.NumberThousands, (Value) => {
-            Value = this.Formats.Number(Value);
-            if (Value == null || Value == '')
-                return Value;
-            Value = Number(Value).toLocaleString();
-            return Value;
-        });
+        }));
     }
     //#endregion
 
@@ -486,7 +563,6 @@ class DtvlPvIniter {
                 Model.NavigateTo(GoPath);
             },
             GroupClick: (Item: any) => {
-
                 let RouterStore = Model.GetStore<SidebarStore>([this.$AppStore, 'Router']);
                 if (RouterStore == null)
                     return;
@@ -909,6 +985,8 @@ class DtvlPvIniter {
     public AddPv_Modal(PvName: PathType, Option?: ModalOption) {
         Option ??= {};
         Option.IsShow ??= false;
+        Option.Overlay ??= {};
+        Option.Overlay.IsClickedClose ??= true;
 
         Model.AddStore(PvName, {});
         let PvStorePath = this.RootPath(PvName);
@@ -920,12 +998,13 @@ class DtvlPvIniter {
             'v-model': [PvStorePath, 'IsShow'],
             ':Overlayer': {
                 'v-on:click': (event: any) => {
-                    let GetStore = Model.GetStore<AlertStore>(PvStorePath);
-                    if (GetStore.BtnCancel != null) {
-                        GetStore.BtnCancel(GetStore, event);
+                    let PvStore = this.GetModal(PvName);
+                    if (typeof PvStore.Overlay?.Clicked === 'function') {
+                        PvStore.Overlay.Clicked(event);
                         return;
                     }
-                    this.Modal(PvName, false);
+                    if (PvStore.Overlay.IsClickedClose)
+                        PvStore.IsShow = false;
                 }
             }
         });
@@ -933,9 +1012,9 @@ class DtvlPvIniter {
         return this;
     }
     public AddPv_SendModal(PvName: PathType, Option?: SendModalOption) {
-        Option ??= {};
+        let PvStorePath = this.RootPath(PvName);
 
-        this.AddPv_Modal(PvName, Option);
+        Option ??= {};
         Option.BtnCancel ??= () => {
             this.Modal(PvName, false);
         };
@@ -957,52 +1036,59 @@ class DtvlPvIniter {
                 });
             }
         };
-
-        if (Option.BtnSend)
-            Model.AddV_Tree(PvName, {
-                ':BtnSend': {
-                    'v-on:click': (event: any) => {
-                        let ModalStore = Model.GetStore<SendModalStore>(this.RootPath(PvName));
-                        ModalStore.BtnSend(ModalStore, event);
-                    },
-                }
-            });
+        Option.Overlay ??= {};
+        Option.Overlay.Clicked ??= (event: any) => {
+            let PvStore = this.GetSendModal(PvStorePath);
+            if (PvStore.BtnCancel != null)
+                PvStore.BtnCancel(PvStore, event);
+        }
 
         Model.AddV_Tree(PvName, {
+            ':BtnSend': {
+                'v-on:click': (event: any) => {
+                    let PvStore = this.GetSendModal(PvStorePath);
+                    if (typeof PvStore.BtnSend != null)
+                        PvStore.BtnSend(PvStore, event);
+                },
+            },
             ':BtnCancel': {
                 'v-on:click': (event: any) => {
-                    let ModalStore = Model.GetStore<SendModalStore>(this.RootPath(PvName));
-                    ModalStore.BtnCancel(ModalStore, event);
+                    let PvStore = this.GetSendModal(PvStorePath);
+                    if (typeof PvStore.BtnCancel != null)
+                        PvStore.BtnCancel(PvStore, event);
                 }
             },
             ':Title': {
-                'v-text': this.RootPath(PvName, 'Title'),
+                'v-text': [PvStorePath, 'Title'],
+                'using': Paths => {
+                    if (!Option.Title) {
+                        Queryer.Using(Paths, ({ QueryNodes }) => {
+                            QueryNodes.forEach(NodeItem => {
+                                Option.Title = NodeItem.Dom.textContent.trim();
+                            });
+                        });
+                    }
+                }
             },
+            'using': Paths => this.AddPv_Modal(Paths, Option),
         });
-
-        if (!Option.Title) {
-            Queryer.Using(this.RootPath(PvName, 'Title'), ({ QueryNodes }) => {
-                QueryNodes.forEach(NodeItem => {
-                    Option.Title = NodeItem.Dom.textContent.trim();
-                });
-            });
-        }
 
         let StoreData: SendModalStore = {
             ...Option,
             IsCalling: false,
         };
-        Model.UpdateStore(this.RootPath(PvName), StoreData);
+        Model.UpdateStore(PvStorePath, StoreData);
         return this;
     }
     public Modal(PvName: PathType, Option: boolean | SendModalStore) {
+        let PvStorePath = this.RootPath(PvName);
         if (typeof (Option) == 'boolean') {
-            Model.UpdateStore(this.RootPath(PvName, 'IsShow'), Option);
+            Model.UpdateStore([PvStorePath, 'IsShow'], Option);
             return this;
         }
         if (Option.IsShow == null)
             Option.IsShow = true;
-        Model.UpdateStore(this.RootPath(PvName), Option);
+        Model.UpdateStore(PvStorePath, Option);
         return this;
     }
     public GetModal(PvName: PathType) {
@@ -1160,54 +1246,155 @@ class DtvlPvIniter {
         }
         Option.Store.Path = Model.ToJoin(Option.Store.Path);
 
+        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
         let PvStore: InputStore = {
             Store: Option.Store,
-            Value: Option.Value,
+            ReadOnly: Option.ReadOnly,
+            InputMode: Option.InputMode ?? 'text',
             Formats: {
                 Value: [],
                 Display: [],
             },
-            OnFormatDisplay: (Value: any) => {
+            OnFormatDisplayValue: (Value: any) => {
+                if (Value == null)
+                    return null;
                 let PvStore = Model.GetStore<InputStore>(PvStorePath);
                 for (let Format of PvStore.Formats.Display)
-                    Value = Format?.call(this, Value);
+                    Value = Format?.Convert(Value, Format?.Option);
                 return Value;
             },
-            OnFormatValue: (Value: any) => {
+            OnFormatModelValue: (Value: any) => {
+                if (Value == null)
+                    return null;
                 let PvStore = Model.GetStore<InputStore>(PvStorePath);
                 for (let Format of PvStore.Formats.Value)
-                    Value = Format?.call(this, Value);
+                    Value = Format?.Convert(Value, Format?.Option);
                 return Value;
             },
         };
-        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
-        Model.UpdateStore(PvStorePath, PvStore)
-            .AddV_Tree(PvName, {
-                'v-model': `${Option.Store.Path}`,
-                'v-bind:model-value': `${PvStorePath}.OnFormatDisplay(${Option.Store.Path} = ${PvStorePath}.OnFormatValue(${Option.Store.Path}))`,
-                //'v-on:update:model-value': `value => ${Option.Store.Path} = ${PvStorePath}.OnFormatValue(value)`,
-                //'v-on:input': `value => ${Option.Store.Path} = ${PvStorePath}.OnFormatValue(value)`,
-                //'v-bind:value': `${PvStorePath}.OnFormatDisplay(${Option.Store.Path}, ${Option.Store.Path} = ${PvStorePath}.OnFormatValue(${Option.Store.Path}))`,
-            });
+        Model.UpdateStore(PvStorePath, PvStore);
+        Model.AddV_Tree(PvName, {
+            'v-bind:inputmode': [PvStorePath, 'InputMode'],
+        });
 
-        if (Option.Store.IsItem != true) {
-            Model.AddStore(Option.Store.Path, null)
+        if (PvStore.Store.IsItem == true) {
+            PvStore.ItemValues = [];
+            PvStore.GetItemValue = (index: number) => {
+                let Path = [PvStorePath, `ItemValues[${index}]`, 'item.$DisplayValue'];
+                let Value = Model.GetStore(Path);
+                return Value;
+            };
+            PvStore.SetItemValue = (index: number, value: any) => {
+                let PvStore = this.GetInput(PvName);
+                let Path = [PvStorePath, `ItemValues[${index}]`, PvStore.Store.Path];
+                Model.UpdateStore(Path, value);
+            };
+            PvStore.OnItemsMounted = (item: any) => {
+                item.$id ??= Model.GenerateId();
+                let PvStore = this.GetInput(PvName);
+                if (!PvStore.ItemValues.find(Item => Item.$id == item.$id)) {
+                    let SetItem = {
+                        item,
+                    };
+                    let GetValue = Model.GetStoreFrom(SetItem, PvStore.Store.Path);
+                    if (item.$properties == null) {
+                        Model.AddV_PropertyFrom(item, '$DisplayValue', {});
+                        Model.AddV_PropertyFrom(item, '$ModelValue', {});
+                        Model.AddV_PropertyFrom(SetItem, PvStore.Store.Path, {
+                            get() {
+                                let Value = this.$get('$ModelValue');
+                                return Value;
+                            },
+                            set(value) {
+                                let PvStore = DtvlPv.GetInput(PvName);
+                                let DisplayValue = PvStore.OnFormatDisplayValue(value);
+                                let ModelValue = PvStore.OnFormatModelValue(DisplayValue);
+                                this.$set('$DisplayValue', DisplayValue);
+                                this.$set('$ModelValue', ModelValue);
+                            },
+                            Value: GetValue,
+                        });
+                    }
+
+                    PvStore.ItemValues.push(SetItem);
+                }
+            };
+            PvStore.OnItemsUnMounted = (item: any) => {
+                if (item.$id == null)
+                    return;
+
+                let PvStore = this.GetInput(PvName);
+                let DeleteIndex = PvStore.ItemValues.findIndex(Item => Item.item.$id == item.$id);
+                PvStore.ItemValues.splice(DeleteIndex, 1);
+            };
+            Model.AddV_Tree(PvName, {
+                'v-bind:key': 'item.$id',
+                'v-bind:model-value': [PvStorePath, 'GetItemValue(index)'],
+                'v-on:update:model-value': `value => ${PvStorePath}.SetItemValue(index, value)`,
+                'v-on-mounted': `() => ${PvStorePath}.OnItemsMounted(item)`,
+                'v-on-unmounted': `() => ${PvStorePath}.OnItemsUnMounted(item)`,
+                //'v-on:input:index': (event: InputEvent, index: number) => {
+                //    let Target = event.target as HTMLInputElement;
+                //    let PvStore = this.GetInput(PvName);
+                //    //PvStore.Value = Target.value
+                //    //Target.value = PvStore.Value;
+                //},
+            });
+        }
+        else {
+            Model.AddStore(PvStore.Store.Path, null)
+                .AddV_Tree(PvName, {
+                    'v-model': [PvStorePath, 'Value'],
+                    'v-on:input': (event: InputEvent) => {
+                        let Target = event.target as HTMLInputElement;
+                        let PvStore = this.GetInput(PvName);
+                        PvStore.Value = Target.value
+                        Target.value = PvStore.Value;
+                    },
+                })
                 .AddV_Property([PvStorePath, 'Value'], {
-                    Target: Option.Store.Path,
+                    get() {
+                        let PvStore = DtvlPv.GetInput(PvName);
+                        return PvStore?.DisplayValue;
+                    },
+                    set(value) {
+                        let PvStore = DtvlPv.GetInput(PvName);
+                        if (PvStore == null)
+                            return;
+                        PvStore.ModelValue = PvStore.OnFormatModelValue(value);
+                        PvStore.DisplayValue = PvStore.OnFormatDisplayValue(PvStore.ModelValue);
+                        let StoreValue = Model.GetStore(PvStore.Store.Path);
+                        if (StoreValue != PvStore.ModelValue)
+                            Model.UpdateStore(PvStore.Store.Path, PvStore.ModelValue);
+                    },
+                })
+                .AddV_Property(PvStore.Store.Path, {
+                    get() {
+                        let PvStore = DtvlPv.GetInput(PvName);
+                        return PvStore?.ModelValue;
+                    },
+                    set(value) {
+                        let PvStore = DtvlPv.GetInput(PvName);
+                        if (PvStore == null)
+                            return;
+
+                        if (PvStore.ModelValue != value)
+                            PvStore.Value = value;
+                    },
                 });
         }
+        PvStore.Value = Option.Value;
 
-        if (Option.ReadOnly != null) {
+        if (PvStore.ReadOnly != null) {
             let ReadOnlyPath = null;
-            if (typeof (Option.ReadOnly) == 'function') {
-                PvStore.ReadOnly = Option.ReadOnly;
-                ReadOnlyPath = this.RootPath(PvName, `ReadOnly(${Model.ToJoin(PvStorePath)})`);
+            if (typeof (PvStore.ReadOnly) == 'function') {
+                ReadOnlyPath = [PvStorePath, `ReadOnly(${Model.ToJoin(PvStorePath)})`];
             }
-            else if (typeof (Option.ReadOnly) == 'boolean') {
-                PvStore.ReadOnly = Option.ReadOnly;
-                ReadOnlyPath = this.RootPath(PvName, 'ReadOnly');
-            } else if (typeof (Option.ReadOnly == 'string')) {
-                ReadOnlyPath = Option.ReadOnly;
+            else if (typeof (PvStore.ReadOnly) == 'boolean') {
+                ReadOnlyPath = [PvStorePath, 'ReadOnly'];
+            }
+            else if (typeof (PvStore.ReadOnly == 'string')) {
+                ReadOnlyPath = PvStore.ReadOnly;
             }
 
             if (ReadOnlyPath != null) {
@@ -1253,29 +1440,19 @@ class DtvlPvIniter {
                 'v-bind:type': `${SecuringPath} ? 'password' : 'text' `,
             });
         }
-        if (Option.Number != null && Option.Number != false) {
-            if (Option.Number == true)
-                Option.Number = { ThousandsSeparator: true };
-
-            PvStore.Number = Option.Number;
-            PvStore.Formats.Value.push(this.Formats.Number);
-            if (Option.Number.ThousandsSeparator == true)
-                PvStore.Formats.Display.push(this.Formats.NumberThousands);
-            else
-                PvStore.Formats.Display.push(this.Formats.Number);
-            Model.AddV_Bind(PvName, 'inputmode', `'numeric'`);
-        }
         if (Option.Formats != null) {
-            if (Array.isArray(Option.Formats) || typeof (Option.Formats) == 'function') {
+            if (Array.isArray(Option.Formats) || 'Convert' in Option.Formats) {
                 Option.Formats = {
                     Value: Option.Formats,
                     Display: Option.Formats,
-                }
+                };
             }
+
             if (!Array.isArray(Option.Formats.Display))
                 Option.Formats.Display = [Option.Formats.Display];
             if (!Array.isArray(Option.Formats.Value))
                 Option.Formats.Value = [Option.Formats.Value];
+
             PvStore.Formats.Display.push(...Option.Formats.Display);
             PvStore.Formats.Value.push(...Option.Formats.Value);
         }
@@ -1512,16 +1689,18 @@ class DtvlPvIniter {
     //#endregion
 
     //#region Format
-    public AddPv_Format(FormatKey: string, FormatFunc: FormateFuncType) {
-        let FormatStore = Model.GetStore<Record<string, FormateFuncType>>(this.$FormatStore);
+    public AddPv_Format<TOption = any>(FormatKey: string, FormatFunc: FormatBuilderType<TOption>) {
+        let FormatStore = Model.GetStore<FormatStore>(this.$FormatStore);
         FormatStore[FormatKey] = FormatFunc;
         return this;
     }
     public CreateDateFormat(Option: DateFormatOption) {
-        Option.YearCount ??= 4;
-        Option.MonthCount ??= 2;
-        Option.DayCount ??= 2;
-        let DateFormat: FormateFuncType = Value => {
+        let DateFormat = this.CreateFormat<DateFormatOption>((Value, Option) => {
+            Option.Separator ??= '/';
+            Option.YearCount ??= 4;
+            Option.MonthCount ??= 2;
+            Option.DayCount ??= 2;
+
             if (Value == null || Value == '')
                 return Value;
 
@@ -1541,11 +1720,23 @@ class DtvlPvIniter {
             let ReplaceReg = `[${Option.Separator}]+$`;
             let Result = FullDate.replace(new RegExp(ReplaceReg), '');
             return Result;
-        }
+        }, Option);
         return DateFormat;
     }
+    public CreateFormat<TOption = any>(Convert: FormatConvertType<TOption>, DefaultOption?: TOption) {
+        let Builder: FormatBuilderType = (Option: TOption) => {
+            return {
+                Option: {
+                    ...DefaultOption,
+                    ...Option,
+                },
+                Convert: Convert,
+            };
+        };
+        return Builder;
+    }
     public GetFormat(FormatKey: string) {
-        let FormatStore = Model.GetStore<Record<string, FormateFuncType>>(this.$FormatStore);
+        let FormatStore = Model.GetStore<FormatStore>(this.$FormatStore);
         let FormatResult = FormatStore[FormatKey];
         return FormatResult;
     }
@@ -1686,8 +1877,13 @@ class DtvlPvIniter {
     //#endregion
 
     //#region Image
+    public GetImage(PvName: PathType) {
+        return this.Pv<ImageStore>(PvName);
+    }
+    public GetImageViewer(PvName: PathType) {
+        return this.Pv<ImageViewerStore>(PvName);
+    }
     public AddPv_Image(PvName: PathType, Option: ImageOption) {
-
         let PvStorePath = Model.ToJoin(this.RootPath(PvName));
         let PvStore: ImageStore = {};
         Model.UpdateStore(PvStorePath, PvStore);
@@ -1696,7 +1892,8 @@ class DtvlPvIniter {
             Model.AddV_Property([PvStorePath, 'Src'], {
                 Target: Option.Src,
             });
-        } else {
+        }
+        else {
             PvStore.Src = Option.SrcUrl;
         }
 
@@ -1709,16 +1906,206 @@ class DtvlPvIniter {
             Model.AddV_Property([PvStorePath, 'LazySrc'], {
                 Target: Option.LazySrc,
             });
-        } else {
+        }
+        else {
             PvStore.LazySrc = Option.LazySrcUrl;
+        }
+
+        if (Option.Viewer != null) {
+            if (Array.isArray(Option.Viewer))
+                Option.Viewer = Model.ToJoin(Option.Viewer);
+
+            if (typeof Option.Viewer === 'string') {
+                Option.Viewer = {
+                    Path: Option.Viewer,
+                    Mode: 'single',
+                };
+            }
+            PvStore.Viewer = Option.Viewer;
+            PvStore.Clicked = () => {
+                let PvStore = this.GetImage(PvName);
+                if (PvStore.Src != null) {
+                    this.ImageViewer(PvStore.Viewer.Path, {
+                        IsShow: true,
+                        Mode: PvStore.Viewer.Mode,
+                        Datas: [PvStore.Src],
+                        Index: 0,
+                    });
+                }
+            };
+            Model.AddV_Bind(PvName, 'class', `{ Pointer: true }`);
         }
 
         Model.AddV_Tree(PvName, {
             'v-bind:src': [PvStorePath, 'Src'],
             'v-bind:lazy-src': [PvStorePath, 'LazySrc'],
+            'v-on:click': [PvStorePath, 'Clicked'],
         });
 
         return this;
+    }
+    public AddPv_ImageViewer(PvName: PathType, Option?: ImageViewerOption) {
+        this.AddPv_Modal(PvName);
+
+        Option ??= {};
+        Option.Mode ??= 'album';
+        Option.HasCounter ??= Option.Mode == 'single' ? false : true;
+        Option.HasSideTool ??= Option.Mode == 'single' ? false : true;
+        Option.HasRotator ??= false;
+        Option.Datas ??= [];
+        Option.Datas = this.$ParseImageViwerDatas(Option.Datas);
+
+        let PvStorePath = this.RootPath(PvName);
+        let PvStore: ImageViewerStore = {
+            ...Option,
+            Datas: Option.Datas,
+            CurrentCount: null,
+            TotalCount: null,
+            Src: null,
+            LazySrc: null,
+        };
+        PvStore.BtnCloseClicked ??= () => {
+            this.GetImageViewer(PvName).IsShow = false;
+        };
+
+        Model.AddV_Tree(PvName, {
+            ':Toolbar': {
+                ':BtnClose': {
+                    'v-on:click': [PvStorePath, 'BtnCloseClicked()'],
+                },
+                ':Counter': {
+                    'v-if': [PvStorePath, 'HasCounter'],
+                    ':CurrentCount': {
+                        'v-text': [PvStorePath, 'CurrentCount']
+                    },
+                    ':TotalCount': {
+                        'v-text': [PvStorePath, 'TotalCount']
+                    }
+                },
+            },
+            ':BtnRotateLeft': {
+                'v-if': [PvStorePath, 'HasRotator'],
+                'v-on:click': () => {
+
+                },
+            },
+            ':BtnRotateRight': {
+                'v-if': [PvStorePath, 'HasRotator'],
+                'v-on:click': () => {
+
+                },
+            },
+            ':SideToolBefore': {
+                'v-if': [PvStorePath, 'HasSideTool'],
+                'v-on:click': () => {
+                    let PvStore = this.GetImageViewer(PvName);
+                    this.ImageViewer(PvName, {
+                        Index: PvStore.Index - 1,
+                    });
+                }
+            },
+            ':SideToolNext': {
+                'v-if': [PvStorePath, 'HasSideTool'],
+                'v-on:click': () => {
+                    let PvStore = this.GetImageViewer(PvName);
+                    this.ImageViewer(PvName, {
+                        Index: PvStore.Index + 1,
+                    });
+                }
+            },
+            ':ImageViewerContent': {
+                'v-on:click': (event: PointerEvent) => {
+                    let ClickTarget = event.target as HTMLElement;
+                    if (ClickTarget.tagName.toLowerCase() == 'img')
+                        return;
+
+                    let PvStore = this.GetImageViewer(PvName);
+                    if (typeof PvStore.Overlay?.Clicked === 'function') {
+                        PvStore.Overlay.Clicked(event);
+                        return;
+                    }
+                    if (PvStore.Overlay.IsClickedClose)
+                        PvStore.IsShow = false;
+                },
+                'v-bind:src': [PvStorePath, 'Src'],
+                'v-bind:lazy-src': [PvStorePath, 'LazySrc'],
+            }
+        });
+
+        Model.UpdateStore(PvStorePath, PvStore);
+        return this;
+    }
+    public ImageViewer(PvName: PathType, Option?: ImageViewerSet | boolean) {
+        if (PvName == null)
+            return this;
+
+        Option ??= true;
+        if (typeof Option === 'boolean') {
+            Option = {
+                IsShow: Option,
+            };
+        }
+        Option.Index ??= 0;
+        Option.IsShow ??= true;
+
+        let PvStore = this.GetImageViewer(PvName);
+        if (PvStore == null)
+            return this;
+
+        if (Option.Datas != null)
+            PvStore.Datas = this.$ParseImageViwerDatas(Option.Datas);
+
+        if (PvStore.Datas && PvStore.Datas.length > 0) {
+            if (Option.Index < 0)
+                Option.Index = PvStore.Datas.length - 1;
+            else if (Option.Index > PvStore.Datas.length - 1)
+                Option.Index = 0;
+
+            PvStore.Index = Option.Index;
+            PvStore.Src = PvStore.Datas[PvStore.Index].Src;
+            PvStore.LazySrc = PvStore.Datas[PvStore.Index].LazySrc;
+            PvStore.IsShow = Option.IsShow;
+            PvStore.TotalCount = PvStore.Datas.length;
+            PvStore.CurrentCount = PvStore.Index + 1;
+        }
+        else {
+            PvStore.TotalCount = 1;
+            PvStore.CurrentCount = 1;
+        }
+        return this;
+    }
+    protected $ParseImageViwerDatas(Datas?: string | string[] | ImageViewerValue | ImageViewerValue[]) {
+        if (Datas == null)
+            return null;
+
+        if (typeof Datas === 'string') {
+            Datas = [{
+                Src: Datas,
+                LazySrc: Datas,
+            }];
+        }
+        else if (Array.isArray(Datas)) {
+            let NewDatas: ImageViewerValue[] = [];
+            for (let i = 0; i < Datas.length; i++) {
+                let Item = Datas[i];
+                if (Item == null)
+                    continue;
+                if (typeof Item === 'string') {
+                    NewDatas.push({
+                        Src: Item,
+                        LazySrc: Item,
+                    });
+                }
+                else {
+                    NewDatas.push(Item);
+                }
+            }
+            Datas = NewDatas;
+        }
+        else
+            Datas = [Datas];
+
+        return Datas;
     }
     //#endregion
 

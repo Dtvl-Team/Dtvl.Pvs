@@ -114,6 +114,10 @@
   aspect-ratio: 1/1;
 }
 
+.Position-Unset {
+  position: unset;
+}
+
 --StaticVar, :root {
   --Scrollbar-height: 0.7rem;
   --Scrollbar-width: 0.7rem;
@@ -1417,6 +1421,18 @@ body {
   padding-inline-start: 12px;
 }
 
+.InputTextStart input {
+  text-align: start;
+}
+
+.InputTextCenter input {
+  text-align: center;
+}
+
+.InputTextEnd input {
+  text-align: end;
+}
+
 --TextareaVar, :root {
   --Textarea-bg: var(--Input-bg);
   --Textarea-text-color: var(--Input-text-color);
@@ -1730,4 +1746,79 @@ body {
 
 .TabContent {
   background: var(--TabContent-bg);
+}
+
+--ImageViewerVar, :root {
+  --ImageViewer-max-height: 500px;
+  --ImageViewer-Overlay-bg: #808080;
+  --ImageViewer-Overlay-opacity: 0.6;
+  --ImageViewer-Toolbar-bg: #121212;
+  --ImageViewer-Toolbar-opacity: 1;
+  --ImageViewer-Toolbar-height: 2.5rem;
+  --ImageViewer-Toolbar-Item-size: 1.5rem;
+  --ImageViewer-SideTool-bg: var(--ImageViewer-Toolbar-bg);
+  --ImageViewer-SideTool-width: 4rem;
+  --ImageViewer-SideTool-opacity: 0.2;
+}
+
+.ImageViewer-Content {
+  position: relative;
+  user-select: none;
+  max-height: var(--ImageViewer-max-height);
+}
+
+.ImageViewer-Content .v-img__img {
+  top: unset;
+  left: unset;
+  height: auto;
+  width: auto;
+  max-height: var(--ImageViewer-max-height);
+}
+
+.ImageViewer-Overlay {
+  background: var(--ImageViewer-Overlay-bg);
+  opacity: var(--ImageViewer-Overlay-opacity);
+}
+
+.ImageViewer-Toolbar {
+  background: var(--ImageViewer-Toolbar-bg);
+  opacity: var(--ImageViewer-Toolbar-opacity);
+  position: fixed;
+  height: var(--ImageViewer-Toolbar-height);
+}
+
+.ImageViewer-Toolbar-Item {
+  cursor: pointer;
+  height: var(--ImageViewer-Toolbar-Item-size);
+  width: var(--ImageViewer-Toolbar-Item-size);
+}
+
+.ImageViewer-SideTool, .ImageViewer-SideTool-Next, .ImageViewer-SideTool-Before {
+  position: fixed;
+  height: calc(100% - var(--ImageViewer-Toolbar-height));
+  width: var(--ImageViewer-SideTool-width);
+  background: var(--ImageViewer-SideTool-bg);
+  margin-top: var(--ImageViewer-Toolbar-height);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ImageViewer-SideTool:hover, .ImageViewer-SideTool-Next:hover, .ImageViewer-SideTool-Before:hover {
+  opacity: var(--ImageViewer-SideTool-opacity);
+}
+
+.ImageViewer-SideTool-Before {
+  left: 0;
+}
+
+.ImageViewer-SideTool-Next {
+  right: 0;
+}
+
+.ImageViewer-SideTool-Before:hover {
+  opacity: var(--ImageViewer-SideTool-opacity);
+}
+
+.ImageViewer-SideTool-Next:hover {
+  opacity: var(--ImageViewer-SideTool-opacity);
 }

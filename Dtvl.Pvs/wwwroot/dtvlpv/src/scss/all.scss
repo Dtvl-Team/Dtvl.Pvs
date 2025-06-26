@@ -30,6 +30,8 @@
 @import 'List.scss';
 @import 'Menu.scss';
 @import 'Tabbed.scss';
+@import 'Image.scss';
+@import 'ImageViewer.scss';
 
 :root {
     @extend --DefaultThemeVar;
@@ -65,4 +67,6 @@
     @extend --MenuVar;
     @extend --ListVar;
     @extend --TabbedVar;
+    @extend --ImageVar;
+    @extend --ImageViewerVar;
 }

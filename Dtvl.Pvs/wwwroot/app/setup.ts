@@ -52,6 +52,10 @@ DtvlPv.UseRouter('Sidebar', [
                 href: '/Component/ImageFlex',
             },
             {
+                title: 'ImageViewer',
+                href: '/Component/ImageViewer',
+            },
+            {
                 title: 'Modal',
                 href: '/Component/Modal',
             },

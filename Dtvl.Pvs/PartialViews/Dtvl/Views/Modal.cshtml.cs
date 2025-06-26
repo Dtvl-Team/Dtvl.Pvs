@@ -5,6 +5,12 @@ public enum ModalSlot
     WidthColumn,
     Activator,
     Color,
+    FullScreen,
+
+    ScrollNone,
+    ScrollClose,
+    ScrollBlock,
+    ScrollReposition,
 
     HeaderView,
     HeaderStart,
@@ -12,9 +18,13 @@ public enum ModalSlot
     CenterHeader,
 
     Content,
+    ContentView,
+    //DisableScroll,
 
     FooterView,
     FooterStart,
     FooterEnd,
     CenterFooter,
+
+    OverlayAttr,
 }

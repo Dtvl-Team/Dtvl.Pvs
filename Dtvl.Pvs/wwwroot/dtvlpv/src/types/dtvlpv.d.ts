@@ -84,6 +84,10 @@ type DataTableStore = DataTableOption & {
 };
 type ModalOption = {
     IsShow?: boolean;
+    Overlay?: {
+        Clicked?: Function;
+        IsClickedClose?: boolean;
+    };
 };
 type SendModalOption = ModalOption & {
     ApiKey?: string;
@@ -114,6 +118,7 @@ type SecureOption = boolean | {
     ShowingIcon?: string;
     HidingIcon?: string;
 };
+type InputModeType = 'text' | 'numeric';
 type InputOption = {
     Value?: any;
     Store?: PathType | {
@@ -122,51 +127,65 @@ type InputOption = {
     };
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     Secure?: SecureOption;
-    Number?: boolean | InputNumberOption;
+    InputMode?: InputModeType;
     Formats?: {
-        Value?: FormateFuncType | FormateFuncType[];
-        Display?: FormateFuncType | FormateFuncType[];
-    } | FormateFuncType | FormateFuncType[];
+        Value?: FormatFuncType | FormatFuncType[];
+        Display?: FormatFuncType | FormatFuncType[];
+    } | FormatFuncType | FormatFuncType[];
 } | string;
 type InputStore = {
     Store: {
         Path: PathType;
         IsItem?: boolean;
+        ItemsPath?: PathType;
     };
     Value?: any;
-    ReadOnly?: boolean | ((Store?: InputStore) => boolean);
+    DisplayValue?: any;
+    ModelValue?: any;
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     Secure?: {
         Securing: boolean;
     } & SecureOption;
-    Number?: InputNumberOption;
+    InputMode?: InputModeType;
     Formats: {
-        Value: FormateFuncType[];
-        Display: FormateFuncType[];
+        Value: FormatFuncType[];
+        Display: FormatFuncType[];
     };
-    OnFormatDisplay: Function;
-    OnFormatValue: Function;
+    ItemValues?: any[];
+    GetItemValue?: Function;
+    SetItemValue?: Function;
+    OnItemsMounted?: Function;
+    OnItemsUnMounted?: Function;
+    OnFormatDisplayValue: Function;
+    OnFormatModelValue: Function;
 };
-type InputNumberOption = {
-    ThousandsSeparator?: boolean;
+type FormatConvertType<TOption = any> = (Value: string, Option: TOption) => string;
+type FormatFuncType<TOption = any> = {
+    Option?: TOption;
+    Convert: FormatConvertType;
 };
-type FormateFuncType = (Value: string) => string;
+type FormatBuilderType<TOption = any> = (Option?: TOption) => FormatFuncType<TOption>;
 type DateFormatOption = {
-    Separator: string;
+    Separator?: string;
     YearCount?: number;
     MonthCount?: number;
     DayCount?: number;
 };
-type FormatStore = {
-    AdDate: FormateFuncType;
-    TwDate: FormateFuncType;
-    Number: FormateFuncType;
-    NumberThousands: FormateFuncType;
-} | Record<string, FormateFuncType>;
+type NumberFormatOption = {
+    ThousandsSeparator?: boolean;
+    Negative?: boolean;
+    DecimalPoint?: number;
+    MaxLength?: number;
+};
+type FormatStore = Record<string, FormatBuilderType> & {
+    AdDate?: FormatBuilderType<DateFormatOption>;
+    TwDate?: FormatBuilderType<DateFormatOption>;
+    Number?: FormatBuilderType<NumberFormatOption>;
+};
 type DefaultFormatsType = {
     AdDate: string;
     TwDate: string;
     Number: string;
-    NumberThousands: string;
 };
 type SelectOption = {
     Datas?: any[];
@@ -201,6 +220,11 @@ type SelectStore = {
     Multiple?: boolean;
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     OnChange?: Function | string;
+    QueryItem?: (Value: any, Option: QueryOption) => any;
+};
+type QueryOption = {
+    Source: 'item' | 'value';
+    Target: 'item' | 'value';
 };
 type DatePickerOption = {
     Store?: PathType;
@@ -227,6 +251,50 @@ type ImageOption = {
     LazySrcUrl?: string;
     Src?: string;
     LazySrc?: string;
+    Viewer?: PathType | {
+        Path: PathType;
+        Mode?: ImageViewerMode;
+    };
+};
+type ImageStore = {
+    Src?: string;
+    LazySrc?: string;
+    Clicked?: Function;
+    Viewer?: {
+        Path: PathType;
+        Mode?: ImageViewerMode;
+    };
+};
+type ImageViewerMode = 'single' | 'album';
+type ImageViewerValue = {
+    Src?: string;
+    LazySrc?: string;
+};
+type ImageViewerOption = {
+    Store?: PathType;
+    IsShow?: boolean;
+    Mode?: ImageViewerMode;
+    HasCounter?: boolean;
+    HasSideTool?: boolean;
+    HasRotator?: boolean;
+    BtnCloseClicked?: Function;
+    Overlay?: {
+        Clicked?: Function;
+        IsClickedClose?: boolean;
+    };
+    Datas?: string | string[] | ImageViewerValue | ImageViewerValue[];
+    Index?: number;
+};
+type ImageViewerStore = ImageViewerOption & ImageViewerValue & {
+    Datas?: ImageViewerValue[];
+    CurrentCount?: number;
+    TotalCount?: number;
+};
+type ImageViewerSet = {
+    IsShow?: boolean;
+    Datas?: string | string[] | ImageViewerValue | ImageViewerValue[];
+    Index?: number;
+    Mode?: ImageViewerMode;
 };
 type PushAnimateOption = {
     PositionFrom: 'Left' | 'Right';
@@ -249,7 +317,6 @@ declare class DtvlPvIniter {
     protected $CreateAdDateFormat(): void;
     protected $CreateTwDateFormat(): void;
     protected $CreateNumberFormat(): void;
-    protected $CreateNumberThousandsFormat(): void;
     UseRouter(PvName: PathType, RouterData?: SidebarItemSet[], Option?: SidebarOption): this;
     private $InitSidebar;
     private $CreateSidebar;
@@ -273,14 +340,20 @@ declare class DtvlPvIniter {
     GetSelect(PvName: PathType): SelectStore;
     AddPv_Input(PvName: PathType, Option?: InputOption): this;
     AddPv_Select(PvName: PathType, Option?: SelectOption): this;
-    AddPv_Format(FormatKey: string, FormatFunc: FormateFuncType): this;
-    CreateDateFormat(Option: DateFormatOption): FormateFuncType;
-    GetFormat(FormatKey: string): FormateFuncType;
+    AddPv_Format<TOption = any>(FormatKey: string, FormatFunc: FormatBuilderType<TOption>): this;
+    CreateDateFormat(Option: DateFormatOption): FormatBuilderType<any>;
+    CreateFormat<TOption = any>(Convert: FormatConvertType<TOption>, DefaultOption?: TOption): FormatBuilderType<any>;
+    GetFormat(FormatKey: string): FormatBuilderType<any>;
     AddPv_DatePicker(PvName: PathType, Option?: DatePickerOption): this;
     AddPv_Tabbed(PvName: PathType, Option?: TabbedOption): this;
     AddPv_Flex(PvName: PathType, Option: FlexOption): this;
     AddPv_ImageFlex(PvName: PathType, Option: ImageFlexOption): this;
+    GetImage(PvName: PathType): ImageStore;
+    GetImageViewer(PvName: PathType): ImageViewerStore;
     AddPv_Image(PvName: PathType, Option: ImageOption): this;
+    AddPv_ImageViewer(PvName: PathType, Option?: ImageViewerOption): this;
+    ImageViewer(PvName: PathType, Option?: ImageViewerSet | boolean): this;
+    protected $ParseImageViwerDatas(Datas?: string | string[] | ImageViewerValue | ImageViewerValue[]): ImageViewerValue[];
     AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption): void;
     Animate(PvName: PathType): void;
     protected RootPath(...PushPath: PathType[]): string[];

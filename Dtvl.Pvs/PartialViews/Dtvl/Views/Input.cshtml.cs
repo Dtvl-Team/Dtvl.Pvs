@@ -21,6 +21,10 @@ public enum InputSlot
     SizeDefault,
     SizeComfortable,
     SizeCompact,
+
+    TextAlignStart,
+    TextAlignCenter,
+    TextAlignEnd,
 }
 
 public static class InputExtention
@@ -64,6 +68,17 @@ public static class InputExtention
             _ => "compact"
         };
         Option.AddParentAttr("density", Density, PropPassType.Fill);
+
+        var TextAlignSlots = new[] { InputSlot.TextAlignStart, InputSlot.TextAlignCenter, InputSlot.TextAlignEnd };
+        var TextAlign = Option.OrderFirstSlot(TextAlignSlots)?.ToSlotType<InputSlot>() switch
+        {
+            InputSlot.TextAlignStart => "InputTextStart",
+            InputSlot.TextAlignCenter => "InputTextCenter",
+            InputSlot.TextAlignEnd => "InputTextEnd",
+            _ => "InputTextStart"
+        };
+        Option.AddParentAttr("class", TextAlign, PropPassType.Append);
+
         return Option;
     }
     public static PvSlotsStore PassSlot_InputToIcon(this PvOption<DtvlPvs> Option)
