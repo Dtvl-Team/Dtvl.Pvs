@@ -1,23 +1,24 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-    Model
-        .FillSlotFromDefault(InfoLineSlot.Content)
-        .AddParentAttr(new
-        {
-            @class = "row align-content-center align-items-center InfoLine"
-        });
+	Model
+		.UseGlobalSlots()
+		.FillSlotFromDefault(InfoLineSlot.Content)
+		.AddParentAttr(new
+		{
+			@class = "row align-content-center align-items-center InfoLine"
+		});
 }
 
 <div class="col-auto">
-    @Model.RenderSlot(InfoLineSlot.Content)
+	@Model.RenderSlot(InfoLineSlot.Content)
 </div>
 <div class="col ms-3">
-    <hr />
+	<hr />
 </div>
 
 @if (Model.TryGetSlotRender(InfoLineSlot.Footer, out var SlotFooter))
 {
-    <div class="col-auto ms-3">
-        @SlotFooter
-    </div>
+	<div class="col-auto ms-3">
+		@SlotFooter
+	</div>
 }

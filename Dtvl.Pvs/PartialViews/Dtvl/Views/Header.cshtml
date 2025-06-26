@@ -1,6 +1,8 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-    Model.AddParentAttr(new
+    Model
+    .UseGlobalSlots()
+    .AddParentAttr(new
     {
         @class = "Header py-0 w-100 row align-items-center NotSelect"
     });

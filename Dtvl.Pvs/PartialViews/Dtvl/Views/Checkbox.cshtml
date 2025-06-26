@@ -1,13 +1,14 @@
 ﻿@model PvOption<DtvlPvs>
 
 @{
-    Model.WithParentTag("v-checkbox")
-        .FillSlotFromDefault(CheckboxSlot.Label)
-        .AddParentAttr("hide-details")
-        .AddParentAttr(new
-        {
-            Label = Model.GetSlotContent(CheckboxSlot.Label),
-            density = "compact",
-            @class = "Checkbox",
-        });
+	Model.WithParentTag("v-checkbox")
+		.UseGlobalSlots()
+		.FillSlotFromDefault(CheckboxSlot.Label)
+		.AddParentAttr("hide-details")
+		.AddParentAttr(new
+		{
+			Label = Model.GetSlotContent(CheckboxSlot.Label),
+			density = "compact",
+			@class = "Checkbox",
+		});
 }

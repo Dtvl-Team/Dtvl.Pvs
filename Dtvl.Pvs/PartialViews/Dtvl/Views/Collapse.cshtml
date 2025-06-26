@@ -1,7 +1,9 @@
 ﻿@model PvOption<DtvlPvs>
 
 @{
-    Model.AddParentAttr(new
+    Model
+    .UseGlobalSlots()
+    .AddParentAttr(new
     {
         @class = "bg-danger",
     });

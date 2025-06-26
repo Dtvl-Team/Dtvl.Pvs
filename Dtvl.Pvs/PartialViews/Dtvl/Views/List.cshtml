@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-list")
+        .UseGlobalSlots()
         .AddParentAttr("v-show", "app.IsMounted")
         .AddParentAttr(new
         {

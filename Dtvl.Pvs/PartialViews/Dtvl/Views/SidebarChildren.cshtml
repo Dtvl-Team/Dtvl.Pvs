@@ -1,6 +1,7 @@
 ﻿@model PvOption<DtvlPvs>
 @{
     Model.WithParentTag("v-list-item")
+        .UseGlobalSlots()
         .AddParentAttr(new
         {
             density = "compact",

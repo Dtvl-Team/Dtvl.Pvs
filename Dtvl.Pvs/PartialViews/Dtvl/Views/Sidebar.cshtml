@@ -24,6 +24,7 @@
         Classes.Add("Sidebar-Right");
 
     Model
+        .UseGlobalSlots()
         .AddParentAttr("v-show", "!mobile || Router?.IsSidebarOpen")
         .AddParentAttr(new
         {

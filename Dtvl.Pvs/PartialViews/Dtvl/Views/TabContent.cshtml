@@ -1,6 +1,7 @@
 ﻿@model PvOption<DtvlPvs>
 @{
     Model.WithParentTag("v-tabs-window-item")
+        .UseGlobalSlots()
         .FillSlotFromDefault(TabContentSlot.Content)
         .AddParentAttr(new
         {
