@@ -1,6 +1,8 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-    Model.FillSlotFromDefault(FilterCardSlot.Content);
+    Model
+    .UseGlobalSlots()
+    .FillSlotFromDefault(FilterCardSlot.Content);
 }
 <pv-slot slot="CardSlot.FooterEnd" export-option="Model">
     <dtvl-pv pv-type="Btn" pv-name="BtnClear">

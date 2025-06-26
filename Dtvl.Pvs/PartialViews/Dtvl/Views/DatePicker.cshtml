@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-menu")
+       .UseGlobalSlots()
        .AddParentAttr("open-on-click")
        .AddParentAttr(":close-on-content-click", "false")
        .AddParentAttr(new

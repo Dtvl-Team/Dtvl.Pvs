@@ -1,8 +1,10 @@
 ﻿@model PvOption<DtvlPvs>
 
 @{
-    Model.AddParentAttr("class", "App");
-
+    Model
+    .UseGlobalSlots()
+    .AddParentAttr("class", "App");
+    
     var HasHeader = Model.HasSlot(AppSlot.Header) && !this.TryLoadSlotRender(AppSlot.DisableHeader, out _);
     var HasSidebar = Model.HasSlot(AppSlot.Sidebar) && !this.TryLoadSlotRender(AppSlot.DisableSidebar, out _);
     var HasBreadcrumb = Model.HasSlot(AppSlot.Bread) && !this.TryLoadSlotRender(AppSlot.DisableBread, out _);

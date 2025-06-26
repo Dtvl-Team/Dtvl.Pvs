@@ -2,6 +2,7 @@
 @{
     Model
         .WithParentTag("v-card")
+        .UseGlobalSlots()
         .FillSlotFromDefault(CardSlot.Content)
         .AddParentAttr(new
         {

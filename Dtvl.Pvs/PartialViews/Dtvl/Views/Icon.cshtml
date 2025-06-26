@@ -1,6 +1,7 @@
 ﻿@model PvOption<DtvlPvs>
 @{
     Model.WithParentTag("v-icon")
+        .UseGlobalSlots()
         .FillSlotFromDefault(IconSlot.Icon)
         .AddParentAttr(new
         {

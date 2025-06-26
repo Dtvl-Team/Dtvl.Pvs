@@ -2,6 +2,7 @@
 
 @{
     Model.WithParentTag("v-treeview")
+        .UseGlobalSlots()
         .AddParentAttr("activatable", PropPassType.Fill)
         .AddParentAttr("open-on-click", PropPassType.Fill)
         .AddParentAttr("lines", "two", PropPassType.Fill)

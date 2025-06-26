@@ -1,90 +1,101 @@
 ﻿@model PvOption<DtvlPvs>
 
 @{
-    Model
-        .AddParentAttr(new
-        {
-            @class = "Alert",
-        })
-        .FillSlot(AlertSlot.ButtonEnd, default(string));
+	Model
+		.UseGlobalSlots()
+		.AddParentAttr(new
+		{
+			@class = "Alert",
+		})
+		.FillSlot(AlertSlot.ButtonEnd, default(string));
 
-    var HasButton = Model.HasSlot(AlertSlot.Button);
+	var HasButton = Model.HasSlot(AlertSlot.Button);
 }
 
 @if (!Model.HasSlot(AlertSlot.WidthColumn))
 {
-    Model.AddSlot(ModalSlot.WidthColumn, "col-xs-12 col-sm-9 col-md-7 col-lg-5", PropPassType.Cover);
+	Model.AddSlot(ModalSlot.WidthColumn, "col-xs-12 col-sm-9 col-md-7 col-lg-5", PropPassType.Cover);
 }
 
 @if (Model.HasSlot(AlertSlot.AlterConfirm))
 {
-    Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-question AlertConfirm");
-    if (!HasButton)
-    {
-        <pv-slot slot="AlertSlot.Button" export-slot="Model.GetSlot(AlertSlot.Button, true)">
-            <dtvl-pv pv-type="Btn" pv-name="BtnCancel"
-                     class="col-auto">
-                <pv-slot slot="BtnSlot.BtnCancel"></pv-slot>
-                <pv-slot slot="BtnSlot.SizeDefault"></pv-slot>
-            </dtvl-pv>
-        </pv-slot>
-    }
+	Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-question AlertConfirm");
+	if (!HasButton)
+	{
+		<pv-slot slot="AlertSlot.Button" export-slot="Model.GetSlot(AlertSlot.Button, true)">
+			<dtvl-pv pv-type="Btn" pv-name="BtnCancel"
+					 class="col-auto">
+				<pv-slot slot="BtnSlot.BtnCancel"></pv-slot>
+				<pv-slot slot="BtnSlot.SizeDefault"></pv-slot>
+			</dtvl-pv>
+		</pv-slot>
+	}
 }
 else
 {
-    if (Model.HasSlot(AlertSlot.AlertError))
-    {
-        Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-xmark AlertError");
-    }
-    else if (Model.HasSlot(AlertSlot.AlertWarning))
-    {
-        Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-exclamation AlertWarning");
-    }
-    else
-    {
-        Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-check AlertOk");
-    }
+	@* if (Model.HasSlot(AlertSlot.AlertError))
+	{
+		Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-xmark AlertError");
+	}
+	else if (Model.HasSlot(AlertSlot.AlertWarning))
+	{
+		Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-exclamation AlertWarning");
+	}
+	else
+	{
+		Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-check AlertOk");
+	} *@
+
+	var DensitySlots = new[] { AlertSlot.AlertError, AlertSlot.AlertWarning, AlertSlot.AlertOk };
+	var Density = Model.OrderFirstSlot(DensitySlots)?.ToSlotType<AlertSlot>() switch
+	{
+		AlertSlot.AlertError => "AlertError",
+		AlertSlot.AlertWarning => "AlertWarning",
+		AlertSlot.AlertOk => "AlertOk",
+		_ => "AlertOk",
+	};
+	Model.AddParentAttr("density", Density);
 }
 
 @if (!HasButton)
 {
-    <pv-slot slot="AlertSlot.Button" pass-type="Append" export-slot="Model.GetSlot(AlertSlot.Button, true)">
-        <dtvl-pv pv-type="Btn" pv-name="BtnOk"
-                 class="col-auto ms-2">
-            <pv-slot slot="BtnSlot.BtnOk"></pv-slot>
-            <pv-slot slot="BtnSlot.SizeDefault"></pv-slot>
-        </dtvl-pv>
-    </pv-slot>
+	<pv-slot slot="AlertSlot.Button" pass-type="Append" export-slot="Model.GetSlot(AlertSlot.Button, true)">
+		<dtvl-pv pv-type="Btn" pv-name="BtnOk"
+				 class="col-auto ms-2">
+			<pv-slot slot="BtnSlot.BtnOk"></pv-slot>
+			<pv-slot slot="BtnSlot.SizeDefault"></pv-slot>
+		</dtvl-pv>
+	</pv-slot>
 }
 
 @{
-    var FooterSlot =
-    Model.HasSlot(AlertSlot.ButtonCenter) ? ModalSlot.CenterFooter :
-    Model.HasSlot(AlertSlot.ButtonStart) ? ModalSlot.FooterStart :
-    ModalSlot.FooterEnd;
+	var FooterSlot =
+	Model.HasSlot(AlertSlot.ButtonCenter) ? ModalSlot.CenterFooter :
+	Model.HasSlot(AlertSlot.ButtonStart) ? ModalSlot.FooterStart :
+	ModalSlot.FooterEnd;
 }
 
 <pv-slot slot="FooterSlot" export-option="Model">
-    @Model.RenderSlot(AlertSlot.Button)
+	@Model.RenderSlot(AlertSlot.Button)
 </pv-slot>
 
 <pv-slot slot="ModalSlot.Content" export-option="Model">
-    <div class="row text-center AlertContent">
-        <div pv-name="Icon">
-            <i class="AlertIcon @Model.RenderSlot(AlertSlot.Icon)"></i>
-        </div>
+	<div class="row text-center AlertContent">
+		<div pv-name="Icon">
+			<i class="AlertIcon @Model.RenderSlot(AlertSlot.Icon)"></i>
+		</div>
 
-        @if (Model.TryGetSlotRender(AlertSlot.Content, out var ContentSlot))
-        {
-            @ContentSlot
-        }
-        else
-        {
-            <div pv-name="Message" class="AlertMessage">
-                @Model.RenderSlot(AlertSlot.Message)
-            </div>
-        }
-    </div>
+		@if (Model.TryGetSlotRender(AlertSlot.Content, out var ContentSlot))
+		{
+			@ContentSlot
+		}
+		else
+		{
+			<div pv-name="Message" class="AlertMessage">
+				@Model.RenderSlot(AlertSlot.Message)
+			</div>
+		}
+	</div>
 </pv-slot>
 
 @DtvlPvRender.Render(DtvlPvs.Modal, Model)
