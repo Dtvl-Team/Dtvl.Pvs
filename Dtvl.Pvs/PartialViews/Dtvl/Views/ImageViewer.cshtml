@@ -1,27 +1,7 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-    // Model.WithParentTag("v-dialog")
-    //     .AddParentAttr("scroll-strategy", "block")
-    //     .AddParentAttr("fullscreen")
-    //     .AddParentAttr(new
-    //     {
-    //         @class = "Modal",
-    //         width = "auto",
-    //     });
+    Model.UseGlobalSlots();
 }
-
-@* <div class="row w-100 h-100 align-content-center bg-success">
-    <div class="col bg-danger" style="height:50px;">
-        123
-    </div>
-    <div class="col-12 h-auto">
-        <img style="max-height:100vh; height: 95vh; width:100%; aspect-ratio:1; object-fit:contain;"
-             src="https://dogtime.com/wp-/uploads/sites/12/2024/03/GettyImages-1285465107-e1710251441662.jpg?w=1024" />
-    </div>
-    <div class="col-12 h-auto">
-        123content
-    </div>
-</div> *@
 
 <pv-slot slot="ModalSlot.FullScreen" export-option="Model"></pv-slot>
 <pv-slot slot="ModalSlot.ScrollBlock" export-option="Model"></pv-slot>
@@ -82,7 +62,6 @@
                 fa-solid fa-chevron-right
             </dtvl-pv>
         </div>
-
     </div>
 </pv-slot>
 

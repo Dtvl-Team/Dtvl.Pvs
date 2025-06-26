@@ -1,7 +1,8 @@
 ﻿@model PvOption<DtvlPvs>
 
 @{
-    Model.WithParentTag("v-dialog")
+    Model.WithParentTag("v-dialog") 
+        .UseGlobalSlots()
         .FillSlotFromDefault(ModalSlot.Content)
         .AddParentAttr(new
         {

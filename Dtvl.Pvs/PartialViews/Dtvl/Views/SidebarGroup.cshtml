@@ -1,6 +1,6 @@
 ﻿@model PvOption<DtvlPvs>
-
 @{
+    Model.UseGlobalSlots();
     var LayerLevel = 1;
     if (Model.TryGetSlotContent(SidebarGroupSlot.LayerLevel, out var LayerLevelContent))
     {

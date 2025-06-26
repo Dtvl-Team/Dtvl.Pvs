@@ -1,6 +1,7 @@
 ﻿@model PvOption<DtvlPvs>
 @{
     Model.WithParentTag("v-img")
+        .UseGlobalSlots()
         .FillSlotFromDefault(ImageSlot.SrcUrl)
         .FillSlot(ImageSlot.Ratio, "1");
 

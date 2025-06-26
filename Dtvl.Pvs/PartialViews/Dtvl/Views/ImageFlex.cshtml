@@ -1,6 +1,8 @@
 ﻿@model PvOption<DtvlPvs>
 @{
-    Model.FillSlot(ImageFlexSlot.ItemSquare, "true");
+    Model
+        .UseGlobalSlots()
+        .FillSlot(ImageFlexSlot.ItemSquare, "true");
 }
 
 <dtvl-pv pv-type="Flex" pass-slot="Model.Slots">
