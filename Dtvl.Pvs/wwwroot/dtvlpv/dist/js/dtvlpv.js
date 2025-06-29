@@ -212,7 +212,7 @@ class DtvlPvIniter {
         return this.Pv(PvName);
     }
     AddPv_Sidebar(PvName, RouterData, Option) {
-        let RouterDefaultStore = this.RootPath(PvName);
+        let RouterDefaultStore = this.PvPath(PvName);
         this.$InitSidebar(PvName, RouterDefaultStore, RouterData, Option);
         return this;
     }
@@ -264,7 +264,7 @@ class DtvlPvIniter {
         return this.Pv(PvName);
     }
     AddPv_DataTable(PvName, Option) {
-        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStorePath = Model.ToJoin(this.PvPath(PvName));
         let PvStore = {
             ...Option,
             Selected: [],
@@ -445,7 +445,7 @@ class DtvlPvIniter {
         //}
     }
     $BuildDefaultDataTable(PvName, PvStore) {
-        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStorePath = Model.ToJoin(this.PvPath(PvName));
         PvStore.IsSort = (Props, Column, Order) => {
             if (Column.sortable == false)
                 return false;
@@ -563,7 +563,7 @@ class DtvlPvIniter {
         Option.Overlay ??= {};
         Option.Overlay.IsClickedClose ??= true;
         Model.AddStore(PvName, {});
-        let PvStorePath = this.RootPath(PvName);
+        let PvStorePath = this.PvPath(PvName);
         let PvStore = {
             ...Option,
         };
@@ -585,13 +585,13 @@ class DtvlPvIniter {
         return this;
     }
     AddPv_SendModal(PvName, Option) {
-        let PvStorePath = this.RootPath(PvName);
+        let PvStorePath = this.PvPath(PvName);
         Option ??= {};
         Option.BtnCancel ??= () => {
             this.Modal(PvName, false);
         };
         Option.BtnSend ??= () => {
-            let ModalStore = Model.GetStore(this.RootPath(PvName));
+            let ModalStore = Model.GetStore(this.PvPath(PvName));
             if (ModalStore.IsCalling == true)
                 return;
             ModalStore.IsCalling = true;
@@ -650,7 +650,7 @@ class DtvlPvIniter {
         return this;
     }
     Modal(PvName, Option) {
-        let PvStorePath = this.RootPath(PvName);
+        let PvStorePath = this.PvPath(PvName);
         if (typeof (Option) == 'boolean') {
             Model.UpdateStore([PvStorePath, 'IsShow'], Option);
             return this;
@@ -687,15 +687,15 @@ class DtvlPvIniter {
             IsCalling: false,
         };
         Model
-            .UpdateStore(this.RootPath(PvName), SetAlertStore)
+            .UpdateStore(this.PvPath(PvName), SetAlertStore)
             .AddV_Tree(PvName, {
-            'v-model': this.RootPath(PvName, 'IsShow'),
+            'v-model': this.PvPath(PvName, 'IsShow'),
             ':Message': {
-                'v-text': this.RootPath(PvName, 'Message')
+                'v-text': this.PvPath(PvName, 'Message')
             },
             ':BtnOk': {
                 'v-on:click': (event) => {
-                    let AlertStore = Model.GetStore(this.RootPath(PvName));
+                    let AlertStore = Model.GetStore(this.PvPath(PvName));
                     if (AlertStore.BtnOk != null) {
                         AlertStore.BtnOk(AlertStore, event);
                         return;
@@ -720,7 +720,7 @@ class DtvlPvIniter {
             },
             ':BtnCancel': {
                 'v-on:click': (event) => {
-                    let GetStore = Model.GetStore(this.RootPath(PvName));
+                    let GetStore = Model.GetStore(this.PvPath(PvName));
                     if (GetStore.BtnCancel != null) {
                         GetStore.BtnCancel(GetStore, event);
                         return;
@@ -730,7 +730,7 @@ class DtvlPvIniter {
             },
             ':Overlayer': {
                 'v-on:click': (event) => {
-                    let GetStore = Model.GetStore(this.RootPath(PvName));
+                    let GetStore = Model.GetStore(this.PvPath(PvName));
                     if (GetStore.BtnCancel != null) {
                         GetStore.BtnCancel(GetStore, event);
                         return;
@@ -743,7 +743,7 @@ class DtvlPvIniter {
     }
     Alert(PvName, Option) {
         if (typeof (Option) == 'boolean') {
-            let GetStore = Model.GetStore(this.RootPath(PvName));
+            let GetStore = Model.GetStore(this.PvPath(PvName));
             Option = {
                 IsShow: Option,
                 IsCalling: GetStore.IsCalling,
@@ -751,7 +751,7 @@ class DtvlPvIniter {
         }
         if (Option.IsShow == null)
             Option.IsShow = true;
-        Model.UpdateStore(this.RootPath(PvName), Option);
+        Model.UpdateStore(this.PvPath(PvName), Option);
         return this;
     }
     GetAlert(PvName) {
@@ -761,7 +761,7 @@ class DtvlPvIniter {
     //#region Card
     AddPv_FilterCard(PvName, Option) {
         Option ??= {};
-        let PvStorePath = this.RootPath(PvName);
+        let PvStorePath = this.PvPath(PvName);
         let PvStore = {
             ...Option
         };
@@ -781,6 +781,80 @@ class DtvlPvIniter {
         return this;
     }
     //#endregion
+    //#region ForItems
+    CreateForItemsStore(PvName, Option, ValueOption) {
+        Option ??= {};
+        Option.Store ??= PvName;
+        if (Array.isArray(Option.Store) || typeof Option.Store === 'string') {
+            Option.Store = {
+                Path: Option.Store,
+            };
+        }
+        if (Option.Store.Items != null) {
+            if (typeof Option.Store.Items === 'boolean') {
+                if (Option.Store.Items == false)
+                    Option.Store.Items = null;
+                else if (Option.Store.Items == true)
+                    Option.Store.Items = {};
+            }
+            else if (Array.isArray(Option.Store.Items) || typeof Option.Store.Items === 'string') {
+                Option.Store.Items = {
+                    Source: Option.Store.Items,
+                };
+            }
+        }
+        let PvStore = {
+            ...Option,
+            ItemsMap: {},
+            Store: Option.Store,
+            OnItemsMounted: (ValueMethod, el) => {
+                let ItemsId = null;
+                if (el.hasAttribute('items_id'))
+                    ItemsId = el.getAttribute('items_id');
+                else {
+                    ItemsId = Model.GenerateId();
+                    el.setAttribute('items_id', ItemsId);
+                }
+                let WatchEffect = (newValue, oldValue, a) => {
+                    if (ValueOption?.OnItemSetValue)
+                        newValue = ValueOption.OnItemSetValue(newValue);
+                    ValueMethod.SetValue(newValue);
+                };
+                WatchEffect(ValueMethod.GetValue(), null, null);
+                let Watcher = Model.Watch(ValueMethod.GetValue, WatchEffect);
+                PvStore.ItemsMap[ItemsId] = {
+                    Watcher: Watcher,
+                };
+            },
+            OnItemsUnMounted: (el) => {
+                let ItemsId = el.getAttribute('items_id');
+                if (ItemsId == null)
+                    return;
+                let MapSet = PvStore.ItemsMap[ItemsId];
+                if (MapSet != null) {
+                    MapSet.Watcher?.stop();
+                    delete PvStore.ItemsMap[ItemsId];
+                }
+            },
+        };
+        if (PvStore.Store.Items?.Source != null) {
+            Model.AddV_PropertyFrom(PvStore, 'ItemsSource', {
+                Target: PvStore.Store.Items.Source,
+            });
+        }
+        if (PvStore.Store.Items != null) {
+            let PvStorePath = this.PvPath(PvName);
+            Model.AddV_Tree(PvName, {
+                'v-on-unmounted': `($props, $el) => ${PvStorePath}.OnItemsUnMounted($el)`,
+                'v-on-mounted': `($props, $el) => ${PvStorePath}.OnItemsMounted({
+                    GetValue: () => ${PvStore.Store.Path},
+                    SetValue: (value) => ${PvStore.Store.Path} = value
+                }, $el)`,
+            });
+        }
+        return PvStore;
+    }
+    //#endregion
     //#region Input, Select
     GetInput(PvName) {
         return this.Pv(PvName);
@@ -790,37 +864,42 @@ class DtvlPvIniter {
     }
     AddPv_Input(PvName, Option) {
         Option ??= {};
-        if (typeof (Option) == 'string')
+        if (Array.isArray(Option) || typeof (Option) == 'string')
             Option = { Store: Option };
-        Option.Store ??= Model.ToJoin(PvName);
-        if (Array.isArray(Option.Store) || typeof Option.Store == 'string') {
-            Option.Store = {
-                Path: Option.Store,
-                IsItem: false,
-            };
-        }
-        Option.Store.Path = Model.ToJoin(Option.Store.Path);
-        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStorePath = this.PvPath(PvName);
         let PvStore = {
-            Store: Option.Store,
+            ...this.CreateForItemsStore(PvName, Option, {
+                OnItemSetValue: value => PvStore.OnFormatValue(PvStore.OnFormatDisplay(value)),
+            }),
             ReadOnly: Option.ReadOnly,
             InputMode: Option.InputMode ?? 'text',
             Formats: {
+                Shared: [],
                 Value: [],
                 Display: [],
             },
-            OnFormatDisplayValue: (Value) => {
+            OnFormatShared: (Value) => {
                 if (Value == null)
                     return null;
                 let PvStore = Model.GetStore(PvStorePath);
+                for (let Format of PvStore.Formats.Shared)
+                    Value = Format?.Convert(Value, Format?.Option);
+                return Value;
+            },
+            OnFormatDisplay: (Value) => {
+                if (Value == null)
+                    return null;
+                let PvStore = Model.GetStore(PvStorePath);
+                Value = PvStore.OnFormatShared(Value);
                 for (let Format of PvStore.Formats.Display)
                     Value = Format?.Convert(Value, Format?.Option);
                 return Value;
             },
-            OnFormatModelValue: (Value) => {
+            OnFormatValue: (Value) => {
                 if (Value == null)
                     return null;
                 let PvStore = Model.GetStore(PvStorePath);
+                Value = PvStore.OnFormatDisplay(Value);
                 for (let Format of PvStore.Formats.Value)
                     Value = Format?.Convert(Value, Format?.Option);
                 return Value;
@@ -830,66 +909,16 @@ class DtvlPvIniter {
         Model.AddV_Tree(PvName, {
             'v-bind:inputmode': [PvStorePath, 'InputMode'],
         });
-        if (PvStore.Store.IsItem == true) {
-            PvStore.ItemValues = [];
-            PvStore.GetItemValue = (index) => {
-                let Path = [PvStorePath, `ItemValues[${index}]`, 'item.$DisplayValue'];
-                let Value = Model.GetStore(Path);
-                return Value;
-            };
-            PvStore.SetItemValue = (index, value) => {
-                let PvStore = this.GetInput(PvName);
-                let Path = [PvStorePath, `ItemValues[${index}]`, PvStore.Store.Path];
-                Model.UpdateStore(Path, value);
-            };
-            PvStore.OnItemsMounted = (item) => {
-                item.$id ??= Model.GenerateId();
-                let PvStore = this.GetInput(PvName);
-                if (!PvStore.ItemValues.find(Item => Item.$id == item.$id)) {
-                    let SetItem = {
-                        item,
-                    };
-                    let GetValue = Model.GetStoreFrom(SetItem, PvStore.Store.Path);
-                    if (item.$properties == null) {
-                        Model.AddV_PropertyFrom(item, '$DisplayValue', {});
-                        Model.AddV_PropertyFrom(item, '$ModelValue', {});
-                        Model.AddV_PropertyFrom(SetItem, PvStore.Store.Path, {
-                            get() {
-                                let Value = this.$get('$ModelValue');
-                                return Value;
-                            },
-                            set(value) {
-                                let PvStore = DtvlPv.GetInput(PvName);
-                                let DisplayValue = PvStore.OnFormatDisplayValue(value);
-                                let ModelValue = PvStore.OnFormatModelValue(DisplayValue);
-                                this.$set('$DisplayValue', DisplayValue);
-                                this.$set('$ModelValue', ModelValue);
-                            },
-                            Value: GetValue,
-                        });
-                    }
-                    PvStore.ItemValues.push(SetItem);
-                }
-            };
-            PvStore.OnItemsUnMounted = (item) => {
-                if (item.$id == null)
-                    return;
-                let PvStore = this.GetInput(PvName);
-                let DeleteIndex = PvStore.ItemValues.findIndex(Item => Item.item.$id == item.$id);
-                PvStore.ItemValues.splice(DeleteIndex, 1);
-            };
+        if (PvStore.Store.Items != null) {
             Model.AddV_Tree(PvName, {
-                'v-bind:key': 'item.$id',
-                'v-bind:model-value': [PvStorePath, 'GetItemValue(index)'],
-                'v-on:update:model-value': `value => ${PvStorePath}.SetItemValue(index, value)`,
-                'v-on-mounted': `() => ${PvStorePath}.OnItemsMounted(item)`,
-                'v-on-unmounted': `() => ${PvStorePath}.OnItemsUnMounted(item)`,
-                //'v-on:input:index': (event: InputEvent, index: number) => {
-                //    let Target = event.target as HTMLInputElement;
-                //    let PvStore = this.GetInput(PvName);
-                //    //PvStore.Value = Target.value
-                //    //Target.value = PvStore.Value;
-                //},
+                'v-bind:model-value': `${PvStorePath}.OnFormatDisplay(${PvStore.Store.Path})`,
+                'v-on:update:model-value': `value => {
+                    ${PvStore.Store.Path} = ${PvStorePath}.OnFormatValue(value);
+                }`,
+                'v-on:input': `event => {
+                    event.target.value = ${PvStorePath}.OnFormatDisplay(${PvStore.Store.Path});
+                    ${PvStore.Store.Path} = ${PvStorePath}.OnFormatValue(event.target.value);
+                }`,
             });
         }
         else {
@@ -912,11 +941,8 @@ class DtvlPvIniter {
                     let PvStore = DtvlPv.GetInput(PvName);
                     if (PvStore == null)
                         return;
-                    PvStore.ModelValue = PvStore.OnFormatModelValue(value);
-                    PvStore.DisplayValue = PvStore.OnFormatDisplayValue(PvStore.ModelValue);
-                    let StoreValue = Model.GetStore(PvStore.Store.Path);
-                    if (StoreValue != PvStore.ModelValue)
-                        Model.UpdateStore(PvStore.Store.Path, PvStore.ModelValue);
+                    PvStore.DisplayValue = PvStore.OnFormatDisplay(value);
+                    PvStore.ModelValue = PvStore.OnFormatValue(PvStore.DisplayValue);
                 },
             })
                 .AddV_Property(PvStore.Store.Path, {
@@ -962,7 +988,7 @@ class DtvlPvIniter {
                 Securing: true,
                 ...Option.Secure,
             };
-            let SecureStorePath = this.RootPath(PvName, 'Secure');
+            let SecureStorePath = this.PvPath(PvName, 'Secure');
             let SecuringPath = Model.ToJoin([SecureStorePath, 'Securing'], '.');
             let HidingIconPath = Model.ToJoin([SecureStorePath, 'HidingIcon'], '.');
             let ShowingIconPath = Model.ToJoin([SecureStorePath, 'ShowingIcon'], '.');
@@ -989,16 +1015,27 @@ class DtvlPvIniter {
             });
         }
         if (Option.Formats != null) {
-            if (Array.isArray(Option.Formats) || 'Convert' in Option.Formats) {
+            if (Array.isArray(Option.Formats)) {
                 Option.Formats = {
-                    Value: Option.Formats,
-                    Display: Option.Formats,
+                    Shared: Option.Formats,
+                    Convert: null,
                 };
             }
+            Option.Formats.Shared ??= [];
+            Option.Formats.Display ??= [];
+            Option.Formats.Value ??= [];
+            if (Option.Formats.Convert != null)
+                PvStore.Formats.Shared.push({
+                    Convert: Option.Formats.Convert,
+                    Option: Option.Formats.Option,
+                });
+            if (!Array.isArray(Option.Formats.Shared))
+                Option.Formats.Shared = [Option.Formats.Shared];
             if (!Array.isArray(Option.Formats.Display))
                 Option.Formats.Display = [Option.Formats.Display];
             if (!Array.isArray(Option.Formats.Value))
                 Option.Formats.Value = [Option.Formats.Value];
+            PvStore.Formats.Shared.push(...Option.Formats.Shared);
             PvStore.Formats.Display.push(...Option.Formats.Display);
             PvStore.Formats.Value.push(...Option.Formats.Value);
         }
@@ -1006,20 +1043,15 @@ class DtvlPvIniter {
     }
     AddPv_Select(PvName, Option) {
         Option ??= {};
+        if (Array.isArray(Option) || typeof (Option) == 'string')
+            Option = { Store: Option };
         Option.ReturnObject ??= false;
         Option.Multiple ??= false;
         Option.Datas ??= [];
-        Option.Store ??= Model.ToJoin(PvName);
-        if (Array.isArray(Option.Store) || typeof Option.Store == 'string') {
-            Option.Store = {
-                Path: Option.Store,
-                IsItem: false,
-            };
-        }
-        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStorePath = this.PvPath(PvName);
         let PvStore = {
+            ...this.CreateForItemsStore(PvName, Option),
             IsInited: false,
-            Store: Option.Store,
             Datas: Option.Datas,
             ApiKey: Option.ApiKey,
             ItemName: Option.ItemName,
@@ -1059,8 +1091,13 @@ class DtvlPvIniter {
             },
         };
         Model.UpdateStore(PvStorePath, PvStore);
-        if (PvStore.Store.IsItem == true) {
-            Model.AddV_Model(PvName, Option.Store.Path);
+        if (PvStore.Store.Items != null && PvStore.Store.Items != false) {
+            Model.AddV_Tree(PvName, {
+                'v-bind:model-value': `${PvStore.Store.Path}`,
+                'v-on:update:model-value': `value => {
+                    ${PvStore.Store.Path} = value;
+                }`,
+            });
         }
         else {
             Model.AddStore(PvStore.Store.Path, null)
@@ -1271,23 +1308,23 @@ class DtvlPvIniter {
         Model.UpdateStore(PvName, Store);
         if (Store.Store) {
             Model.AddV_Property(Store.Store, {
-                Target: this.RootPath(PvName, 'Date'),
+                Target: this.PvPath(PvName, 'Date'),
                 get() {
-                    let PickerStore = Model.GetStore(DtvlPv.RootPath(PvName));
+                    let PickerStore = Model.GetStore(DtvlPv.PvPath(PvName));
                     return PickerStore['Date'];
                 },
                 set(Value) {
-                    let PickerStore = Model.GetStore(DtvlPv.RootPath(PvName));
+                    let PickerStore = Model.GetStore(DtvlPv.PvPath(PvName));
                     PickerStore['Date'] = Value;
                 }
             });
         }
-        Model.AddV_Property(this.RootPath(PvName, 'Selected'), {
+        Model.AddV_Property(this.PvPath(PvName, 'Selected'), {
             set(Value) {
                 this.$set('Selected', Value);
             }
         });
-        Model.AddV_Property(this.RootPath(PvName, 'Date'), {
+        Model.AddV_Property(this.PvPath(PvName, 'Date'), {
             get() {
                 let Selected = this.Selected;
                 if (Selected == null) {
@@ -1311,18 +1348,18 @@ class DtvlPvIniter {
             }
         });
         Model.AddV_Tree(PvName, {
-            'v-model': this.RootPath(PvName, 'IsOpen'),
+            'v-model': this.PvPath(PvName, 'IsOpen'),
             ':Input': {
-                'v-model': this.RootPath(PvName, 'Date'),
+                'v-model': this.PvPath(PvName, 'Date'),
                 'v-on:click:clear': () => {
-                    let FindStore = Model.GetStore(this.RootPath(PvName));
+                    let FindStore = Model.GetStore(this.PvPath(PvName));
                     if (FindStore) {
                         FindStore.Selected = null;
                     }
                 },
             },
             ':DatePicker': {
-                'v-model': this.RootPath(PvName, 'Selected'),
+                'v-model': this.PvPath(PvName, 'Selected'),
             },
         });
         return this;
@@ -1330,7 +1367,7 @@ class DtvlPvIniter {
     //#endregion
     //#region Tabbed
     AddPv_Tabbed(PvName, Option) {
-        let TabbedPath = Model.ToJoin(this.RootPath(PvName));
+        let TabbedPath = Model.ToJoin(this.PvPath(PvName));
         Model.AddV_Tree(PvName, {
             ':Tabs': {
                 'v-model': `${TabbedPath}.Value`,
@@ -1344,14 +1381,14 @@ class DtvlPvIniter {
     //#endregion
     //#region Flex
     AddPv_Flex(PvName, Option) {
-        let RootStorePath = Model.ToJoin(this.RootPath(PvName));
+        let RootStorePath = Model.ToJoin(this.PvPath(PvName));
         Option.Datas ??= [];
         let RootStore = {
             ...Option,
         };
         Model.UpdateStore(RootStorePath, RootStore);
         if (RootStore.ApiKey != null) {
-            Model.AddV_Property(this.RootPath(PvName, 'Datas'), {
+            Model.AddV_Property(this.PvPath(PvName, 'Datas'), {
                 Target: Option.ApiKey,
                 Value: Option.Datas,
             });
@@ -1390,7 +1427,7 @@ class DtvlPvIniter {
         return this.Pv(PvName);
     }
     AddPv_Image(PvName, Option) {
-        let PvStorePath = Model.ToJoin(this.RootPath(PvName));
+        let PvStorePath = Model.ToJoin(this.PvPath(PvName));
         let PvStore = {};
         Model.UpdateStore(PvStorePath, PvStore);
         if (Option.Src != null) {
@@ -1453,7 +1490,7 @@ class DtvlPvIniter {
         Option.HasRotator ??= false;
         Option.Datas ??= [];
         Option.Datas = this.$ParseImageViwerDatas(Option.Datas);
-        let PvStorePath = this.RootPath(PvName);
+        let PvStorePath = this.PvPath(PvName);
         let PvStore = {
             ...Option,
             Datas: Option.Datas,
@@ -1598,7 +1635,7 @@ class DtvlPvIniter {
     //#endregion
     //#region Animate
     AddPv_AnimatePush(PvName, Option) {
-        let StorePath = this.RootPath(PvName, 'Animate');
+        let StorePath = this.PvPath(PvName, 'Animate');
         Model.SetStore(StorePath, {
             IsRun: false,
         });
@@ -1609,7 +1646,7 @@ class DtvlPvIniter {
         Model.AddV_Tree(PvName, {});
     }
     Animate(PvName) {
-        let StorePath = this.RootPath(PvName, 'Animate');
+        let StorePath = this.PvPath(PvName, 'Animate');
         let AnimateStore = Model.GetStore(StorePath, {
             CreateIfNull: true,
             DefaultValue: {
@@ -1622,8 +1659,8 @@ class DtvlPvIniter {
     }
     //#endregion
     //#region Protect Process
-    RootPath(...PushPath) {
-        let RootPath = Model.Paths([this.$PvStore, PushPath]);
+    PvPath(...PushPath) {
+        let RootPath = Model.ToJoin(Model.Paths([this.$PvStore, PushPath]));
         return RootPath;
     }
     ApiPath(...PushPath) {

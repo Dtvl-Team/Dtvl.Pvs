@@ -34,7 +34,7 @@ Model.AddV_Tree('Rows', {
             DtvlPv.AddPv_Select(Paths, {
                 Store: {
                     Path: 'item.value',
-                    IsItem: true,
+                    Items: true,
                 },
                 ReturnObject: true,
                 Datas: SelectDatas,

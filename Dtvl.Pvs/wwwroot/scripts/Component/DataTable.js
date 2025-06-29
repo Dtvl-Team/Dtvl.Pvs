@@ -59,7 +59,7 @@ DtvlPv.AddPv_DataTable('DataTable', {
 DtvlPv.AddPv_Input('TestInput', {
     Store: {
         Path: 'item.test',
-        IsItem: true,
+        //Items: 
     },
 });
 Model.AddV_Click('BtnA', (item) => {

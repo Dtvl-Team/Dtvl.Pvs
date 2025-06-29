@@ -2,41 +2,44 @@ import { DtvlPv, Formats } from 'dtvlpv';
 import { Model } from '@rugal.tu/vuemodel3';
 
 let TwDateInput;
-//Model.AddV_Tree('Root', {
-//    ':NumberInput': Paths => {
-//        DtvlPv.AddPv_Input(Paths, {
-//            InputMode: 'numeric',
-//            Formats: Formats.Number({
-//                ThousandsSeparator: false,
-//                DecimalPoint: 2,
-//                Negative: true,
-//            }),
-//        });
-//    },
-//    ':AdDateInput': Paths => {
-//        DtvlPv.AddPv_Input(Paths, {
-//            InputMode: 'numeric',
-//            Formats: {
-//                Display: Formats.AdDate(),
-//                Value: Formats.Number(),
-//            },
-//        });
-//    },
-//    ':TwDateInput': Paths => {
-//        TwDateInput = Paths;
-//        DtvlPv.AddPv_Input(Paths, {
-//            InputMode: 'numeric',
-//            Formats: Formats.TwDate(),
-//        });
-//    },
-//    'using': (Paths) => {
-//        Model.UpdateStore(Paths, {
-//            NumberInput: 12345,
-//            AdDateInput: '1998-10/14',
-//            TwDateInput: '1141014',
-//        });
-//    }
-//});
+Model.AddV_Tree('Root', {
+    //':NumberInput': Paths => {
+    //    DtvlPv.AddPv_Input(Paths, {
+    //        InputMode: 'numeric',
+    //        Formats: Formats.Number({
+    //            ThousandsSeparator: false,
+    //            DecimalPoint: 2,
+    //            Negative: true,
+    //        }),
+    //    });
+    //},
+    //':AdDateInput': Paths => {
+    //    DtvlPv.AddPv_Input(Paths, {
+    //        InputMode: 'numeric',
+    //        Formats: {
+    //            Display: Formats.AdDate(),
+    //            Value: Formats.Number(),
+    //        },
+    //    });
+    //},
+    ':TwDateInput': Paths => {
+        TwDateInput = Paths;
+        DtvlPv.AddPv_Input(Paths, {
+            InputMode: 'numeric',
+            Formats: {
+                Display: Formats.AdDate(),
+                Value: Formats.Number(),
+            },
+        });
+    },
+    'using': (Paths) => {
+        Model.UpdateStore(Paths, {
+            NumberInput: 12345,
+            AdDateInput: '1998-10/14',
+            TwDateInput: '19981014',
+        });
+    }
+});
 Model.AddV_Tree('Rows', {
     ':Inputs': {
         'v-for': 'Rows',
@@ -44,12 +47,10 @@ Model.AddV_Tree('Rows', {
             DtvlPv.AddPv_Input(Paths, {
                 Store: {
                     Path: 'item.value',
-                    //IsItem: {
-                    //    Source: 'Rows'
-                    //},
+                    Items: true,
                 },
                 Formats: {
-                    Display: Formats.AdDate(),
+                    Shared: Formats.AdDate(),
                     Value: Formats.Number(),
                     //Display: Formats.Number({
                     //    ThousandsSeparator: true,
@@ -60,8 +61,9 @@ Model.AddV_Tree('Rows', {
         },
     },
     'using': () => {
-        Model.UpdateStore('Rows', [{ value: 12345 }, { value: '19981014' }, { value: '0871014' }]);
-        console.log(JSON.stringify(Model.GetStore('Rows'), null, 2));
+        Model.UpdateStore('Rows', [{ value: 12345 }, { value: '19981014a' }]);
+        //Model.UpdateStore('Rows', [12345, 19981014]);
+        //console.log(Model.GetStore('Rows'));
     }
 });
 

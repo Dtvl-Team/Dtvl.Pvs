@@ -1,4 +1,5 @@
 import { PathType, ApiCallback } from '@rugal.tu/vuemodel3';
+import { WatchCallback, WatchHandle } from 'vue';
 type SidebarItemSet = {
     title: string;
     icon?: string;
@@ -113,53 +114,37 @@ type FilterCardOption = {
     BtnClear?: () => void;
     BtnSearch?: () => void;
 };
-type SecureOption = boolean | {
-    SecureEye?: boolean;
-    ShowingIcon?: string;
-    HidingIcon?: string;
-};
-type InputModeType = 'text' | 'numeric';
-type InputOption = {
-    Value?: any;
+type ForItemsOption = {
     Store?: PathType | {
         Path: PathType;
-        IsItem?: boolean;
+        Items?: PathType | boolean | {
+            Source?: PathType;
+        };
     };
-    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
-    Secure?: SecureOption;
-    InputMode?: InputModeType;
-    Formats?: {
-        Value?: FormatFuncType | FormatFuncType[];
-        Display?: FormatFuncType | FormatFuncType[];
-    } | FormatFuncType | FormatFuncType[];
-} | string;
-type InputStore = {
+};
+type ForItemsValueOption = {
+    OnItemSetValue?: (value: any) => void;
+};
+type ForItemsValueMethod = {
+    GetValue: () => any;
+    SetValue: (value: any) => void;
+};
+type ForItemsMapSet = {
+    Watcher?: WatchHandle;
+};
+type ForItemsStore = ForItemsOption & {
     Store: {
         Path: PathType;
-        IsItem?: boolean;
-        ItemsPath?: PathType;
+        Items?: {
+            Source?: PathType;
+        };
     };
-    Value?: any;
-    DisplayValue?: any;
-    ModelValue?: any;
-    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
-    Secure?: {
-        Securing: boolean;
-    } & SecureOption;
-    InputMode?: InputModeType;
-    Formats: {
-        Value: FormatFuncType[];
-        Display: FormatFuncType[];
-    };
-    ItemValues?: any[];
-    GetItemValue?: Function;
-    SetItemValue?: Function;
-    OnItemsMounted?: Function;
-    OnItemsUnMounted?: Function;
-    OnFormatDisplayValue: Function;
-    OnFormatModelValue: Function;
+    ItemsSource?: any[];
+    ItemsMap?: Record<string, ForItemsMapSet>;
+    OnItemsMounted?: (ValueMethod: ForItemsValueMethod, el: HTMLElement) => void;
+    OnItemsUnMounted?: (el: HTMLElement) => void;
 };
-type FormatConvertType<TOption = any> = (Value: string, Option: TOption) => string;
+type FormatConvertType<TOption = any> = (Value: any, Option: TOption) => any;
 type FormatFuncType<TOption = any> = {
     Option?: TOption;
     Convert: FormatConvertType;
@@ -187,26 +172,60 @@ type DefaultFormatsType = {
     TwDate: string;
     Number: string;
 };
-type SelectOption = {
+type SecureOption = boolean | {
+    SecureEye?: boolean;
+    ShowingIcon?: string;
+    HidingIcon?: string;
+};
+type InputModeType = 'text' | 'numeric';
+type InputOption = PathType | (ForItemsOption & {
+    Value?: any;
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
+    Secure?: SecureOption;
+    InputMode?: InputModeType;
+    Formats?: FormatFuncType[] | {
+        Option?: any;
+        Convert?: FormatConvertType;
+        Shared?: FormatFuncType | FormatFuncType[];
+        Value?: FormatFuncType | FormatFuncType[];
+        Display?: FormatFuncType | FormatFuncType[];
+    };
+});
+type InputStore = ForItemsStore & {
+    Value?: any;
+    DisplayValue?: any;
+    ModelValue?: any;
+    ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
+    Secure?: {
+        Securing: boolean;
+    } & SecureOption;
+    InputMode?: InputModeType;
+    Formats: {
+        Shared: FormatFuncType[];
+        Value: FormatFuncType[];
+        Display: FormatFuncType[];
+    };
+    OnFormatShared: Function;
+    OnFormatDisplay: Function;
+    OnFormatValue: Function;
+    GetItemsModelValue?: Function;
+};
+type SelectOption = PathType | (ForItemsOption & {
     Datas?: any[];
     ApiKey?: PathType;
     ItemName?: string | Function;
     ItemValue?: string;
-    Store?: PathType | {
-        Path: PathType;
-        IsItem?: boolean;
-    };
     SelectedValue?: any;
     ReturnObject?: boolean;
     Multiple?: boolean;
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     OnChange?: Function | string;
+});
+type SelectQueryOption = {
+    Source: 'item' | 'value';
+    Target: 'item' | 'value';
 };
-type SelectStore = {
-    Store: {
-        Path: PathType;
-        IsItem?: boolean;
-    };
+type SelectStore = ForItemsStore & {
     IsInited: boolean;
     Loading?: boolean;
     LoadingTime?: Date;
@@ -220,11 +239,7 @@ type SelectStore = {
     Multiple?: boolean;
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean);
     OnChange?: Function | string;
-    QueryItem?: (Value: any, Option: QueryOption) => any;
-};
-type QueryOption = {
-    Source: 'item' | 'value';
-    Target: 'item' | 'value';
+    QueryItem?: (Value: any, Option: SelectQueryOption) => any;
 };
 type DatePickerOption = {
     Store?: PathType;
@@ -336,6 +351,7 @@ declare class DtvlPvIniter {
     Alert(PvName: PathType, Option: boolean | AlertStore): this;
     GetAlert(PvName: PathType): AlertStore;
     AddPv_FilterCard(PvName: PathType, Option?: FilterCardOption): this;
+    protected CreateForItemsStore(PvName: PathType, Option?: ForItemsOption, ValueOption?: ForItemsValueOption): ForItemsStore;
     GetInput(PvName: PathType): InputStore;
     GetSelect(PvName: PathType): SelectStore;
     AddPv_Input(PvName: PathType, Option?: InputOption): this;
@@ -356,9 +372,9 @@ declare class DtvlPvIniter {
     protected $ParseImageViwerDatas(Datas?: string | string[] | ImageViewerValue | ImageViewerValue[]): ImageViewerValue[];
     AddPv_AnimatePush(PvName: PathType, Option: PushAnimateOption): void;
     Animate(PvName: PathType): void;
-    protected RootPath(...PushPath: PathType[]): string[];
+    protected PvPath(...PushPath: PathType[]): string;
     protected ApiPath(...PushPath: PathType[]): string[];
-    WatchApi(ApiKey: PathType, Status: string, Func: Function): void;
+    WatchApi(ApiKey: PathType, Status: string, Func: WatchCallback): void;
 }
 declare const DtvlPv: DtvlPvIniter;
 declare const Formats: FormatStore;
