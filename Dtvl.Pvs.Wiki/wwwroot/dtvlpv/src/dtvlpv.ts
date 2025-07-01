@@ -1035,7 +1035,7 @@ class DtvlPvIniter {
             this.Modal(PvName, false);
         };
         Option.BtnSend ??= () => {
-            let ModalStore = Model.GetStore<SendModalStore>(this.PvPath(PvName));
+            let ModalStore = Model.GetStore<SendModalStore>(PvStorePath);
             if (ModalStore.IsCalling == true)
                 return;
 
@@ -1062,14 +1062,14 @@ class DtvlPvIniter {
         Model.AddV_Tree(PvName, {
             ':BtnSend': {
                 'v-on:click': (event: any) => {
-                    let PvStore = this.GetSendModal(PvStorePath);
+                    let PvStore = this.GetSendModal(PvName);
                     if (typeof PvStore.BtnSend != null)
                         PvStore.BtnSend(PvStore, event);
                 },
             },
             ':BtnCancel': {
                 'v-on:click': (event: any) => {
-                    let PvStore = this.GetSendModal(PvStorePath);
+                    let PvStore = this.GetSendModal(PvName);
                     if (typeof PvStore.BtnCancel != null)
                         PvStore.BtnCancel(PvStore, event);
                 }
