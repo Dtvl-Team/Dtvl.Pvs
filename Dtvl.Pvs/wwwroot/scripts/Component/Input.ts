@@ -3,16 +3,19 @@ import { Model } from '@rugal.tu/vuemodel3';
 
 let TwDateInput;
 Model.AddV_Tree('Root', {
-    //':NumberInput': Paths => {
-    //    DtvlPv.AddPv_Input(Paths, {
-    //        InputMode: 'numeric',
-    //        Formats: Formats.Number({
-    //            ThousandsSeparator: false,
-    //            DecimalPoint: 2,
-    //            Negative: true,
-    //        }),
-    //    });
-    //},
+    ':NumberInput': Paths => {
+        DtvlPv.AddPv_Input(Paths, {
+            InputMode: 'numeric',
+            Formats: {
+                Display: Formats.Number({
+                    ThousandsSeparator: true,
+                    DecimalPoint: 2,
+                    Negative: true,
+                }),
+                Value: Formats.Number(),
+            },
+        });
+    },
     //':AdDateInput': Paths => {
     //    DtvlPv.AddPv_Input(Paths, {
     //        InputMode: 'numeric',

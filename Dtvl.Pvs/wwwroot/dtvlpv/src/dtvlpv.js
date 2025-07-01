@@ -84,7 +84,7 @@ class DtvlPvIniter {
             Value = Value.toString().replace(new RegExp(`[^${ReplaceExp}]`, 'g'), '');
             Value = Value.replace(/(?!^)-/g, '');
             if (Value != null && Value != '') {
-                if (Option?.ThousandsSeparator == true) {
+                if (Option?.ThousandsSeparator == true && Value != '-') {
                     if (Option.DecimalPoint > 0 && Value.includes('.')) {
                         let Values = Value.split('.');
                         let HeadValue = Values[0];
