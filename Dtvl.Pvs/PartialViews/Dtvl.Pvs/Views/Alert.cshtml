@@ -33,28 +33,15 @@
 }
 else
 {
-	@* if (Model.HasSlot(AlertSlot.AlertError))
+	var IconSlots = new[] { AlertSlot.AlertError, AlertSlot.AlertWarning, AlertSlot.AlertOk };
+	var Icon = Model.OrderFirstSlot(IconSlots)?.ToSlotType<AlertSlot>() switch
 	{
-		Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-xmark AlertError");
-	}
-	else if (Model.HasSlot(AlertSlot.AlertWarning))
-	{
-		Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-exclamation AlertWarning");
-	}
-	else
-	{
-		Model.FillSlot(AlertSlot.Icon, "fa-solid fa-circle-check AlertOk");
-	} *@
-
-	var DensitySlots = new[] { AlertSlot.AlertError, AlertSlot.AlertWarning, AlertSlot.AlertOk };
-	var Density = Model.OrderFirstSlot(DensitySlots)?.ToSlotType<AlertSlot>() switch
-	{
-		AlertSlot.AlertError => "AlertError",
-		AlertSlot.AlertWarning => "AlertWarning",
-		AlertSlot.AlertOk => "AlertOk",
-		_ => "AlertOk",
+		AlertSlot.AlertError => "fa-solid fa-circle-xmark AlertError",
+		AlertSlot.AlertWarning => "fa-solid fa-circle-exclamation AlertWarning",
+		AlertSlot.AlertOk => "fa-solid fa-circle-check AlertOk",
+		_ => "fa-solid fa-circle-check AlertOk",
 	};
-	Model.AddParentAttr("density", Density);
+	Model.FillSlot(AlertSlot.Icon, Icon);
 }
 
 @if (!HasButton)
