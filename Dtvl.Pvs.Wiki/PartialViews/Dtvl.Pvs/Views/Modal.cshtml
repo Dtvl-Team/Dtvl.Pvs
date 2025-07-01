@@ -1,0 +1,95 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-dialog") 
+        .UseGlobalSlots()
+        .FillSlotFromDefault(ModalSlot.Content)
+        .AddParentAttr(new
+        {
+            @class = "Modal",
+            width = "auto",
+        });
+
+    if (!Model.TryGetSlotContent(ModalSlot.WidthColumn, out var WidthColumn))
+    {
+        WidthColumn = "col-xs-12 col-sm-11 col-md-10 col-lg-8 col-xl-7";
+    }
+
+    if (Model.HasSlot(ModalSlot.FullScreen))
+        Model.AddParentAttr("v-bind:fullscreen", "true");
+
+    var ScrollSlots = new[] {
+        ModalSlot.ScrollNone,
+        ModalSlot.ScrollClose,
+        ModalSlot.ScrollBlock,
+        ModalSlot.ScrollReposition,
+    };
+    var ScrollStrategy = Model.OrderFirstSlot(ScrollSlots)?.ToSlotType<ModalSlot>() switch
+    {
+        ModalSlot.ScrollNone => "none",
+        ModalSlot.ScrollClose => "close",
+        ModalSlot.ScrollBlock => "block",
+        ModalSlot.ScrollReposition => "reposition",
+        _ => "none",
+    };
+    Model.AddParentAttr("scroll-strategy", ScrollStrategy);
+
+    var PassHeader = new[]
+    {
+        ModalSlot.HeaderView,
+        ModalSlot.CenterHeader,
+        ModalSlot.HeaderStart,
+        ModalSlot.HeaderEnd,
+    };
+    var PassFooter = new[]
+    {
+        ModalSlot.FooterView,
+        ModalSlot.CenterFooter,
+        ModalSlot.FooterStart,
+        ModalSlot.FooterEnd,
+    };
+
+    var PassSlots = Model.QuerySlotStore(PassHeader.Concat(PassFooter));
+    var HasAnyHeader = Model.HasSlotAny(PassHeader);
+    var HasAnyFooter = Model.HasSlotAny(PassFooter);
+}
+
+@if (Model.TryGetSlotRender(ModalSlot.Activator, out var Activator))
+{
+    <template v-slot:activator="{ props = activatorProps }">
+        @Activator
+    </template>
+}
+
+<section class="row justify-content-center HideScrollbar h-100">
+    @{
+        var OverlayAttrSlot = Model.GetSlot(ModalSlot.OverlayAttr);
+    }
+    <pv-tag tag="div"
+            pv-name="Overlayer"
+            pass-attr="OverlayAttrSlot?.Attrs"
+            class="w-100 h-100 position-fixed">
+    </pv-tag>
+
+    @if (Model.TryGetSlotRender(ModalSlot.ContentView, out var ContentViewRender))
+    {
+        @Model.RenderSlot(ModalSlot.ContentView)
+    }
+    else
+    {
+        <dtvl-pv pv-type="Card" pass-slot="PassSlots"
+                 class="ModalCard @WidthColumn">
+            <pv-slot slot="CardSlot.Content">
+                @if (HasAnyHeader)
+                {
+                    <hr class="my-3" />
+                }
+                <div class="pb-2">
+                    @Model.RenderSlot(ModalSlot.Content)
+                </div>
+            </pv-slot>
+        </dtvl-pv>
+    }
+</section>
+
+

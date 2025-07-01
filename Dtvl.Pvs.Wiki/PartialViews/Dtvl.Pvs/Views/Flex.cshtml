@@ -1,0 +1,72 @@
+﻿@model PvOption<DtvlPvs>
+@{
+	Model
+		.UseGlobalSlots()
+		.FillSlotFromDefault(FlexSlot.Items)
+		.AddParentAttr(new
+		{
+			@class = "row",
+		});
+
+	var ColumnMap = new Dictionary<string, string>() { { "_", "12" } };
+	if (Model.HasSlot(FlexSlot.Column3))
+	{
+		ColumnMap.Add("xl", "4");
+		ColumnMap.Add("lg", "6");
+		ColumnMap.Add("md", "6");
+	}
+	else if (Model.HasSlot(FlexSlot.Column2))
+	{
+		ColumnMap.Add("xl", "3");
+		ColumnMap.Add("lg", "4");
+		ColumnMap.Add("md", "6");
+	}
+	else
+	{
+		ColumnMap.Add("xl", "2");
+		ColumnMap.Add("lg", "3");
+		ColumnMap.Add("md", "4");
+		ColumnMap.Add("sm", "6");
+	}
+
+	if (Model.TryGetSlotContent(FlexSlot.ColXl, out var ColXlContent))
+		ColumnMap["xl"] = ColXlContent;
+	if (Model.TryGetSlotContent(FlexSlot.ColLg, out var ColLgContent))
+		ColumnMap["lg"] = ColLgContent;
+	if (Model.TryGetSlotContent(FlexSlot.ColMd, out var ColMdContent))
+		ColumnMap["md"] = ColMdContent;
+	if (Model.TryGetSlotContent(FlexSlot.ColSm, out var ColSmContent))
+		ColumnMap["sm"] = ColSmContent;
+	if (Model.TryGetSlotContent(FlexSlot.ColXs, out var ColXsContent))
+		ColumnMap["xs"] = ColXsContent;
+	if (Model.TryGetSlotContent(FlexSlot.Col, out var ColContent))
+		ColumnMap["_"] = ColContent;
+
+	var AllColumnStyle = ColumnMap.Select(Item => $"col-{Item.Key}-{Item.Value}".Replace("-_", "")).ToList();
+	if (Model.HasSlot(FlexSlot.ItemSquare))
+	{
+		var ItemSquareContent = Model.GetSlotContent(FlexSlot.ItemSquare);
+		if (string.IsNullOrWhiteSpace(ItemSquareContent) || ItemSquareContent.ToLower() != "false")
+			AllColumnStyle.Add("Square");
+	}
+
+	var ColumnClass = string.Join(' ', AllColumnStyle);
+}
+
+@if (Model.TryGetSlotRenderMulti(FlexSlot.Items, out var ItemRenders))
+{
+	Model.TryGetSlot(FlexSlot.ItemsAttr, out var ItemAttrs);
+	foreach (var ItemRender in ItemRenders)
+	{
+		<pv-tag tag="div"
+				pv-name="Items">
+			@if (ItemAttrs is not null && ItemAttrs.Attrs != null)
+			{
+				<pv-attr pass-attr="ItemAttrs.Attrs" pass-type="Append" />
+			}
+			<pv-attr class="@ColumnClass" pass-type="Append" />
+
+			@ItemRender
+		</pv-tag>
+	}
+}

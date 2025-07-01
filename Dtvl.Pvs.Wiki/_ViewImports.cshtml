@@ -1,0 +1,12 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Rugal.PartialViewRender
+@addTagHelper *, Dtvl.Pvs
+@addTagHelper *, Dtvl.Pvs.Wiki
+
+@using Dtvl.Pvs
+@using Rugal.PartialViewRender.Extensions
+@using Rugal.PartialViewRender.Models
+@using Rugal.ImportMapper.Services
+
+@inject PvGlobalSlotsStore<DtvlPvs> GlobalSlotsStore
+@inject ImportMapperService ImportMapper

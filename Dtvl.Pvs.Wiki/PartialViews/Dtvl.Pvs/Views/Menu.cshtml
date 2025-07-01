@@ -1,0 +1,42 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-menu")
+        .UseGlobalSlots()
+        .AddParentAttr(new
+        {
+            @class = "Menu"
+        });
+
+    var Location = "bottom";
+    var LocationDic = new Dictionary<MenuSlot, string>(){
+        { MenuSlot.FromTop, "top" },
+        { MenuSlot.FromBottom, "bottom" },
+        { MenuSlot.FromLeft, "start" },
+        { MenuSlot.FromRight, "end" },
+        { MenuSlot.FromCenter, "center" },
+    };
+    foreach (var Item in LocationDic)
+    {
+        if (Model.HasSlot(Item.Key))
+        {
+            Location = Item.Value;
+            break;
+        }
+    }
+
+    Model.AddParentAttr("v-bind:location", Location)
+        .AddParentAttr("transition", "slide-y-transition");
+}
+
+<template v-slot:activator="{ props }">
+    @if (Model.TryGetSlotRender(MenuSlot.Activator, out var ActivatorRender))
+    {
+        @ActivatorRender
+    }
+</template>
+
+@if (Model.TryGetSlotRender(MenuSlot.Content, out var ContentRender))
+{
+    @ContentRender
+}

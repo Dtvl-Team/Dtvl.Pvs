@@ -1,0 +1,33 @@
+﻿@model PvOption<DtvlPvs>
+@{
+	Model
+		.UseGlobalSlots()
+		.WithPvName("Bread")
+		.AddParentAttr(new
+		{
+			@class = "row align-items-center align-content-center justify-content-between NotSelect Bread",
+		});
+}
+
+<section class="col-auto row">
+	<div class="col-auto me-2 BreadItem" v-for="(item, index) in app.Router?.Current ?? []">
+		<a style="text-decoration:none;"
+		   v-on:click="app.Router.Click(item, $event)"
+		   class="BreadText">
+			<i v-if="item.icon" v-bind:class="item.icon" class="me-2"></i>
+			<span class="Pointer" v-text="item.title"></span>
+		</a>
+		<i class="fa-solid fa-angle-right ms-2 BreadArrow"
+		   style="display:none;"
+		   v-show="index < app.Router.Current.length - 1"
+		   v-if="index < app.Router.Current.length - 1">
+		</i>
+	</div>
+</section>
+
+@if (Model.TryGetSlotRender(BreadSlot.Footer, out var SlotFooter) || this.TryLoadSlotRender(BreadSlot.Footer, out SlotFooter))
+{
+	<div class="col-auto">
+		@SlotFooter
+	</div>
+}

@@ -1,0 +1,26 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model.WithParentTag("v-img")
+        .UseGlobalSlots()
+        .FillSlotFromDefault(ImageSlot.SrcUrl)
+        .FillSlot(ImageSlot.Ratio, "1");
+
+    if (Model.TryGetSlotContent(ImageSlot.Ratio, out var RatioContent))
+        Model.AddParentAttr("v-bind:aspect-ratio", RatioContent);
+
+    if (Model.TryGetSlotContent(ImageSlot.SrcUrl, out var SrcUrlContent))
+    {
+        SrcUrlContent = $"'{SrcUrlContent}'";
+        Model.AddParentAttr("v-bind:src", SrcUrlContent);
+        if (Model.TryGetSlotContent(ImageSlot.LazySrcUrl, out var LazySrcUrlContent))
+            Model.AddParentAttr("v-bind:lazy-src", $"'{LazySrcUrlContent}'");
+        else
+            Model.AddParentAttr("v-bind:lazy-src", SrcUrlContent);
+    }
+
+    if (Model.TryGetSlotContent(ImageSlot.Cover, out var CoverContent) && bool.TryParse(CoverContent, out var CoverValue) && !CoverValue)
+        Model.AddParentAttr("v-bind:cover", "false");
+    else
+        Model.AddParentAttr("v-bind:cover", "true");
+}
+

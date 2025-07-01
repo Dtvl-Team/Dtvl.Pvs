@@ -1,0 +1,38 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-list")
+        .UseGlobalSlots()
+        .AddParentAttr("v-show", "app.IsMounted")
+        .AddParentAttr(new
+        {
+            density = "compact",
+            @class = "List",
+        });
+
+    if (Model.HasSlot(InputSlot.SizeDefault))
+        Model.AddParentAttr("density", "default", PropPassType.Cover);
+    else if (Model.HasSlot(InputSlot.SizeCompact))
+        Model.AddParentAttr("density", "compact", PropPassType.Cover);
+    else if (Model.HasSlot(InputSlot.SizeComfortable))
+        Model.AddParentAttr("density", "comfortable", PropPassType.Cover);
+}
+
+@if (Model.TryGetSlot(ListSlot.Datas, out var DatasSlot) && DatasSlot.PassData is List<PvListItem> ListItems)
+{
+    foreach (var Item in ListItems)
+    {
+        <v-list-item pv-name="@Item.PvName" href="@Item.Href">
+            <v-list-item-title pv-name="@($"{Item.PvName}Title")"
+                               class="Pointer">
+                @Item.Title
+            </v-list-item-title>
+        </v-list-item>
+    }
+}
+else
+{
+    <v-list-item pv-name="Items">
+        <v-list-item-title pv-name="ItemsTitle"></v-list-item-title>
+    </v-list-item>
+}

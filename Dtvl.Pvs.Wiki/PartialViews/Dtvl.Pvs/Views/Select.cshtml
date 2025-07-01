@@ -1,0 +1,37 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-autocomplete")
+        .UseGlobalSlots()
+        .FillSlotFromDefault(InputSlot.Label)
+        .UsingInputBase()
+        .AddParentAttr("no-data-text", "查無資料")
+        .AddParentAttr(new
+        {
+            @class = "Select",
+        });
+
+    if (Model.HasPvName)
+        Model.AddParentAttr("ref", Model.PvName);
+
+    if (Model.HasSlot(SelectSlot.Chips))
+        Model.AddParentAttr("chips");
+
+    if (Model.HasSlot(SelectSlot.Multiple))
+        Model.AddParentAttr("multiple");
+}
+
+
+
+<template v-slot:prepend-inner="props">
+    <section class="SelectPrependInner">
+        @if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
+        {
+            <dtvl-pv pv-type="Icon"
+                     pv-name="Icon"
+                     pass-slot="Model.PassSlot_InputToIcon()"
+                     class="SelectIcon">
+            </dtvl-pv>
+        }
+    </section>
+</template>

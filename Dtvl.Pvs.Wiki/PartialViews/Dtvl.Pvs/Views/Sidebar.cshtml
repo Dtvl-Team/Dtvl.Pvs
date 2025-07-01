@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNetCore.Html
+@model PvOption<DtvlPvs>
+@{
+    var Classes = new List<string>{
+        "Sidebar NotSelect row",
+    };
+
+    if (Model.HasSlot(SidebarSlot.AutoHeight))
+        Classes.Add("Sidebar-AutoHeight");
+    else
+        Classes.Add("Sidebar-FullHeight");
+
+    if (Model.HasSlot(SidebarSlot.Radius1))
+        Classes.Add("Sidebar-Radius-1");
+    else if (Model.HasSlot(SidebarSlot.Radius2))
+        Classes.Add("Sidebar-Radius-2");
+    else if (Model.HasSlot(SidebarSlot.Radius3))
+        Classes.Add("Sidebar-Radius-3");
+
+    if (Model.HasSlot(SidebarSlot.Block))
+        Classes.Add("Sidebar-Block");
+
+    if (Model.HasSlot(SidebarSlot.FromRight))
+        Classes.Add("Sidebar-Right");
+
+    Model
+        .UseGlobalSlots()
+        .AddParentAttr("v-show", "!mobile || Router?.IsSidebarOpen")
+        .AddParentAttr(new
+        {
+            @class = string.Join(' ', Classes),
+            style = "display:none; "
+        });
+}
+
+
+@functions {
+    IHtmlContent Rcs_CreateSidebarGroup(int CurrentLayer, int EndLayer)
+    {
+        var Group = DtvlPvRender.Create(DtvlPvs.SidebarGroup);
+        Group.Option.AddSlot(SidebarGroupSlot.LayerLevel, CurrentLayer.ToString());
+        if (CurrentLayer < EndLayer)
+        {
+            var NextGroup = Rcs_CreateSidebarGroup(CurrentLayer + 1, EndLayer);
+            Group.Option.AddSlot(SidebarGroupSlot.Content, NextGroup);
+        }
+        else
+        {
+            Group.Option.AddSlot(SidebarGroupSlot.Single, "true");
+        }
+        return Group.Content;
+    }
+}
+
+@if (Model.TryGetSlotRender(SidebarSlot.Header, out var HeaderRender))
+{
+    <section pv-name="Header">
+        @HeaderRender
+    </section>
+}
+
+<v-treeview pv-name="SidebarTree"
+            active-strategy="single-independent"
+            return-object
+            open-on-click>
+    <section pv-name="SidebarContent">
+        @{
+            var Layers = 2; //default layers
+            if (Model.TryGetSlotContent(SidebarSlot.Layers, out var LayersContent))
+            {
+                if (int.TryParse(LayersContent, out var TryGetLayers) && TryGetLayers > 0)
+                    Layers = TryGetLayers;
+            }
+            var Group = Rcs_CreateSidebarGroup(1, Layers);
+            @Group
+        }
+    </section>
+</v-treeview>
+
+@if (Model.TryGetSlotRender(SidebarSlot.Footer, out var FooterRender))
+{
+    @FooterRender
+}

@@ -1,0 +1,41 @@
+﻿@model PvOption<DtvlPvs>
+@{
+    Model.UseGlobalSlots();
+    var LayerLevel = 1;
+    if (Model.TryGetSlotContent(SidebarGroupSlot.LayerLevel, out var LayerLevelContent))
+    {
+        if (int.TryParse(LayerLevelContent, out var TryGetLeyerLevel))
+            LayerLevel = TryGetLeyerLevel;
+    }
+    var LayerClass = $"Sidebar-Layer-{LayerLevel}";
+    var IsSingle = Model.HasSlot(SidebarGroupSlot.Single);
+}
+
+<section class="@LayerClass">
+    <v-list-group pv-name="SidebarGroup">
+        <template v-slot:activator="{ props }">
+            <dtvl-pv pv-type="SidebarChildren"
+                     pv-name="SidebarGroupItem"
+                     v-bind="props">
+            </dtvl-pv>
+        </template>
+        @if (!IsSingle)
+        {
+            <div pv-name="GroupChildren">
+                @if (Model.TryGetSlotRender(SidebarGroupSlot.Content, out var ContentRender))
+                {
+                    @ContentRender
+                }
+                else
+                {
+                    <dtvl-pv pv-type="SidebarChildren"
+                             pv-name="ChildrenItem">
+                    </dtvl-pv>
+                }
+            </div>
+        }
+    </v-list-group>
+    <dtvl-pv pv-type="SidebarChildren"
+             pv-name="SingleGroup">
+    </dtvl-pv>
+</section>

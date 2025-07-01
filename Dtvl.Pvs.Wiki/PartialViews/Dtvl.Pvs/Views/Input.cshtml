@@ -1,0 +1,36 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-text-field")
+        .UseGlobalSlots()
+        .FillSlotFromDefault(InputSlot.Label)
+        .UsingInputBase()
+        .AddParentAttr(new
+        {
+            @class = $"Input",
+        });
+}
+
+<template v-slot:prepend-inner="props">
+    <section class="InputPrependInner">
+        @if (Model.TryGetSlotContent(InputSlot.InnerIcon, out var InnerIcon))
+        {
+            <dtvl-pv pv-type="Icon"
+                     pv-name="Icon"
+                     pass-slot="Model.PassSlot_InputToIcon()"
+                     class="InputIcon">
+            </dtvl-pv>
+        }
+    </section>
+</template>
+
+<template v-slot:append-inner>
+    <div pv-name="HidingSecure">
+        <i pv-name="Icon"
+           class="Pointer"></i>
+    </div>
+    <div pv-name="ShowingSecure">
+        <i pv-name="Icon"
+           class="Pointer"></i>
+    </div>
+</template>

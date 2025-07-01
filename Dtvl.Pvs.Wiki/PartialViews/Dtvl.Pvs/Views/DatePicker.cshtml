@@ -1,0 +1,38 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+    Model.WithParentTag("v-menu")
+       .UseGlobalSlots()
+       .AddParentAttr("open-on-click")
+       .AddParentAttr(":close-on-content-click", "false")
+       .AddParentAttr(new
+       {
+           @class = "DatePickerMenu",
+       });
+}
+
+<template v-slot:activator="{ props }">
+    <div pv-name="@Model.PvName">
+        <dtvl-pv pv-type="Input"
+                 pv-name="Input"
+                 v-bind="props">
+            <pv-slot slot="InputSlot.InnerIcon">
+                fa-solid fa-calendar-days
+            </pv-slot>
+            <pv-slot slot="InputSlot.Label">
+                @Model.RenderSlot(DatePickerSlot.Label)
+            </pv-slot>
+            <pv-slot slot="InputSlot.ReadOnly"></pv-slot>
+            <pv-slot slot="InputSlot.Clearable"></pv-slot>
+        </dtvl-pv>
+    </div>
+</template>
+
+<v-date-picker tag="v-date-picker"
+               pv-name="DatePicker"
+               show-adjacent-months
+               hide-header
+               v-model="TestDate"
+               locale="zh-TW"
+               class="DatePicker NotSelect">
+</v-date-picker>

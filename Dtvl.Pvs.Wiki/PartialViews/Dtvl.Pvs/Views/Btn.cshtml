@@ -1,0 +1,77 @@
+﻿@model PvOption<DtvlPvs>
+
+@{
+	Model.WithParentTag("v-btn")
+		.UseGlobalSlots()
+		.FillSlotFromDefault(BtnSlot.Content)
+		.AddParentAttr(new
+		{
+			@class = "Btn",
+		});
+
+	var BtnTypeMaps = new Dictionary<BtnSlot, (string Class, string Icon, string Content)>
+	{
+		{ BtnSlot.BtnAdd, ("BtnAdd", "fa-solid fa-circle-plus", "新增") },
+		{ BtnSlot.BtnCancel, ("BtnCancel", "fa-solid fa-circle-xmark", "取消") },
+		{ BtnSlot.BtnClear, ("BtnClear", "fa-solid fa-eraser", "清空") },
+		{ BtnSlot.BtnDelete, ("BtnDelete", "fa-solid fa-trash-can", "刪除") },
+		{ BtnSlot.BtnDetail, ("BtnDetail", "fa-solid fa-list", "詳細資料") },
+		{ BtnSlot.BtnEdit, ("BtnEdit", "fa-solid fa-pen-to-square", "編輯") },
+		{ BtnSlot.BtnOk, ("BtnOk", "fa-solid fa-circle-check", "確認") },
+		{ BtnSlot.BtnReview, ("BtnReview", "fa-solid fa-images", "審核") },
+		{ BtnSlot.BtnSearch, ("BtnSearch", "fa-solid fa-magnifying-glass", "查詢") },
+		{ BtnSlot.BtnSend, ("BtnSend", "fa-solid fa-paper-plane", "確認送出") },
+		{ BtnSlot.BtnSubmit, ("BtnSubmit", "fa-solid fa-share-from-square", "送審") },
+		{ BtnSlot.BtnUpload, ("BtnUpload", "fa-solid fa-file-arrow-up", "選擇照片") },
+		{ BtnSlot.BtnDownload, ("BtnDownload", "fa-solid fa-file-arrow-down", "下載") },
+		{ BtnSlot.BtnEnable, ("BtnEnable", "fa-regular fa-circle-check", "啟用") },
+		{ BtnSlot.BtnDisable, ("BtnDisable", "fa-solid fa-ban", "停用") },
+		{ BtnSlot.BtnSignIn, ("BtnSignIn", "fa-solid fa-right-to-bracket", "登入") },
+		{ BtnSlot.BtnSignOut, ("BtnSignOut", "fa-solid fa-right-from-bracket", "登出") },
+		{ BtnSlot.BtnRegister, ("BtnRegister", "fa-solid fa-user-plus", "註冊") },
+		{ BtnSlot.BtnFile, ("BtnFile", "fa-solid fa-file-export", "檔案") },
+		{ BtnSlot.BtnReturnBack, ("BtnReturnBack", "fa-solid fa-rotate-left", "返回") },
+	};
+
+	foreach (var BtnMap in BtnTypeMaps)
+	{
+		if (Model.HasSlot(BtnMap.Key))
+		{
+			var Value = BtnMap.Value;
+			Model.AddParentAttr("class", Value.Class);
+			Model.FillSlot(BtnSlot.PrependIcon, Value.Icon)
+				.FillSlot(BtnSlot.Content, Value.Content);
+			break;
+		}
+	}
+
+	var HasPrependIcon = Model.TryGetSlotContent(BtnSlot.PrependIcon, out var PrependIcon);
+	var HasAppendIcon = Model.TryGetSlotContent(BtnSlot.AppendIcon, out var AppendIcon);
+
+	if (HasPrependIcon)
+		Model.AddParentAttr("prepend-icon", PrependIcon);
+	if (HasAppendIcon)
+		Model.AddParentAttr("append-icon", AppendIcon);
+
+	var DensitySlots = new[] { BtnSlot.SizeDefault, BtnSlot.SizeComfortable, BtnSlot.SizeCompact };
+	var Density = Model.OrderFirstSlot(DensitySlots)?.ToSlotType<BtnSlot>() switch
+	{
+		BtnSlot.SizeDefault => "default",
+		BtnSlot.SizeComfortable => "comfortable",
+		BtnSlot.SizeCompact => "compact",
+		_ => "default",
+	};
+	Model.AddParentAttr("density", Density);
+}
+
+@if (Model.TryGetSlotRender(BtnSlot.Content, out var Content))
+{
+	<div class="@(HasPrependIcon ? "BtnMsForPrepend" : "") @(HasAppendIcon ? "BtnMsForAppend" : "")">
+		@Content
+	</div>
+}
+
+@if (Model.TryGetSlotContent(BtnSlot.Activator, out var Activator))
+{
+	Model.AddParentAttr("v-bind", "activatorProps");
+}
