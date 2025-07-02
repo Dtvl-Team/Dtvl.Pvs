@@ -1841,14 +1841,18 @@ class DtvlPvIniter {
                         return null;
                     },
                     set(value) {
-                        if (value == null) {
-                            this.Date = null;
-                            return;
-                        }
                         if (value instanceof Date)
                             value = Model.ToDateText(value);
 
                         let CurrentValue = this.Value;
+                        if (value == null) {
+                            if (CurrentValue != null) {
+                                this.IsOpen = false;
+                                this.Date = null;
+                            }
+                            return;
+                        }
+
                         if (CurrentValue != value)
                             this.Date = new Date(value);
                     },
