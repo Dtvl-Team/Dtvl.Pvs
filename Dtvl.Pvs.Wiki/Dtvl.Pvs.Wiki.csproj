@@ -35,8 +35,4 @@
     <Folder Include="wwwroot\dtvlpv\dist\css\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Dtvl.Pvs\Dtvl.Pvs.csproj" />
-  </ItemGroup>
-
 </Project>
