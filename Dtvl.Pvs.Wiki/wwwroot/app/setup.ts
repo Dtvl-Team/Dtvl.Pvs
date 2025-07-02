@@ -40,6 +40,10 @@ DtvlPv.UseRouter('Sidebar', [
                 href: '/Component/Select',
             },
             {
+                title: 'DatePicker',
+                href: '/Component/DatePicker',
+            },
+            {
                 title: 'Flex',
                 href: '/Component/Flex',
             },
@@ -66,7 +70,7 @@ DtvlPv.UseRouter('Sidebar', [
             {
                 title: 'Tabbed',
                 href: '/Component/Tabbed',
-            }
+            },
         ]
     },
 ], {

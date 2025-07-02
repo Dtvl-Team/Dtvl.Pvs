@@ -2,13 +2,14 @@
 
 @{
     Model.WithParentTag("v-menu")
-       .UseGlobalSlots()
-       .AddParentAttr("open-on-click")
-       .AddParentAttr(":close-on-content-click", "false")
-       .AddParentAttr(new
-       {
-           @class = "DatePickerMenu",
-       });
+        .FillSlotFromDefault(DatePickerSlot.Label)
+        .UseGlobalSlots()
+        .AddParentAttr("open-on-click")
+        .AddParentAttr(":close-on-content-click", "false")
+        .AddParentAttr(new
+        {
+            @class = "DatePickerMenu",
+        });
 }
 
 <template v-slot:activator="{ props }">

@@ -41,5 +41,9 @@ namespace Dtvl.Pvs.Controllers
         {
             return View();
         }
+        public IActionResult DatePicker()
+        {
+            return View();
+        }
     }
 }

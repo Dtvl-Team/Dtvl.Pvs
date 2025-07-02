@@ -866,6 +866,14 @@ class DtvlPvIniter {
         Option ??= {};
         if (Array.isArray(Option) || typeof (Option) == 'string')
             Option = { Store: Option };
+        //setTimeout(() => {
+        //    Queryer.Init(true);
+        //    Queryer.Using([PvName, 'Input'], ({ QueryNodes }) => {
+        //        QueryNodes.forEach(NodeItem => {
+        //            NodeItem.Dom.blur();
+        //        });
+        //    });
+        //}, 200);
         let PvStorePath = this.PvPath(PvName);
         let PvStore = {
             ...this.CreateForItemsStore(PvName, Option, {
@@ -1299,67 +1307,73 @@ class DtvlPvIniter {
     }
     //#endregion
     //#region DatePicker
+    GetDatePicker(PvName) {
+        return this.Pv(PvName);
+    }
     AddPv_DatePicker(PvName, Option) {
         Option ??= {};
-        Option.IsOpen ??= false;
-        let Store = {
-            ...Option,
+        if (Array.isArray(Option) || typeof (Option) == 'string')
+            Option = { Store: Option };
+        let PvStorePath = this.PvPath(PvName);
+        let PvStore = {
+            ...this.CreateForItemsStore(PvName, Option),
         };
-        Model.UpdateStore(PvName, Store);
-        if (Store.Store) {
-            Model.AddV_Property(Store.Store, {
-                Target: this.PvPath(PvName, 'Date'),
-                get() {
-                    let PickerStore = Model.GetStore(DtvlPv.PvPath(PvName));
-                    return PickerStore['Date'];
-                },
-                set(Value) {
-                    let PickerStore = Model.GetStore(DtvlPv.PvPath(PvName));
-                    PickerStore['Date'] = Value;
-                }
-            });
+        PvStore.IsOpen ??= false;
+        Model.UpdateStore(PvStorePath, PvStore);
+        if (PvStore.Store.Items != null) {
         }
-        Model.AddV_Property(this.PvPath(PvName, 'Selected'), {
-            set(Value) {
-                this.$set('Selected', Value);
-            }
-        });
-        Model.AddV_Property(this.PvPath(PvName, 'Date'), {
-            get() {
-                let Selected = this.Selected;
-                if (Selected == null) {
+        else {
+            Model.AddStore(PvStore.Store.Path)
+                .AddV_Property([PvStorePath, 'Value'], {
+                Target: [PvStore.Store.Path],
+                get() {
+                    let DateValue = this.Date;
+                    if (DateValue != null)
+                        return Model.ToDateText(DateValue);
                     if (this.IsOpen)
                         return ' ';
-                    Queryer.Init(true);
-                    Queryer.Using([PvName, 'Input'], ({ QueryNodes }) => {
-                        QueryNodes.forEach(NodeItem => {
-                            NodeItem.Dom.blur();
-                        });
-                    });
                     return null;
-                }
-                return Model.ToDateText(Selected);
-            },
-            set(Value) {
-                if (Value)
-                    this.Selected = new Date(Value);
+                },
+                set(value) {
+                    if (value instanceof Date)
+                        value = Model.ToDateText(value);
+                    let CurrentValue = this.Value;
+                    if (CurrentValue != value)
+                        this.Date = new Date(value);
+                },
+            })
+                .AddV_Property(PvStore.Store.Path, {
+                get() {
+                    let PvStore = DtvlPv.GetDatePicker(PvName);
+                    return PvStore.Value;
+                },
+                set(value) {
+                    let PvStore = DtvlPv.GetDatePicker(PvName);
+                    PvStore.Value = value;
+                },
+            });
+        }
+        Model.AddV_Property([PvStorePath, 'Date'], {
+            set(value) {
+                this.$set('Date', value);
+                if (value)
+                    this.Value = Model.ToDateText(value);
                 else
-                    this.Selected = null;
+                    this.Value = null;
             }
         });
         Model.AddV_Tree(PvName, {
-            'v-model': this.PvPath(PvName, 'IsOpen'),
+            'v-model': [PvStorePath, 'IsOpen'],
             ':Input': {
-                'v-model': this.PvPath(PvName, 'Date'),
+                'v-model': [PvStorePath, 'Value'],
                 'v-on:click:clear': () => {
-                    let FindStore = Model.GetStore(this.PvPath(PvName));
-                    if (FindStore) {
-                        FindStore.Selected = null;
-                    }
+                    let PvStoreStore = this.GetDatePicker(PvName);
+                    if (PvStoreStore)
+                        PvStoreStore.Date = null;
                 },
             },
             ':DatePicker': {
-                'v-model': this.PvPath(PvName, 'Selected'),
+                'v-model': [PvStorePath, 'Date'],
             },
         });
         return this;

@@ -241,9 +241,14 @@ type SelectStore = ForItemsStore & {
     OnChange?: Function | string;
     QueryItem?: (Value: any, Option: SelectQueryOption) => any;
 };
-type DatePickerOption = {
-    Store?: PathType;
+type DatePickerOption = PathType | ForItemsOption & {
     IsOpen?: boolean;
+    Value?: any;
+};
+type DatePickerStore = ForItemsStore & {
+    IsOpen?: boolean;
+    Value?: any;
+    Date?: Date;
 };
 type TabbedOption = {
     Tabs: TabsOption[];
@@ -360,6 +365,7 @@ declare class DtvlPvIniter {
     CreateDateFormat(Option: DateFormatOption): FormatBuilderType<any>;
     CreateFormat<TOption = any>(Convert: FormatConvertType<TOption>, DefaultOption?: TOption): FormatBuilderType<any>;
     GetFormat(FormatKey: string): FormatBuilderType<any>;
+    GetDatePicker(PvName: PathType): DatePickerStore;
     AddPv_DatePicker(PvName: PathType, Option?: DatePickerOption): this;
     AddPv_Tabbed(PvName: PathType, Option?: TabbedOption): this;
     AddPv_Flex(PvName: PathType, Option: FlexOption): this;
