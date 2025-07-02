@@ -1335,6 +1335,10 @@ class DtvlPvIniter {
                     return null;
                 },
                 set(value) {
+                    if (value == null) {
+                        this.Date = null;
+                        return;
+                    }
                     if (value instanceof Date)
                         value = Model.ToDateText(value);
                     let CurrentValue = this.Value;
