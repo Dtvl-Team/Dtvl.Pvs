@@ -1,5 +1,5 @@
-import { Model, Queryer, PathType, ApiCallback } from '@rugal.tu/vuemodel3';
-import { computed, WatchCallback, WatchHandle } from 'vue';
+import { Model, Queryer, PathType, ApiCallback, DomQueryer } from '@rugal.tu/vuemodel3';
+import { computed, nextTick, watch, WatchCallback, WatchHandle } from 'vue';
 //#region Router Type
 type SidebarItemSet = {
     title: string,
@@ -156,9 +156,12 @@ type ForItemsOption = {
     },
 };
 type ForItemsValueOption = {
-    //OnItemGetValue?: () => any,
-    OnItemSetValue?: (value: any) => void,
+    OnItemSetValue?: (value: any, props: ForItemsEventProps) => any,
 };
+type ForItemsEventProps = {
+    ItemsId: string,
+};
+
 type ForItemsValueMethod = {
     GetValue: () => any,
     SetValue: (value: any) => void,
@@ -260,6 +263,7 @@ type SelectOption = PathType | ForItemsOption & {
     ItemName?: string | Function,
     ItemValue?: string,
     SelectedValue?: any,
+    SelectedItem?: any,
     ReturnObject?: boolean,
     Multiple?: boolean,
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
@@ -284,6 +288,7 @@ type SelectStore = ForItemsStore & {
     Multiple?: boolean,
     ReadOnly?: boolean | string | ((Store?: InputStore) => boolean),
     OnChange?: Function | string,
+    OnDatasUpdate?: Function,
     QueryItem?: (Value: any, Option: SelectQueryOption) => any,
 };
 //#endregion
@@ -1278,13 +1283,17 @@ class DtvlPvIniter {
                     ItemsId = Model.GenerateId();
                     el.setAttribute('items_id', ItemsId);
                 }
-                let WatchEffect: WatchCallback = (newValue, oldValue, a) => {
+                let WatchEffect: WatchCallback = (newValue, oldValue, onCleanup) => {
                     if (ValueOption?.OnItemSetValue)
-                        newValue = ValueOption.OnItemSetValue(newValue);
+                        newValue = ValueOption.OnItemSetValue(newValue, {
+                            ItemsId,
+                        });
                     ValueMethod.SetValue(newValue);
                 };
                 WatchEffect(ValueMethod.GetValue(), null, null);
-                let Watcher = Model.Watch(ValueMethod.GetValue, WatchEffect);
+                let Watcher = Model.Watch(ValueMethod.GetValue, WatchEffect, {
+                    deep: true,
+                });
                 PvStore.ItemsMap[ItemsId] = {
                     Watcher: Watcher,
                 };
@@ -1332,15 +1341,6 @@ class DtvlPvIniter {
         Option ??= {};
         if (Array.isArray(Option) || typeof (Option) == 'string')
             Option = { Store: Option };
-
-        //setTimeout(() => {
-        //    Queryer.Init(true);
-        //    Queryer.Using([PvName, 'Input'], ({ QueryNodes }) => {
-        //        QueryNodes.forEach(NodeItem => {
-        //            NodeItem.Dom.blur();
-        //        });
-        //    });
-        //}, 200);
 
         let PvStorePath = this.PvPath(PvName);
         let PvStore: InputStore = {
@@ -1530,11 +1530,32 @@ class DtvlPvIniter {
 
         Option.ReturnObject ??= false;
         Option.Multiple ??= false;
-        Option.Datas ??= [];
+        if (Option.SelectedItem != null && Option.ItemValue != null)
+            Option.SelectedItem = null;
 
         let PvStorePath = this.PvPath(PvName);
         let PvStore: SelectStore = {
-            ...this.CreateForItemsStore(PvName, Option),
+            ...this.CreateForItemsStore(PvName, Option, {
+                OnItemSetValue: (value, props) => {
+                    if (value != null)
+                        return value;
+
+                    let Selects = Model.Refs(PvName);
+                    if (Array.isArray(Selects)) {
+                        let FindSelect = Selects.find(Item => {
+                            let el = Item.$el as HTMLElement;
+                            if (el == null)
+                                return false;
+
+                            let GetItemsId = el.getAttribute('items_id');
+                            return props.ItemsId == GetItemsId;
+                        });
+                        if (FindSelect != null)
+                            FindSelect.search = null;
+                    }
+                    return value;
+                },
+            }),
             IsInited: false,
             Datas: Option.Datas,
             ApiKey: Option.ApiKey,
@@ -1544,11 +1565,12 @@ class DtvlPvIniter {
             Multiple: Option.Multiple,
             ReadOnly: Option.ReadOnly,
             OnChange: Option.OnChange,
+            SelectedItem: Option.SelectedItem,
+            SelectedValue: Option.SelectedValue,
             QueryItem: (Item, Option) => {
                 let PvStore = DtvlPv.GetSelect(PvName);
                 let TargetField = PvStore.ItemValue;
                 let Result = null;
-
                 if (Array.isArray(Item)) {
                     if (TargetField == null) {
                         Result = PvStore.Datas.filter((data: any) => Item.includes(data));
@@ -1575,127 +1597,70 @@ class DtvlPvIniter {
                 }
                 return Result;
             },
-        };
-        Model.UpdateStore(PvStorePath, PvStore);
-
-        if (PvStore.Store.Items != null && PvStore.Store.Items != false) {
-            Model.AddV_Tree(PvName, {
-                'v-bind:model-value': `${PvStore.Store.Path}`,
-                'v-on:update:model-value': `value => {
-                    ${PvStore.Store.Path} = value;
-                }`,
-            });
-        }
-        else {
-            Model.AddStore(PvStore.Store.Path, null)
-                .AddV_Model(PvName, [PvStorePath, 'SelectedItem'])
-                .AddV_Property([PvStorePath, 'SelectedItem'], {
-                    Bind: [PvStore.ReturnObject == true ? PvStore.Store.Path : null],
-                    set(Value) {
-                        let PvStore = DtvlPv.GetSelect(PvName);
-                        if (Value == null) {
-                            this.$set('SelectedItem', null);
-                            this.$set('SelectedValue', null);
-                            return;
-                        }
-
-                        let ClearValue = PvStore.QueryItem(Value, {
-                            Source: 'item',
-                            Target: 'item'
-                        });
-                        let SetSelectedValue = PvStore.QueryItem(ClearValue, {
-                            Source: 'item',
-                            Target: 'value',
-                        });
-
-                        if (SetSelectedValue == null) {
-                            this.$set('SelectedItem', null);
-                            this.$set('SelectedValue', null);
-                            return;
-                        }
-                        let CurrentValue = this.SelectedValue;
-                        if (SetSelectedValue != CurrentValue) {
-                            this.$set('SelectedItem', ClearValue);
-                            this.$set('SelectedValue', SetSelectedValue);
-                        }
+            OnDatasUpdate: () => {
+                let PvStore = DtvlPv.GetSelect(PvName);
+                if (PvStore.Store.Items == null) {
+                    let SelectedValue = PvStore.SelectedItem;
+                    if (SelectedValue == null)
+                        SelectedValue = PvStore.SelectedValue;
+                    else if (PvStore.ItemValue) {
+                        if (PvStore.Multiple)
+                            SelectedValue = SelectedValue.map((Item: any) => Item[PvStore.ItemValue]);
+                        else
+                            SelectedValue = SelectedValue[PvStore.ItemValue];
                     }
-                })
-                .AddV_Property([PvStorePath, 'SelectedValue'], {
-                    Bind: [PvStore.ReturnObject == false ? PvStore.Store.Path : null],
-                    set(Value: any) {
-                        let PvStore = DtvlPv.GetSelect(PvName);
-                        if (Value == null) {
-                            this.$set('SelectedValue', null);
-                            this.$set('SelectedItem', null);
-                            return;
-                        }
-                        let ClearValue = PvStore.QueryItem(Value, {
-                            Source: 'value',
-                            Target: 'value'
-                        });
-                        let SetSelectedItem = PvStore.QueryItem(ClearValue, {
-                            Source: 'value',
-                            Target: 'item',
-                        });
-                        if (SetSelectedItem == null) {
-                            this.$set('SelectedValue', null);
-                            this.$set('SelectedItem', null);
-                            return;
-                        }
-                        if (SetSelectedItem != this.SelectedItem) {
-                            this.$set('SelectedValue', ClearValue);
-                            this.$set('SelectedItem', SetSelectedItem);
-                        }
-                    },
-                });
 
-            PvStore.ReturnObject = true;
-        }
+                    let FindItem = PvStore.QueryItem(SelectedValue, {
+                        Source: 'value',
+                        Target: 'item',
+                    });
+
+                    PvStore.SelectedItem = FindItem;
+                }
+                else {
+
+                }
+            },
+        };
+        Model.UpdateStore(PvStorePath, PvStore)
+            .AddV_Watch([PvStorePath, 'Datas'], () => {
+                let PvStore = this.GetSelect(PvName);
+                PvStore.OnDatasUpdate();
+            }, {
+                deep: true,
+            });
 
         if (PvStore.ApiKey) {
-            Model.AddV_Property([PvStorePath, 'Datas'], {
-                Target: Option.ApiKey,
-                Value: Option.Datas,
-                get() {
-                    let GetDatas = this.$get('Datas');
-                    if (GetDatas == null)
-                        return [];
+            Model.AddStore(PvStore.ApiKey)
+                .AddV_Property([PvStorePath, 'Datas'], {
+                    get() {
+                        let PvStore = DtvlPv.GetSelect(PvName);
+                        let GetDatas = Model.GetStore(PvStore.ApiKey);
+                        if (GetDatas == null)
+                            return [];
 
-                    if (!Array.isArray(GetDatas))
-                        return [];
+                        if (!Array.isArray(GetDatas))
+                            return [];
 
-                    if (GetDatas.length == 0) {
-                        if (this.IsInited)
-                            this.SelectedValue = null;
-                        return [];
-                    }
-
-                    if (!this.IsInited)
-                        this.IsInited = true;
-
-                    let QueryDatas = GetDatas;
-                    if (Option.ItemValue)
-                        QueryDatas = QueryDatas.map(Item => Item[Option.ItemValue]);
-
-                    let SelectedValue = this.SelectedValue;
-                    if (SelectedValue == null)
-                        return GetDatas;
-
-                    if (!Array.isArray(SelectedValue)) {
-                        if (!QueryDatas.includes(SelectedValue))
-                            this.SelectedValue = null;
-                    }
-                    else {
-                        for (let Item of SelectedValue) {
-                            if (!QueryDatas.includes(Item)) {
+                        if (GetDatas.length == 0) {
+                            if (this.IsInited)
                                 this.SelectedValue = null;
-                                break;
-                            }
+                            return [];
                         }
+
+                        if (!this.IsInited)
+                            this.IsInited = true;
+
+                        return GetDatas;
+                    },
+                    set(value) {
+                        if (!Array.isArray(value))
+                            value = [];
+
+                        let PvStore = DtvlPv.GetSelect(PvName);
+                        Model.SetStore(PvStore.ApiKey, value);
                     }
-                    return GetDatas;
-                }
-            });
+                });
 
             this.WatchApi(Option.ApiKey, 'IsCalling', (Value: boolean) => {
                 let Store = Model.GetStore<SelectStore>(PvStorePath);
@@ -1720,8 +1685,7 @@ class DtvlPvIniter {
             Model.AddV_Bind(PvName, 'loading', [PvStorePath, 'Loading']);
         }
         if (PvStore.OnChange)
-            Model.AddV_On(PvName, 'update:model-value', Option.OnChange);
-
+            Model.AddV_OnChange(PvName, Option.OnChange);
         if (PvStore.ReadOnly != null) {
             let ReadOnlyPath = null;
             if (typeof (Option.ReadOnly) == 'function') {
@@ -1741,12 +1705,87 @@ class DtvlPvIniter {
             }
         }
 
+        if (PvStore.Store.Items != null && PvStore.Store.Items != false) {
+            Model.AddV_Tree(PvName, {
+                'v-model': PvStore.Store.Path,
+                'v-bind:return-object': `${PvStore.ReturnObject}`,
+            });
+        }
+        else {
+            Model.AddStore(PvStore.Store.Path, null)
+                .AddV_Model(PvName, [PvStorePath, 'SelectedItem'])
+                .AddV_Property([PvStorePath, 'SelectedItem'], {
+                    set(SelectedItem) {
+                        let PvStore = DtvlPv.GetSelect(PvName);
+                        if (SelectedItem == null) {
+                            this.$set('SelectedItem', null);
+                            this.$set('SelectedValue', null);
+
+                            let SelectRef = Model.Refs(PvName);
+                            if (SelectRef != null)
+                                SelectRef.search = null;
+                            return;
+                        }
+                        let SelectedValue = PvStore.QueryItem(SelectedItem, {
+                            Source: 'item',
+                            Target: 'value'
+                        });
+
+                        this.$set('SelectedItem', SelectedItem);
+                        this.$set('SelectedValue', SelectedValue);
+                    }
+                })
+                .AddV_Property([PvStorePath, 'SelectedValue'], {
+                    set(SelectedValue: any) {
+                        if (SelectedValue == null) {
+                            this.SelectedItem = null;
+                            return;
+                        }
+
+                        let PvStore = DtvlPv.GetSelect(PvName);
+                        let SelectedItem = PvStore.QueryItem(SelectedValue, {
+                            Source: 'value',
+                            Target: 'item',
+                        });
+                        this.$set('SelectedItem', SelectedItem);
+                        this.$set('SelectedValue', SelectedValue);
+                    },
+                })
+                .AddV_Property(PvStore.Store.Path, {
+                    get() {
+                        let PvStore = DtvlPv.GetSelect(PvName);
+                        if (PvStore.ReturnObject)
+                            return PvStore.SelectedItem;
+                        return PvStore.SelectedValue;
+                    },
+                    set(value) {
+                        let PvStore = DtvlPv.GetSelect(PvName);
+                        if (PvStore.ReturnObject)
+                            PvStore.SelectedItem = value;
+                        else
+                            PvStore.SelectedValue = value;
+                    }
+                })
+                .AddV_Tree(PvName, {
+                    'v-bind:return-object': `true`,
+                    //'v-bind:model-value': [PvStorePath, 'SelectedItem'],
+                    //'v-on:update:model-value': `value => {
+                    //    console.log('set');
+                    //    console.log(value);
+                    //    ${PvStorePath}.SelectedItem = value;
+                    //}`,
+                });
+        }
+
         Model.AddV_Tree(PvName, {
             'v-bind:items': [PvStorePath, 'Datas'],
+            //'v-bind:item-title': `(item) => {
+            //    return item['${PvStore.ItemName}'];
+            //}`,
             'v-bind:item-title': [PvStorePath, 'ItemName'],
             'v-bind:item-value': [PvStorePath, 'ItemValue'],
-            'v-bind:return-object': `${PvStore.ReturnObject}`,
             'v-bind:multiple': `${PvStore.Multiple}`,
+            'v-bind:ref': `'${Model.ToJoin(PvName)}'`,
         });
 
         return this;

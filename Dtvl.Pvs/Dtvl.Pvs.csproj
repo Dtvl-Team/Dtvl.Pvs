@@ -6,8 +6,8 @@
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<AssemblyVersion>1.0.2</AssemblyVersion>
-		<FileVersion>$(AssemblyVersion)-beta</FileVersion>
-		<Version>$(AssemblyVersion)-beta</Version>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<Version>$(AssemblyVersion)</Version>
 		<Authors>Dtvl-Team</Authors>
 		<PackageProjectUrl>https://github.com/Dtvl-Team/Dtvl.Pvs</PackageProjectUrl>
 	</PropertyGroup>

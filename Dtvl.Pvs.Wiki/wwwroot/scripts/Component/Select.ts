@@ -4,46 +4,57 @@ import { Model, PathType } from '@rugal.tu/vuemodel3';
 let SelectDatas = [
 
 ];
-let StringDatas = ['a', 'b', 'c'];
 for (let i = 0; i < 1000; i++) {
-    SelectDatas.push(`${i}aaaa`);
+    //SelectDatas.push(`${i}`);
+    SelectDatas.push({
+        name: `name-${i}`,
+        value: i,
+    });
 }
-Model.UpdateStore('Datas.test', SelectDatas);
-Model.AddV_Tree('Root', {
-    ':StoreSelect': Paths => {
-        DtvlPv.AddPv_Select(Paths, {
-            ApiKey: 'Datas.test',
-            ReturnObject: true,
-            //ItemValue: 'id',
-            //ItemName: 'name',
-            ItemName: (Item: any) => {
-                return Item.replaceAll('a', '');
-            },
-            Store: 'Filter.result',
-        });
-    }
+
+Model.AddV_Click('Btn', () => {
+    //DtvlPv.GetSelect('Root.StoreSelect').SelectedItem = null;
+    Model.GetStore('SomeApi')[0].Selected = null;
 })
 
+//Model.AddV_Tree('Root', {
+//    ':StoreSelect': Paths => {
+//        DtvlPv.AddPv_Select(Paths, {
+//            ApiKey: 'Datas.test',
+//            //ReturnObject: true,
+//            ItemValue: 'value',
+//            ItemName: 'name',
+//            //ItemName: (Item: any) => {
+//            //    return Item.replaceAll('a', '');
+//            //},
+//            Store: 'Filter.result',
+//        });
+//    }
+//});
+//DtvlPv.GetSelect('Root.StoreSelect').SelectedValue = 3;
+//Model.UpdateStore('Filter.result', 'a3');
+Model.UpdateStore('Datas.test', SelectDatas);
+Model.UpdateStore('SomeApi', [{ Selected: 3 }]);
 
-
-Model.UpdateStore('SomeApi', [{}, {}, {}]);
 Model.AddV_Tree('Rows', {
     ':Items': {
         'v-for': 'SomeApi',
         ':Select': Paths => {
             DtvlPv.AddPv_Select(Paths, {
                 Store: {
-                    Path: 'item.value',
+                    Path: 'item.Selected',
                     Items: true,
                 },
-                ReturnObject: true,
-                Datas: SelectDatas,
+                //ReturnObject: true,
+                ApiKey: 'Datas.test',
+                //Datas: SelectDatas,
                 ItemName: 'name',
-                ItemValue: 'id',
-                Multiple: true,
+                ItemValue: 'value',
+                //Multiple: true,
             });
         }
     }
 });
 
+//DtvlPv.GetSelect('Rows.Items.Select').Datas = SelectDatas;
 
