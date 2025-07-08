@@ -1,9 +1,6 @@
 import { DtvlPv } from 'dtvlpv';
-import { Model, PathType } from '@rugal.tu/vuemodel3';
-
-let SelectDatas = [
-
-];
+import { Model } from '@rugal.tu/vuemodel3';
+let SelectDatas = [];
 for (let i = 0; i < 1000; i++) {
     //SelectDatas.push(`${i}`);
     SelectDatas.push({
@@ -11,12 +8,10 @@ for (let i = 0; i < 1000; i++) {
         value: i,
     });
 }
-
 Model.AddV_Click('Btn', () => {
     //DtvlPv.GetSelect('Root.StoreSelect').SelectedItem = null;
     Model.GetStore('SomeApi')[0].Selected = null;
-})
-
+});
 //Model.AddV_Tree('Root', {
 //    ':StoreSelect': Paths => {
 //        DtvlPv.AddPv_Select(Paths, {
@@ -35,7 +30,6 @@ Model.AddV_Click('Btn', () => {
 //Model.UpdateStore('Filter.result', 'a3');
 Model.UpdateStore('Datas.test', SelectDatas);
 Model.UpdateStore('SomeApi', [{ Selected: 3 }]);
-
 Model.AddV_Tree('Rows', {
     ':Items': {
         'v-for': 'SomeApi',
@@ -51,13 +45,11 @@ Model.AddV_Tree('Rows', {
                 ItemName: 'name',
                 ItemValue: 'value',
                 //Multiple: true,
-                OnChange: (a: any) => {
-                    
+                OnChange: (a) => {
                 },
             });
         }
     }
 });
-
 //DtvlPv.GetSelect('Rows.Items.Select').Datas = SelectDatas;
-
+//# sourceMappingURL=Select.js.map
