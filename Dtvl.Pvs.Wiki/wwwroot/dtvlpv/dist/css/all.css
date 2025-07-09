@@ -1136,7 +1136,9 @@ body {
   --DataTable-Stripe-bg: #252525;
   --DataTable-Select-bg: #2A3550;
   --DataTable-hover-bg: #3A3A3A;
-  --DataTable-Column-NumberInput-text-align: end;
+  --DataTable-Column-padding: 0 16px;
+  --DataTable-Head-Column-padding: var(--DataTable-Column-padding);
+  --DataTable-Body-Column-padding: var(--DataTable-Column-padding);
 }
 
 .DataTable {
@@ -1198,8 +1200,12 @@ body {
   background: var(--DataTable-hover-bg);
 }
 
-.TableColumnNumberInput input {
-  text-align: var(--DataTable-Column-NumberInput-text-align);
+.v-table > .v-table__wrapper > table > thead > tr > td {
+  padding: var(--DataTable-Head-Column-padding);
+}
+
+.v-table > .v-table__wrapper > table > tbody > tr > td {
+  padding: var(--DataTable-Body-Column-padding);
 }
 
 --InfoLineVar, :root {
